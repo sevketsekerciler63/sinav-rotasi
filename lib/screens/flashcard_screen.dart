@@ -19,6 +19,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   final List<String> _knownIds = [];
   String? _loadedProfileId;
   int _loadGeneration = 0;
+  bool _knownLoaded = false;
+  bool _isSavingKnown = false;
+  String? _knownStorageError;
 
   final Map<String, List<Flashcard>> _cards = {
     'Matematik': [
@@ -168,39 +171,114 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     if (profileId == _loadedProfileId) return;
     _loadedProfileId = profileId;
     _knownIds.clear();
+    _knownLoaded = false;
+    _isSavingKnown = false;
+    _knownStorageError = null;
     _loadKnown(profileId, ++_loadGeneration);
   }
 
   Future<void> _loadKnown(String profileId, int generation) async {
-    final data = await ProfileStorage.instance.readStringForProfile(
-      profileId,
-      'flashcard_known',
-    );
-    if (!mounted || generation != _loadGeneration) return;
-    final list = data == null
-        ? const <String>[]
-        : (jsonDecode(data) as List).cast<String>();
-    setState(() {
-      _knownIds
-        ..clear()
-        ..addAll(list);
-    });
+    try {
+      final data = await ProfileStorage.instance.readStringForProfile(
+        profileId,
+        'flashcard_known',
+      );
+      final decoded = data == null ? const <String>[] : jsonDecode(data);
+      if (decoded is! List || decoded.any((item) => item is! String)) {
+        throw const FormatException('Kart ilerleme biçimi geçersiz.');
+      }
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _knownIds
+          ..clear()
+          ..addAll(decoded.cast<String>().toSet());
+        _knownLoaded = true;
+        _knownStorageError = null;
+      });
+    } catch (_) {
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _knownLoaded = false;
+        _knownStorageError = 'Kart ilerlemesi yüklenemedi.';
+      });
+    }
   }
 
   Future<void> _saveKnown() async {
+    if (!_knownLoaded || _isSavingKnown) return;
     final profileId = _loadedProfileId;
     if (profileId == null) return;
-    await ProfileStorage.instance.writeStringForProfile(
-      profileId,
-      'flashcard_known',
-      jsonEncode(_knownIds),
+    final generation = _loadGeneration;
+    setState(() => _isSavingKnown = true);
+    try {
+      await ProfileStorage.instance.writeStringForProfile(
+        profileId,
+        'flashcard_known',
+        jsonEncode(_knownIds),
+      );
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _isSavingKnown = false;
+        _knownStorageError = null;
+      });
+    } catch (_) {
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _isSavingKnown = false;
+        _knownStorageError = 'Kart ilerlemesi kaydedilemedi.';
+      });
+    }
+  }
+
+  Future<void> _retryKnownStorage() async {
+    final profileId = _loadedProfileId;
+    if (profileId == null) return;
+    if (_knownLoaded) {
+      await _saveKnown();
+    } else {
+      setState(() => _knownStorageError = null);
+      await _loadKnown(profileId, ++_loadGeneration);
+    }
+  }
+
+  Future<void> _confirmResetKnown(
+    BuildContext context,
+    List<Flashcard> cards,
+  ) async {
+    if (!_knownLoaded) return;
+    final cardIds = cards.map((card) => card.id).toSet();
+    final categoryKnownCount = _knownIds.where(cardIds.contains).length;
+    if (categoryKnownCount == 0) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Bilinen kartları sıfırla?'),
+        content: Text(
+          '$_selectedCategory için $categoryKnownCount kartın “Biliyorum” işareti kaldırılacak.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Sıfırla'),
+          ),
+        ],
+      ),
     );
+    if (confirmed != true || !mounted) return;
+    setState(() => _knownIds.removeWhere(cardIds.contains));
+    await _saveKnown();
   }
 
   List<Flashcard> get _currentCards => _cards[_selectedCategory] ?? [];
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final categories = _cards.keys.toList();
     final categoryColors = [
       AppTheme.accentPurple,
@@ -217,18 +295,17 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bilgi Kartlari'),
+        title: const Text('Bilgi Kartları'),
         actions: [
           TextButton(
-            onPressed: () {
-              setState(() {
-                _knownIds.removeWhere((id) => cards.any((c) => c.id == id));
-                _saveKnown();
-              });
-            },
-            child: const Text(
-              'Sifirla',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
+            onPressed: !_knownLoaded || _isSavingKnown || knownCount == 0
+                ? null
+                : () => _confirmResetKnown(context, cards),
+            child: Text(
+              'Sıfırla',
+              style: textTheme.labelLarge?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -257,7 +334,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                         color: color.withValues(alpha: isSelected ? 1 : 0.3),
                       ),
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : color,
+                        color: isSelected
+                            ? (ThemeData.estimateBrightnessForColor(color) ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black)
+                            : colors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -282,16 +364,16 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.accentCyan.withValues(alpha: 0.08),
+                color: colors.tertiaryContainer.withValues(alpha: 0.55),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.accentCyan.withValues(alpha: 0.2),
+                  color: colors.tertiary.withValues(alpha: 0.35),
                 ),
               ),
               child: Text(
                 'Başlangıç seti: $totalCardCount kart. Matematik, Fizik, Kimya ve Biyolojiyle sınırlı; tüm müfredatı kapsamaz. “Biliyorum” işareti tekrar planlamaz.',
-                style: const TextStyle(
-                  color: Colors.white70,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colors.onSurface,
                   fontSize: 11,
                   height: 1.35,
                 ),
@@ -301,6 +383,40 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           const SizedBox(height: 8),
 
           // Progress
+          if (_knownStorageError != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.errorContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: colors.onErrorContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _knownStorageError!,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _isSavingKnown ? null : _retryKnownStorage,
+                      child: Text(
+                        _knownLoaded ? 'Yeniden kaydet' : 'Yeniden yükle',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -308,14 +424,15 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               children: [
                 Text(
                   '${_currentIndex + 1} / ${cards.length}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
                 Text(
-                  '$knownCount / ${cards.length} işaretli',
-                  style: const TextStyle(
-                    color: AppTheme.accentGreen,
-                    fontSize: 12,
-                  ),
+                  _knownLoaded
+                      ? '$knownCount / ${cards.length} işaretli'
+                      : 'İlerleme yükleniyor',
+                  style: textTheme.bodySmall?.copyWith(color: colors.secondary),
                 ),
               ],
             ),
@@ -328,8 +445,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               child: LinearProgressIndicator(
                 value: cards.isEmpty ? 0 : knownCount / cards.length,
                 minHeight: 4,
-                backgroundColor: AppTheme.borderDark,
-                valueColor: const AlwaysStoppedAnimation(AppTheme.accentGreen),
+                backgroundColor: colors.outlineVariant,
+                valueColor: AlwaysStoppedAnimation(colors.secondary),
               ),
             ),
           ),
@@ -338,10 +455,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           // Flashcard
           Expanded(
             child: cards.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'Kart yok',
-                      style: TextStyle(color: Colors.white38),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   )
                 : Semantics(
@@ -371,20 +490,18 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                 gradient: _showAnswer
                                     ? LinearGradient(
                                         colors: [
-                                          AppTheme.accentGreen.withValues(
+                                          colors.secondary.withValues(
                                             alpha: 0.1,
                                           ),
-                                          AppTheme.cardDark,
+                                          colors.surfaceContainerLow,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       )
                                     : LinearGradient(
                                         colors: [
-                                          AppTheme.accentBlue.withValues(
-                                            alpha: 0.1,
-                                          ),
-                                          AppTheme.cardDark,
+                                          colors.primary.withValues(alpha: 0.1),
+                                          colors.surfaceContainerLow,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -392,19 +509,15 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
                                   color: _showAnswer
-                                      ? AppTheme.accentGreen.withValues(
-                                          alpha: 0.3,
-                                        )
-                                      : AppTheme.accentBlue.withValues(
-                                          alpha: 0.3,
-                                        ),
+                                      ? colors.secondary.withValues(alpha: 0.3)
+                                      : colors.primary.withValues(alpha: 0.3),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
                                     color:
                                         (_showAnswer
-                                                ? AppTheme.accentGreen
-                                                : AppTheme.accentBlue)
+                                                ? colors.secondary
+                                                : colors.primary)
                                             .withValues(alpha: 0.1),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
@@ -422,8 +535,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                     decoration: BoxDecoration(
                                       color:
                                           (_showAnswer
-                                                  ? AppTheme.accentGreen
-                                                  : AppTheme.accentBlue)
+                                                  ? colors.secondary
+                                                  : colors.primary)
                                               .withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -431,8 +544,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                       _showAnswer ? 'CEVAP' : 'SORU',
                                       style: TextStyle(
                                         color: _showAnswer
-                                            ? AppTheme.accentGreen
-                                            : AppTheme.accentBlue,
+                                            ? colors.secondary
+                                            : colors.primary,
                                         fontWeight: FontWeight.w700,
                                         fontSize: 11,
                                         letterSpacing: 2,
@@ -446,7 +559,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                         : cards[_currentIndex].question,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: colors.onSurface,
                                       fontSize: _showAnswer ? 15 : 18,
                                       fontWeight: _showAnswer
                                           ? FontWeight.w400
@@ -456,10 +569,10 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                   ),
                                   const SizedBox(height: 24),
                                   if (!_showAnswer)
-                                    const Text(
-                                      'Cevabi gormek icin dokun',
+                                    Text(
+                                      'Cevabı görmek için dokun',
                                       style: TextStyle(
-                                        color: Colors.white24,
+                                        color: colors.onSurfaceVariant,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -473,15 +586,15 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.accentGreen.withValues(
+                                        color: colors.secondary.withValues(
                                           alpha: 0.15,
                                         ),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         'Biliyorum',
                                         style: TextStyle(
-                                          color: AppTheme.accentGreen,
+                                          color: colors.secondary,
                                           fontSize: 11,
                                         ),
                                       ),
@@ -503,40 +616,48 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
             child: Row(
               children: [
                 // Previous
-                _navButton(Icons.arrow_back_ios_rounded, 'Önceki kart', () {
-                  if (_currentIndex > 0) {
-                    setState(() {
-                      _currentIndex--;
-                      _showAnswer = false;
-                    });
-                  }
-                }),
+                _navButton(
+                  context,
+                  Icons.arrow_back_ios_rounded,
+                  'Önceki kart',
+                  () {
+                    if (_currentIndex > 0) {
+                      setState(() {
+                        _currentIndex--;
+                        _showAnswer = false;
+                      });
+                    }
+                  },
+                ),
                 const SizedBox(width: 12),
                 // I don't know
                 Expanded(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
-                    onTap: () {
-                      setState(() {
-                        _knownIds.remove(cards[_currentIndex].id);
-                        _saveKnown();
-                        _nextCard();
-                      });
-                    },
+                    onTap: !_knownLoaded || _isSavingKnown
+                        ? null
+                        : () async {
+                            if (_isSavingKnown) return;
+                            setState(
+                              () => _knownIds.remove(cards[_currentIndex].id),
+                            );
+                            await _saveKnown();
+                            if (mounted) _nextCard();
+                          },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: AppTheme.accentRed.withValues(alpha: 0.15),
+                        color: colors.errorContainer,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: AppTheme.accentRed.withValues(alpha: 0.3),
+                          color: colors.error.withValues(alpha: 0.3),
                         ),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           'Bilmiyorum',
                           style: TextStyle(
-                            color: AppTheme.accentRed,
+                            color: colors.onErrorContainer,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -549,29 +670,31 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                 Expanded(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
-                    onTap: () {
-                      setState(() {
-                        if (!_knownIds.contains(cards[_currentIndex].id)) {
-                          _knownIds.add(cards[_currentIndex].id);
-                          _saveKnown();
-                        }
-                        _nextCard();
-                      });
-                    },
+                    onTap: !_knownLoaded || _isSavingKnown
+                        ? null
+                        : () async {
+                            if (_isSavingKnown) return;
+                            final id = cards[_currentIndex].id;
+                            if (!_knownIds.contains(id)) {
+                              setState(() => _knownIds.add(id));
+                              await _saveKnown();
+                            }
+                            if (mounted) _nextCard();
+                          },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: AppTheme.accentGreen.withValues(alpha: 0.15),
+                        color: colors.secondaryContainer,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: AppTheme.accentGreen.withValues(alpha: 0.3),
+                          color: colors.secondary.withValues(alpha: 0.3),
                         ),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           'Biliyorum',
                           style: TextStyle(
-                            color: AppTheme.accentGreen,
+                            color: colors.onSecondaryContainer,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -581,9 +704,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                 ),
                 const SizedBox(width: 12),
                 // Next
-                _navButton(Icons.arrow_forward_ios_rounded, 'Sonraki kart', () {
-                  _nextCard();
-                }),
+                _navButton(
+                  context,
+                  Icons.arrow_forward_ios_rounded,
+                  'Sonraki kart',
+                  () {
+                    _nextCard();
+                  },
+                ),
               ],
             ),
           ),
@@ -608,7 +736,13 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     }
   }
 
-  Widget _navButton(IconData icon, String label, VoidCallback onTap) {
+  Widget _navButton(
+    BuildContext context,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
+    final colors = Theme.of(context).colorScheme;
     return Semantics(
       button: true,
       label: label,
@@ -619,11 +753,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: AppTheme.cardDark,
+            color: colors.surfaceContainerLow,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.borderDark),
+            border: Border.all(color: colors.outlineVariant),
           ),
-          child: Icon(icon, color: Colors.white54, size: 18),
+          child: Icon(icon, color: colors.onSurfaceVariant, size: 18),
         ),
       ),
     );

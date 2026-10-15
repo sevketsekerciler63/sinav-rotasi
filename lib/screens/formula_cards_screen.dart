@@ -188,6 +188,8 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final categories = _formulas.keys.toList();
     final totalFormulaCount = _formulas.values.fold<int>(
       0,
@@ -201,7 +203,7 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Formul Kartlari')),
+      appBar: AppBar(title: const Text('Formül Kartları')),
       body: Column(
         children: [
           // Category chips
@@ -226,7 +228,12 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
                         color: color.withValues(alpha: isSelected ? 1 : 0.3),
                       ),
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : color,
+                        color: isSelected
+                            ? (ThemeData.estimateBrightnessForColor(color) ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black)
+                            : colors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -247,16 +254,16 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.accentCyan.withValues(alpha: 0.08),
+                color: colors.tertiaryContainer.withValues(alpha: 0.55),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.accentCyan.withValues(alpha: 0.2),
+                  color: colors.tertiary.withValues(alpha: 0.35),
                 ),
               ),
               child: Text(
                 'Başlangıç seçkisi: $totalFormulaCount formül. Matematik, Fizik, Kimya ve Biyolojiyle sınırlıdır; tam ders kapsamı ve kaynak denetimi değildir.',
-                style: const TextStyle(
-                  color: Colors.white70,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colors.onSurface,
                   fontSize: 11,
                   height: 1.35,
                 ),
@@ -271,8 +278,10 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
             child: Row(
               children: [
                 Text(
-                  '${_formulas[_selectedCategory]!.length} formul',
-                  style: const TextStyle(color: Colors.white38, fontSize: 12),
+                  '${_formulas[_selectedCategory]!.length} formül',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -288,7 +297,7 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
                 final formula = _formulas[_selectedCategory]![index];
                 final catIndex = categories.indexOf(_selectedCategory);
                 final color = categoryColors[catIndex];
-                return _buildFormulaCard(formula, color, index + 1);
+                return _buildFormulaCard(context, formula, color, index + 1);
               },
             ),
           ),
@@ -297,14 +306,21 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
     );
   }
 
-  Widget _buildFormulaCard(FormulaItem formula, Color color, int number) {
+  Widget _buildFormulaCard(
+    BuildContext context,
+    FormulaItem formula,
+    Color color,
+    int number,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,8 +349,8 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
               Expanded(
                 child: Text(
                   formula.title,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: textTheme.titleSmall?.copyWith(
+                    color: colors.onSurface,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -354,7 +370,7 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
             child: Text(
               formula.formula,
               style: TextStyle(
-                color: color,
+                color: colors.onSurface,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
                 letterSpacing: 1,
@@ -364,7 +380,9 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
           const SizedBox(height: 6),
           Text(
             formula.description,
-            style: const TextStyle(color: Colors.white38, fontSize: 11),
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),

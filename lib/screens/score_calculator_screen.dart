@@ -31,6 +31,8 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         if (_profileId != state.activeProfile.id) {
           _profileId = state.activeProfile.id;
           _nets.clear();
@@ -99,16 +101,16 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppTheme.accentOrange.withValues(alpha: 0.09),
+                  color: colors.tertiaryContainer.withValues(alpha: 0.55),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: AppTheme.accentOrange.withValues(alpha: 0.3),
+                    color: colors.tertiary.withValues(alpha: 0.4),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Bu araç yalnızca girdiğin deneme netlerini toplar. Resmî puan ve başarı sırası; ilgili yılın kılavuzu ve değerlendirme verileriyle hesaplandığı için burada tahmin gösterilmez.',
-                  style: TextStyle(
-                    color: Colors.white70,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.onTertiaryContainer,
                     fontSize: 13,
                     height: 1.45,
                   ),
@@ -119,7 +121,7 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
                 _subjectSection(
                   title: 'TYT · Resmî dersler',
                   subjects: officialTyt,
-                  color: AppTheme.accentGreen,
+                  color: colors.secondary,
                 ),
               ],
               if (officialAyt.isNotEmpty) ...[
@@ -127,7 +129,7 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
                 _subjectSection(
                   title: 'AYT · Resmî dersler',
                   subjects: officialAyt,
-                  color: AppTheme.accentOrange,
+                  color: colors.tertiary,
                 ),
               ],
               if (extraTyt.isNotEmpty) ...[
@@ -135,7 +137,7 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
                 _subjectSection(
                   title: 'Kişisel TYT ek dersleri · resmî toplama dahil değil',
                   subjects: extraTyt,
-                  color: AppTheme.accentBlue,
+                  color: colors.primary,
                 ),
               ],
               if (extraAyt.isNotEmpty) ...[
@@ -143,7 +145,7 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
                 _subjectSection(
                   title: 'Kişisel AYT ek dersleri · resmî toplama dahil değil',
                   subjects: extraAyt,
-                  color: AppTheme.accentPurple,
+                  color: colors.secondary,
                 ),
               ],
               if (tytSubjects.isEmpty && aytSubjects.isEmpty)
@@ -252,10 +254,16 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
     required List<Subject> subjects,
     required Color color,
   }) {
+    final colors = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: colors.onSurface),
+        ),
         const SizedBox(height: 12),
         for (final subject in subjects) _subjectNetSlider(subject, color),
       ],
@@ -263,6 +271,8 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
   }
 
   Widget _subjectNetSlider(Subject subject, Color color) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final questionCount = subject.totalQuestions < 0
         ? 0
         : subject.totalQuestions;
@@ -281,9 +291,9 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -292,8 +302,8 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
               Expanded(
                 child: Text(
                   subject.name,
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurface,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -346,7 +356,9 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
                     signed: true,
                   ),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurface,
+                  ),
                   decoration: InputDecoration(
                     isDense: true,
                     labelText: 'Net',

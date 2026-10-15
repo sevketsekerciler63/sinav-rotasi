@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../data/achievements_data.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
 
@@ -101,7 +102,7 @@ class AchievementsScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
-                  ...unlocked.map((a) => _achievementCard(a, true)),
+                  ...unlocked.map((a) => _achievementCard(context, a, true)),
                   const SizedBox(height: 20),
                 ],
 
@@ -111,7 +112,7 @@ class AchievementsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                ...locked.map((a) => _achievementCard(a, false)),
+                ...locked.map((a) => _achievementCard(context, a, false)),
                 const SizedBox(height: 40),
               ],
             ),
@@ -121,19 +122,25 @@ class AchievementsScreen extends StatelessWidget {
     );
   }
 
-  Widget _achievementCard(dynamic achievement, bool unlocked) {
+  Widget _achievementCard(
+    BuildContext context,
+    Achievement achievement,
+    bool unlocked,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: unlocked
-            ? AppTheme.accentGreen.withValues(alpha: 0.06)
-            : AppTheme.cardDark,
+            ? colors.secondaryContainer.withValues(alpha: 0.65)
+            : colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: unlocked
-              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-              : AppTheme.borderDark,
+              ? colors.secondary.withValues(alpha: 0.4)
+              : colors.outlineVariant,
         ),
       ),
       child: Row(
@@ -144,7 +151,7 @@ class AchievementsScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: unlocked
                   ? Colors.transparent
-                  : Colors.white.withValues(alpha: 0.05),
+                  : colors.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -161,33 +168,33 @@ class AchievementsScreen extends StatelessWidget {
               children: [
                 Text(
                   achievement.title,
-                  style: TextStyle(
-                    color: unlocked ? Colors.white : Colors.white54,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: unlocked
+                        ? colors.onSurface
+                        : colors.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
                 ),
                 Text(
                   achievement.description,
-                  style: TextStyle(
-                    color: unlocked ? Colors.white54 : Colors.white24,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                     fontSize: 12,
                   ),
                 ),
                 if (unlocked && achievement.unlockedDate != null)
                   Text(
                     'Kazanıldı: ${achievement.unlockedDateLabel}',
-                    style: TextStyle(color: AppTheme.accentGreen, fontSize: 10),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colors.secondary,
+                    ),
                   ),
               ],
             ),
           ),
           if (unlocked)
-            const Icon(
-              Icons.check_circle,
-              color: AppTheme.accentGreen,
-              size: 22,
-            ),
+            Icon(Icons.check_circle, color: colors.secondary, size: 22),
         ],
       ),
     );
