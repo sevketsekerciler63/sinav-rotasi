@@ -89,6 +89,14 @@ class SettingsScreen extends StatelessWidget {
               ),
 
               _settingsCard(
+                icon: Icons.privacy_tip_outlined,
+                title: 'Veri ve gizlilik',
+                subtitle: 'Yerel kayıt, dış bağlantı ve yedek kapsamı',
+                color: AppTheme.accentCyan,
+                onTap: () => _showDataPrivacy(context),
+              ),
+
+              _settingsCard(
                 icon: Icons.delete_forever,
                 title: 'Çalışma Verilerini Sil',
                 subtitle: 'İlerleme, plan ve çalışma tercihleri silinir.',
@@ -497,6 +505,76 @@ class SettingsScreen extends StatelessWidget {
         ),
       );
     }
+  }
+
+  Future<void> _showDataPrivacy(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        scrollable: true,
+        title: const Text('Veri ve gizlilik'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _privacyDetail(
+              dialogContext,
+              'Nerede saklanır?',
+              'Profil, hedef, ders/konu ilerlemesi ve notları, günlük plan, soru ve odak kayıtları, denemeler, zayıf konular, rozetler ve görünüm tercihi uygulamanın yerel profil deposunda tutulur. Uygulamada hesap, bulut eşitleme veya çalışma verilerini gönderen bir servis yoktur.',
+            ),
+            _privacyDetail(
+              dialogContext,
+              'Ne zaman dış bağlantı kurulur?',
+              '“YouTube’da ara” seçildiğinde arama ifadesi YouTube’a açılır. Kullanılan Google Fonts yazı tipleri cihazda/önbellekte yoksa Google font sunucusundan indirilebilir. Diğer ders ve plan içeriği uygulamanın içinde bulunur.',
+            ),
+            _privacyDetail(
+              dialogContext,
+              'Yedek ne içerir?',
+              'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Dışa aktarma panoya kopyalar. İçe aktarmada önce profil/veri grubu özeti gösterilir; güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir.',
+            ),
+            _privacyDetail(
+              dialogContext,
+              'Silme ne yapar?',
+              '“Çalışma Verilerini Sil” tüm profillerin çalışma ilerlemesini ve tercihlerini siler; profil listesini ve görünüm tercihini korur. İşlem geri alınamaz; önce yedek al.',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _privacyDetail(
+    BuildContext context,
+    String heading,
+    String description,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            heading,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(height: 1.45),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _chooseProfile(BuildContext context, AppState state) async {

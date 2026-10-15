@@ -34,6 +34,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Profil geçişi, çok anahtarlı yazma ve Pomodoro devamı için kaynak korumaları eklendi. Net girişleri negatif/çeyrek değerleri koruyup soru sınırlarını doğrular; kaydedilmemiş Pomodoro sonucu kararlı kimlik ve bitiş bilgisiyle yeniden denenir. Analyzer ve web release derlemesi temiz. Davranış/regresyon testleri, işlem kesintisi enjeksiyonu, yedek round-trip ve gerçek cihazdaki zorla kapatıp açma doğrulaması bekliyor.
 - Günlük plan kartındaki soru sayısı yalnız seçilen günün tarihli soru olaylarından hesaplanır; tarihi belirsiz eski toplamlar haftalık raporda ayrıca belirtilir. Haftalık ayrıntı, mevcut şablondan çıkmış eski tamamlanma tarihlerini de gösterebilir.
 - Yedek JSON panoya kopyalanabilir ve içe aktarma sırasında panodan yapıştırılabilir; dosya seçerek aktarma ve zaman damgalı yedek henüz yoktur.
+- Ayarlarındaki “Veri ve gizlilik” özeti yerel veri alanını, YouTube/Google Fonts dış bağlantılarını, yedek kapsamını ve silme etkisini açıklar.
 - `test/widget_test.dart` henüz çalıştırılabilir test içermiyor.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
 - `arsiv/eski-yks-kaynaklari` klasöründe eski MTOK Excel kaynakları vardır.
