@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
 
               // Theme toggle
               const Text(
-                'Gorunum',
+                'Görünüm',
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 12),
@@ -68,7 +68,7 @@ class SettingsScreen extends StatelessWidget {
 
               // Data section
               const Text(
-                'Veri Yonetimi',
+                'Veri Yönetimi',
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 12),
@@ -76,8 +76,8 @@ class SettingsScreen extends StatelessWidget {
               _settingsCard(
                 context,
                 icon: Icons.cloud_download,
-                title: 'Veriyi Disa Aktar',
-                subtitle: 'Tum ilerlemenizi JSON olarak kopyala',
+                title: 'Veriyi Dışa Aktar',
+                subtitle: 'Tüm ilerlemenizi JSON olarak kopyala',
                 color: AppTheme.accentBlue,
                 onTap: () => _exportData(context),
               ),
@@ -85,8 +85,8 @@ class SettingsScreen extends StatelessWidget {
               _settingsCard(
                 context,
                 icon: Icons.cloud_upload,
-                title: 'Veriyi Ice Aktar',
-                subtitle: 'JSON verisini yapistirarak geri yukle',
+                title: 'Veriyi İçe Aktar',
+                subtitle: 'JSON verisini yapıştırarak geri yükle',
                 color: AppTheme.accentGreen,
                 onTap: () => _importData(context, state),
               ),
@@ -113,7 +113,7 @@ class SettingsScreen extends StatelessWidget {
 
               // About
               const Text(
-                'Hakkinda',
+                'Hakkında',
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 12),
@@ -180,51 +180,60 @@ class SettingsScreen extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: colors.surface,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: colors.surface,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.outlineVariant),
+          side: BorderSide(color: colors.outlineVariant),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                      fontSize: 11,
-                    ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: colors.onSurfaceVariant,
+                  size: 20,
+                ),
+              ],
             ),
-            Icon(Icons.chevron_right, color: colors.onSurfaceVariant, size: 20),
-          ],
+          ),
         ),
       ),
     );
@@ -270,7 +279,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      isDark ? 'Karanlik Mod' : 'Aydinlik Mod',
+                      isDark ? 'Karanlık Mod' : 'Aydınlık Mod',
                       style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
                     ),
                   ],
@@ -1138,7 +1147,7 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Vazgec'),
+            child: const Text('Vazgeç'),
           ),
           TextButton(
             onPressed: () async {
