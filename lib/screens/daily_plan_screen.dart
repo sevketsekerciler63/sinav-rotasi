@@ -44,6 +44,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         final scheduleStartKey = state.dailyLogs.isEmpty
             ? null
             : state.dailyLogs.first.dateKey;
@@ -94,7 +96,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
         final prioritizedReviews = state.prioritizedWeakTopics;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Gunluk Calisma Plani')),
+          appBar: AppBar(title: const Text('Günlük Çalışma Planı')),
           body: Column(
             children: [
               if (state.todayLog == null) _buildPlanStatus(context, state),
@@ -131,16 +133,14 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                         showCheckmark: false,
                         onSelected: (_) =>
                             setState(() => _selectedWeek = weekKey),
-                        backgroundColor: AppTheme.cardDark,
-                        selectedColor: AppTheme.accentBlue.withValues(
-                          alpha: 0.2,
-                        ),
+                        backgroundColor: colors.surfaceContainerLow,
+                        selectedColor: colors.primary.withValues(alpha: 0.2),
                         side: BorderSide(
                           color: isSelected
-                              ? AppTheme.accentBlue
+                              ? colors.primary
                               : allCompleted
-                              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-                              : AppTheme.borderDark,
+                              ? colors.secondary.withValues(alpha: 0.35)
+                              : colors.outlineVariant,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -156,18 +156,18 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               '${weekKey + 1}. Hafta',
                               style: TextStyle(
                                 color: isSelected
-                                    ? AppTheme.accentBlue
+                                    ? colors.primary
                                     : allCompleted
-                                    ? AppTheme.accentGreen
-                                    : Colors.white70,
+                                    ? colors.secondary
+                                    : colors.onSurfaceVariant,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
                             ),
                             Text(
                               '$completedInWeek/$scheduledInWeek',
-                              style: const TextStyle(
-                                color: Colors.white38,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                                 fontSize: 10,
                               ),
                             ),
@@ -196,15 +196,15 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isToday
-                            ? AppTheme.accentBlue.withValues(alpha: 0.08)
-                            : AppTheme.cardDark,
+                            ? colors.primary.withValues(alpha: 0.08)
+                            : colors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isToday
-                              ? AppTheme.accentBlue.withValues(alpha: 0.5)
+                              ? colors.primary.withValues(alpha: 0.5)
                               : log.isCompleted
-                              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-                              : AppTheme.borderDark,
+                              ? colors.secondary.withValues(alpha: 0.4)
+                              : colors.outlineVariant,
                           width: isToday ? 2 : 1,
                         ),
                       ),
@@ -229,7 +229,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: const Text(
-                                        'BUGUN',
+                                        'BUGÜN',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 10,
@@ -241,8 +241,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                     '${log.date.day}.${log.date.month.toString().padLeft(2, '0')} ${log.dayName}',
                                     style: TextStyle(
                                       color: isToday
-                                          ? Colors.white
-                                          : Colors.white70,
+                                          ? colors.onSurface
+                                          : colors.onSurfaceVariant,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
                                     ),
@@ -253,19 +253,19 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                 children: [
                                   Text(
                                     log.studyHours,
-                                    style: const TextStyle(
-                                      color: AppTheme.accentCyan,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colors.primary,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   if (log.isRestDay)
-                                    const Padding(
+                                    Padding(
                                       padding: EdgeInsets.all(12),
                                       child: Icon(
                                         Icons.self_improvement_rounded,
-                                        color: Colors.white38,
+                                        color: colors.onSurfaceVariant,
                                         size: 22,
                                       ),
                                     )
@@ -286,22 +286,22 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                         height: 28,
                                         decoration: BoxDecoration(
                                           color: log.isCompleted
-                                              ? AppTheme.accentGreen
+                                              ? colors.secondary
                                               : Colors.transparent,
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
                                           border: Border.all(
                                             color: log.isCompleted
-                                                ? AppTheme.accentGreen
-                                                : Colors.white24,
+                                                ? colors.secondary
+                                                : colors.outlineVariant,
                                             width: 2,
                                           ),
                                         ),
                                         child: log.isCompleted
-                                            ? const Icon(
+                                            ? Icon(
                                                 Icons.check,
-                                                color: Colors.white,
+                                                color: colors.onSecondary,
                                                 size: 16,
                                               )
                                             : null,
@@ -318,8 +318,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'Tamamlandı: ${log.completedAt!.day}.${log.completedAt!.month.toString().padLeft(2, '0')}.${log.completedAt!.year}',
-                              style: const TextStyle(
-                                color: Colors.white38,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                                 fontSize: 11,
                               ),
                             ),
@@ -328,8 +328,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             const SizedBox(height: 2),
                             Text(
                               '${log.completedProgressCount}/${log.progressIds.length} görev tamamlandı',
-                              style: const TextStyle(
-                                color: Colors.white38,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                                 fontSize: 11,
                               ),
                             ),
@@ -340,12 +340,10 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentGreen.withValues(
-                                  alpha: 0.10,
-                                ),
+                                color: colors.secondary.withValues(alpha: 0.10),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: AppTheme.accentGreen.withValues(
+                                  color: colors.secondary.withValues(
                                     alpha: 0.30,
                                   ),
                                 ),
@@ -355,8 +353,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                 children: [
                                   Text(
                                     'Bugün tamamlanan ${log.completedTaskSummaries.length} görev',
-                                    style: const TextStyle(
-                                      color: AppTheme.accentGreen,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colors.secondary,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12,
                                     ),
@@ -370,9 +368,9 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const Icon(
+                                          Icon(
                                             Icons.check_circle_rounded,
-                                            color: AppTheme.accentGreen,
+                                            color: colors.secondary,
                                             size: 16,
                                           ),
                                           const SizedBox(width: 6),
@@ -432,7 +430,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                           Text(
                             'TYT:',
                             style: TextStyle(
-                              color: AppTheme.accentBlue,
+                              color: colors.primary,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -442,8 +440,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             log.tytContent,
                             style: TextStyle(
                               color: log.isCompleted
-                                  ? Colors.white38
-                                  : Colors.white70,
+                                  ? colors.onSurfaceVariant
+                                  : colors.onSurface,
                               fontSize: 13,
                               height: 1.4,
                               decoration: log.isCompleted
@@ -459,7 +457,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             Text(
                               'AYT:',
                               style: TextStyle(
-                                color: AppTheme.accentPurple,
+                                color: colors.secondary,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
@@ -469,8 +467,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               log.aytContent,
                               style: TextStyle(
                                 color: log.isCompleted
-                                    ? Colors.white38
-                                    : Colors.white70,
+                                    ? colors.onSurfaceVariant
+                                    : colors.onSurface,
                                 fontSize: 13,
                                 height: 1.4,
                                 decoration: log.isCompleted
@@ -485,9 +483,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppTheme.accentGreen.withValues(
-                                alpha: 0.06,
-                              ),
+                              color: colors.secondary.withValues(alpha: 0.06),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -497,9 +493,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                   child: Text(
                                     log.motivationNote,
                                     style: TextStyle(
-                                      color: AppTheme.accentGreen.withValues(
-                                        alpha: 0.8,
-                                      ),
+                                      color: colors.secondary,
                                       fontSize: 11,
                                       fontStyle: FontStyle.italic,
                                     ),
@@ -515,7 +509,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: AppTheme.cardDarkAlt,
+                                color: colors.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Wrap(
@@ -523,16 +517,16 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 runSpacing: 4,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Bu günde çözülen soru:',
-                                    style: TextStyle(
-                                      color: Colors.white54,
-                                      fontSize: 12,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colors.onSurfaceVariant,
                                     ),
                                   ),
                                   Row(
                                     children: [
                                       _counterButton(
+                                        context,
                                         Icons.remove,
                                         'Bir soru azalt',
                                         () {
@@ -550,14 +544,15 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                         alignment: Alignment.center,
                                         child: Text(
                                           '${log.solvedQuestions}',
-                                          style: const TextStyle(
-                                            color: AppTheme.accentBlue,
+                                          style: TextStyle(
+                                            color: colors.primary,
                                             fontWeight: FontWeight.w700,
                                             fontSize: 18,
                                           ),
                                         ),
                                       ),
                                       _counterButton(
+                                        context,
                                         Icons.add,
                                         'Bir soru artır',
                                         () => state.updateDailyLog(
@@ -582,7 +577,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                           ),
                                           tapTargetSize:
                                               MaterialTapTargetSize.padded,
-                                          backgroundColor: AppTheme.accentBlue
+                                          backgroundColor: colors.primary
                                               .withValues(alpha: 0.15),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -590,7 +585,12 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                             ),
                                           ),
                                         ),
-                                        child: const Text('+10'),
+                                        child: Text(
+                                          '+10',
+                                          style: TextStyle(
+                                            color: colors.primary,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -611,17 +611,23 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
     );
   }
 
-  Widget _counterButton(IconData icon, String tooltip, VoidCallback onTap) {
+  Widget _counterButton(
+    BuildContext context,
+    IconData icon,
+    String tooltip,
+    VoidCallback onTap,
+  ) {
+    final colors = Theme.of(context).colorScheme;
     return IconButton(
       tooltip: tooltip,
       onPressed: onTap,
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
       style: IconButton.styleFrom(
-        backgroundColor: AppTheme.accentBlue.withValues(alpha: 0.15),
+        backgroundColor: colors.primary.withValues(alpha: 0.15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      icon: Icon(icon, color: AppTheme.accentBlue, size: 16),
+      icon: Icon(icon, color: colors.primary, size: 16),
     );
   }
 
@@ -703,6 +709,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
   }
 
   Widget _buildPlanStatus(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final targetPassed = state.daysRemaining < 0;
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
@@ -726,22 +734,28 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.accentOrange.withValues(alpha: 0.09),
+        color: targetPassed
+            ? colors.errorContainer
+            : colors.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.accentOrange.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: targetPassed
+              ? colors.error.withValues(alpha: 0.35)
+              : colors.outlineVariant,
+        ),
       ),
       child: Row(
         children: [
           Icon(
             targetPassed ? Icons.event_busy_rounded : Icons.info_outline,
-            color: AppTheme.accentOrange,
+            color: targetPassed ? colors.onErrorContainer : colors.primary,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: textTheme.bodySmall?.copyWith(
+                color: colors.onSurface,
                 fontSize: 12,
                 height: 1.4,
               ),
