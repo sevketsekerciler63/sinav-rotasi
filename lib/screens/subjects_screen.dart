@@ -20,15 +20,17 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         return DefaultTabController(
           length: 2,
           child: Scaffold(
             appBar: AppBar(
               title: const Text('Konular'),
               bottom: TabBar(
-                indicatorColor: AppTheme.accentBlue,
-                labelColor: AppTheme.accentBlue,
-                unselectedLabelColor: Colors.white54,
+                indicatorColor: colors.primary,
+                labelColor: colors.primary,
+                unselectedLabelColor: colors.onSurfaceVariant,
                 onTap: (index) => setState(
                   () => _selectedExamType = index == 0 ? 'TYT' : 'AYT',
                 ),
@@ -61,38 +63,36 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                         setState(() => _searchQuery = v.toLowerCase()),
                     decoration: InputDecoration(
                       hintText: 'Konu ara... (${state.totalTopics} konu)',
-                      hintStyle: const TextStyle(
-                        color: Colors.white30,
+                      hintStyle: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
                         fontSize: 13,
                       ),
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.search,
-                        color: Colors.white38,
+                        color: colors.onSurfaceVariant,
                         size: 20,
                       ),
                       suffixIcon: _searchQuery.isNotEmpty
-                          ? GestureDetector(
-                              onTap: () => setState(() => _searchQuery = ''),
-                              child: const Icon(
+                          ? IconButton(
+                              tooltip: 'Aramayı temizle',
+                              onPressed: () =>
+                                  setState(() => _searchQuery = ''),
+                              icon: Icon(
                                 Icons.close,
-                                color: Colors.white38,
+                                color: colors.onSurfaceVariant,
                                 size: 18,
                               ),
                             )
                           : null,
                       filled: true,
-                      fillColor: AppTheme.cardDark,
+                      fillColor: colors.surfaceContainerLow,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(
-                          color: AppTheme.borderDark,
-                        ),
+                        borderSide: BorderSide(color: colors.outlineVariant),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(
-                          color: AppTheme.borderDark,
-                        ),
+                        borderSide: BorderSide(color: colors.outlineVariant),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -103,7 +103,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                 ),
                 Expanded(
                   child: _searchQuery.isNotEmpty
-                      ? _buildSearchResults(state)
+                      ? _buildSearchResults(context, state)
                       : TabBarView(
                           children: [
                             _buildSubjectList(context, state.tytSubjects),
@@ -123,23 +123,23 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     final examType = _selectedExamType;
     final action = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (sheetContext) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.library_add,
-                color: AppTheme.accentBlue,
+                color: Theme.of(sheetContext).colorScheme.primary,
               ),
               title: Text('$examType dersi ekle'),
               onTap: () => Navigator.pop(sheetContext, 'subject'),
             ),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.topic_outlined,
-                color: AppTheme.accentGreen,
+                color: Theme.of(sheetContext).colorScheme.secondary,
               ),
               title: const Text('Bir derse konu ekle'),
               onTap: () => Navigator.pop(sheetContext, 'topic'),
@@ -197,7 +197,9 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     error!,
-                    style: const TextStyle(color: Colors.redAccent),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
             ],
@@ -378,7 +380,9 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       error!,
-                      style: const TextStyle(color: Colors.redAccent),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
               ],
@@ -451,7 +455,9 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
         : message;
   }
 
-  Widget _buildSearchResults(AppState state) {
+  Widget _buildSearchResults(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final results = <MapEntry<Subject, Topic>>[];
     for (var subject in state.subjects) {
       for (var topic in subject.topics) {
@@ -463,13 +469,15 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     }
 
     if (results.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Sonuc bulunamadi',
-              style: TextStyle(color: Colors.white54, fontSize: 14),
+              'Sonuç bulunamadı',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -497,18 +505,20 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     Subject subject,
     Topic topic,
   ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: topic.isCompleted
-            ? AppTheme.accentGreen.withValues(alpha: 0.06)
-            : AppTheme.cardDark,
+            ? colors.secondary.withValues(alpha: 0.08)
+            : colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: topic.isCompleted
-              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-              : AppTheme.borderDark,
+              ? colors.secondary.withValues(alpha: 0.4)
+              : colors.outlineVariant,
         ),
       ),
       child: Row(
@@ -525,18 +535,18 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
               height: 28,
               decoration: BoxDecoration(
                 color: topic.isCompleted
-                    ? AppTheme.accentGreen
+                    ? colors.secondary
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(7),
                 border: Border.all(
                   color: topic.isCompleted
-                      ? AppTheme.accentGreen
-                      : Colors.white24,
+                      ? colors.secondary
+                      : colors.outlineVariant,
                   width: 2,
                 ),
               ),
               child: topic.isCompleted
-                  ? const Icon(Icons.check, color: Colors.white, size: 16)
+                  ? Icon(Icons.check, color: colors.onSecondary, size: 16)
                   : null,
             ),
           ),
@@ -547,15 +557,19 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
               children: [
                 Text(
                   topic.name,
-                  style: TextStyle(
-                    color: topic.isCompleted ? Colors.white38 : Colors.white,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: topic.isCompleted
+                        ? colors.onSurfaceVariant
+                        : colors.onSurface,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
                 ),
                 Text(
                   '${subject.emoji} ${subject.name}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -566,134 +580,138 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   }
 
   Widget _buildSubjectList(BuildContext context, List<Subject> subjects) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: subjects.length,
       itemBuilder: (context, index) {
         final subject = subjects[index];
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => SubjectDetailScreen(
-                subject: subject,
-                onEditTopic: (selectedSubject, {topic}) =>
-                    _showTopicEditorDialog(
-                      context,
-                      Provider.of<AppState>(context, listen: false),
-                      selectedSubject,
-                      topic: topic,
-                    ),
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SubjectDetailScreen(
+                  subject: subject,
+                  onEditTopic: (selectedSubject, {topic}) =>
+                      _showTopicEditorDialog(
+                        context,
+                        Provider.of<AppState>(context, listen: false),
+                        selectedSubject,
+                        topic: topic,
+                      ),
+                ),
               ),
             ),
-          ),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.getSubjectColor(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.getSubjectColor(
+                      subject.name,
+                    ).withValues(alpha: 0.15),
+                    colors.surfaceContainerLow,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppTheme.getSubjectColor(
                     subject.name,
-                  ).withValues(alpha: 0.15),
-                  AppTheme.cardDark,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                  ).withValues(alpha: 0.3),
+                ),
               ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppTheme.getSubjectColor(
-                  subject.name,
-                ).withValues(alpha: 0.3),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(subject.emoji, style: const TextStyle(fontSize: 28)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            subject.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(subject.emoji, style: const TextStyle(fontSize: 28)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              subject.name,
+                              style: textTheme.titleSmall?.copyWith(
+                                color: colors.onSurface,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
-                          Text(
-                            '${subject.totalQuestions} soru - ${subject.topics.length} konu',
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              fontSize: 12,
+                            Text(
+                              '${subject.totalQuestions} soru - ${subject.topics.length} konu',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: subject.progress == 1.0
-                            ? AppTheme.accentGreen.withValues(alpha: 0.2)
-                            : AppTheme.accentBlue.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${(subject.progress * 100).toInt()}%',
-                        style: TextStyle(
-                          color: subject.progress == 1.0
-                              ? AppTheme.accentGreen
-                              : AppTheme.accentBlue,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
+                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: subject.progress,
-                    minHeight: 6,
-                    backgroundColor: AppTheme.borderDark,
-                    valueColor: AlwaysStoppedAnimation(
-                      AppTheme.getSubjectColor(subject.name),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: subject.progress == 1.0
+                              ? colors.secondary.withValues(alpha: 0.18)
+                              : colors.primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          '${(subject.progress * 100).toInt()}%',
+                          style: TextStyle(
+                            color: subject.progress == 1.0
+                                ? colors.secondary
+                                : colors.primary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: subject.progress,
+                      minHeight: 6,
+                      backgroundColor: colors.outlineVariant,
+                      valueColor: AlwaysStoppedAnimation(colors.primary),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${subject.completedCount} tamamlandi, ${subject.topics.length - subject.completedCount} kaldi',
-                      style: const TextStyle(
-                        color: Colors.white38,
-                        fontSize: 11,
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${subject.completedCount} tamamlandı, ${subject.topics.length - subject.completedCount} kaldı',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '~${subject.remainingDays} gun',
-                      style: const TextStyle(
-                        color: Colors.white38,
-                        fontSize: 11,
+                      Text(
+                        '~${subject.remainingDays} gün',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -716,6 +734,8 @@ class SubjectDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         final matchingSubjects = state.subjects.where(
           (item) => item.storageId == subject.storageId,
         );
@@ -752,14 +772,14 @@ class SubjectDetailScreen extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.accentBlue.withValues(alpha: 0.2),
+                  color: colors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
                   child: Text(
                     '${(activeSubject.progress * 100).toInt()}%',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colors.primary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -774,25 +794,25 @@ class SubjectDetailScreen extends StatelessWidget {
                   margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.accentGreen.withValues(alpha: 0.08),
+                    color: colors.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppTheme.accentGreen.withValues(alpha: 0.2),
+                      color: colors.secondary.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '*',
-                        style: TextStyle(fontSize: 16, color: Colors.amber),
+                        style: TextStyle(fontSize: 16, color: colors.tertiary),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           activeSubject.tip,
                           style: TextStyle(
-                            color: AppTheme.accentGreen,
+                            color: colors.secondary,
                             fontSize: 12,
                           ),
                         ),
@@ -830,26 +850,28 @@ class SubjectDetailScreen extends StatelessWidget {
     Topic topic,
     int number,
   ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final priorityColor =
         topic.priority.contains('KRiTiK') || topic.priority.contains('KR')
-        ? AppTheme.accentRed
+        ? colors.error
         : topic.priority.contains('ONEMLI') || topic.priority.contains('NEM')
-        ? AppTheme.accentOrange
+        ? colors.tertiary
         : topic.priority.contains('ORTA')
-        ? AppTheme.accentOrange
-        : Colors.white38;
+        ? colors.secondary
+        : colors.onSurfaceVariant;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: topic.isCompleted
-            ? AppTheme.accentGreen.withValues(alpha: 0.06)
-            : AppTheme.cardDark,
+            ? colors.secondary.withValues(alpha: 0.08)
+            : colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: topic.isCompleted
-              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-              : AppTheme.borderDark,
+              ? colors.secondary.withValues(alpha: 0.4)
+              : colors.outlineVariant,
         ),
       ),
       child: ExpansionTile(
@@ -864,26 +886,26 @@ class SubjectDetailScreen extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: topic.isCompleted
-                  ? AppTheme.accentGreen
-                  : Colors.transparent,
+              color: topic.isCompleted ? colors.secondary : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: topic.isCompleted
-                    ? AppTheme.accentGreen
-                    : Colors.white24,
+                    ? colors.secondary
+                    : colors.outlineVariant,
                 width: 2,
               ),
             ),
             child: topic.isCompleted
-                ? const Icon(Icons.check, color: Colors.white, size: 18)
+                ? Icon(Icons.check, color: colors.onSecondary, size: 18)
                 : null,
           ),
         ),
         title: Text(
           '$number. ${topic.name}',
-          style: TextStyle(
-            color: topic.isCompleted ? Colors.white38 : Colors.white,
+          style: textTheme.bodyMedium?.copyWith(
+            color: topic.isCompleted
+                ? colors.onSurfaceVariant
+                : colors.onSurface,
             fontWeight: FontWeight.w600,
             fontSize: 14,
             decoration: topic.isCompleted ? TextDecoration.lineThrough : null,
@@ -912,22 +934,24 @@ class SubjectDetailScreen extends StatelessWidget {
               margin: const EdgeInsets.only(top: 4),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: colors.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 '${topic.questionCount} soru - ${topic.estimatedDays} gun',
-                style: const TextStyle(color: Colors.white38, fontSize: 10),
+                style: textTheme.labelSmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
             if (topic.notes.isNotEmpty) ...[
               const SizedBox(width: 4),
-              const Icon(Icons.note, color: Colors.amber, size: 14),
+              Icon(Icons.note, color: colors.tertiary, size: 14),
             ],
           ],
         ),
-        iconColor: Colors.white38,
-        collapsedIconColor: Colors.white24,
+        iconColor: colors.onSurfaceVariant,
+        collapsedIconColor: colors.onSurfaceVariant,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -937,13 +961,13 @@ class SubjectDetailScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDarkAlt,
+                    color: colors.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     topic.description,
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurface,
                       fontSize: 13,
                       height: 1.6,
                     ),
@@ -952,11 +976,11 @@ class SubjectDetailScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    _infoChip(topic.difficulty),
+                    _infoChip(context, topic.difficulty),
                     const SizedBox(width: 6),
-                    _infoChip('${topic.questionCount} soru'),
+                    _infoChip(context, '${topic.questionCount} soru'),
                     const SizedBox(width: 6),
-                    _infoChip('~${topic.estimatedDays} gun'),
+                    _infoChip(context, '~${topic.estimatedDays} gün'),
                   ],
                 ),
                 if (topic.isCustom && onEditTopic != null) ...[
@@ -975,7 +999,7 @@ class SubjectDetailScreen extends StatelessWidget {
                         icon: const Icon(Icons.delete_outline, size: 16),
                         label: const Text('Sil'),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppTheme.accentRed,
+                          foregroundColor: colors.error,
                         ),
                       ),
                     ],
@@ -983,50 +1007,54 @@ class SubjectDetailScreen extends StatelessWidget {
                 ],
                 const SizedBox(height: 12),
                 // Notes section
-                GestureDetector(
-                  onTap: () => _showNotesDialog(context, state, topic),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: topic.notes.isNotEmpty
-                          ? Colors.amber.withValues(alpha: 0.08)
-                          : Colors.white.withValues(alpha: 0.03),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => _showNotesDialog(context, state, topic),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
                         color: topic.notes.isNotEmpty
-                            ? Colors.amber.withValues(alpha: 0.3)
-                            : AppTheme.borderDark,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          topic.notes.isNotEmpty
-                              ? Icons.edit_note
-                              : Icons.note_add_outlined,
+                            ? colors.tertiaryContainer.withValues(alpha: 0.55)
+                            : colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
                           color: topic.notes.isNotEmpty
-                              ? Colors.amber
-                              : Colors.white38,
-                          size: 18,
+                              ? colors.tertiary.withValues(alpha: 0.45)
+                              : colors.outlineVariant,
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
                             topic.notes.isNotEmpty
-                                ? topic.notes
-                                : 'Not ekle...',
-                            style: TextStyle(
-                              color: topic.notes.isNotEmpty
-                                  ? Colors.white70
-                                  : Colors.white30,
-                              fontSize: 12,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                                ? Icons.edit_note
+                                : Icons.note_add_outlined,
+                            color: topic.notes.isNotEmpty
+                                ? colors.tertiary
+                                : colors.onSurfaceVariant,
+                            size: 18,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              topic.notes.isNotEmpty
+                                  ? topic.notes
+                                  : 'Not ekle...',
+                              style: TextStyle(
+                                color: topic.notes.isNotEmpty
+                                    ? colors.onSurface
+                                    : colors.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1057,7 +1085,9 @@ class SubjectDetailScreen extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.accentRed),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
             child: const Text('Sil'),
           ),
         ],
@@ -1088,7 +1118,9 @@ class SubjectDetailScreen extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(backgroundColor: AppTheme.accentRed),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
             child: const Text('Sil'),
           ),
         ],
@@ -1102,12 +1134,18 @@ class SubjectDetailScreen extends StatelessWidget {
     }
   }
 
-  void _showNotesDialog(BuildContext context, AppState state, Topic topic) {
+  Future<void> _showNotesDialog(
+    BuildContext context,
+    AppState state,
+    Topic topic,
+  ) async {
     final controller = TextEditingController(text: topic.notes);
-    showModalBottomSheet(
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1124,10 +1162,9 @@ class SubjectDetailScreen extends StatelessWidget {
           children: [
             Text(
               'Not: ${topic.name}',
-              style: const TextStyle(
-                color: Colors.white,
+              style: textTheme.titleMedium?.copyWith(
+                color: colors.onSurface,
                 fontWeight: FontWeight.w700,
-                fontSize: 16,
               ),
             ),
             const SizedBox(height: 12),
@@ -1135,10 +1172,12 @@ class SubjectDetailScreen extends StatelessWidget {
               controller: controller,
               maxLines: 5,
               autofocus: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText:
-                    'Notlarini buraya yaz...\n(formul, kisa yol, onemli detay)',
-                hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                    'Notlarını buraya yaz...\n(formül, kısa yol, önemli detay)',
+                hintStyle: textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -1150,7 +1189,8 @@ class SubjectDetailScreen extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.accentBlue,
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -1164,18 +1204,22 @@ class SubjectDetailScreen extends StatelessWidget {
         ),
       ),
     );
+    controller.dispose();
   }
 
-  Widget _infoChip(String text) {
+  Widget _infoChip(BuildContext context, String text) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: colors.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         text,
-        style: const TextStyle(color: Colors.white54, fontSize: 11),
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
       ),
     );
   }
