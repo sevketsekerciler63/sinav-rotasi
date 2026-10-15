@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 
 class FormulaCardsScreen extends StatefulWidget {
@@ -132,7 +133,10 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
       FormulaItem(
         'Denge Sabiti',
         'Kc = [C]^c[D]^d / [A]^a[B]^b',
-        'aA + bB -> cC + dD',
+        'aA + bB ⇌ cC + dD. Üsler katsayıdır; saf katı ve sıvılar bağıntıya yazılmaz.',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page111.html',
       ),
       FormulaItem('Avogadro', '1 mol = 6.022 x 10^23', 'Avogadro sayisi'),
       FormulaItem(
@@ -384,9 +388,35 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
               color: colors.onSurfaceVariant,
             ),
           ),
+          if (formula.sourceLabel != null && formula.sourceUrl != null)
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton.icon(
+                onPressed: () => _openSource(formula.sourceUrl!),
+                icon: const Icon(Icons.open_in_new, size: 14),
+                label: Text('Kaynak: ${formula.sourceLabel}'),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  Future<void> _openSource(String url) async {
+    final uri = Uri.tryParse(url);
+    var opened = false;
+    try {
+      opened =
+          uri != null &&
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Kaynak açılamadı.')));
+    }
   }
 }
 
@@ -394,6 +424,14 @@ class FormulaItem {
   final String title;
   final String formula;
   final String description;
+  final String? sourceLabel;
+  final String? sourceUrl;
 
-  FormulaItem(this.title, this.formula, this.description);
+  FormulaItem(
+    this.title,
+    this.formula,
+    this.description, {
+    this.sourceLabel,
+    this.sourceUrl,
+  });
 }

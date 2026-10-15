@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_state.dart';
 import '../services/profile_storage.dart';
 import '../theme/app_theme.dart';
@@ -122,7 +123,10 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_5',
         'Kimyasal denge nedir?',
-        'Ileri ve geri tepkime hizlarinin esit oldugu durum.\nKc = [urun]^n / [girent]^m',
+        'İleri ve geri tepkime hızlarının eşit, derişimlerin sabit kaldığı dinamik durum.\n\naA + bB ⇌ cC + dD için:\nKc = [C]^c[D]^d / ([A]^a[B]^b)\nSaf katı ve sıvılar Kc bağıntısına yazılmaz.',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11, Kimyasal Denge',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page111.html',
       ),
       Flashcard(
         'kim_6',
@@ -271,6 +275,23 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     if (confirmed != true || !mounted) return;
     setState(() => _knownIds.removeWhere(cardIds.contains));
     await _saveKnown();
+  }
+
+  Future<void> _openSource(String url) async {
+    final uri = Uri.tryParse(url);
+    var opened = false;
+    try {
+      opened =
+          uri != null &&
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Kaynak açılamadı.')));
+    }
   }
 
   List<Flashcard> get _currentCards => _cards[_selectedCategory] ?? [];
@@ -567,6 +588,20 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                       height: 1.8,
                                     ),
                                   ),
+                                  if (_showAnswer &&
+                                      cards[_currentIndex].sourceUrl != null)
+                                    TextButton.icon(
+                                      onPressed: () => _openSource(
+                                        cards[_currentIndex].sourceUrl!,
+                                      ),
+                                      icon: const Icon(
+                                        Icons.open_in_new,
+                                        size: 14,
+                                      ),
+                                      label: Text(
+                                        'Kaynak: ${cards[_currentIndex].sourceLabel}',
+                                      ),
+                                    ),
                                   const SizedBox(height: 24),
                                   if (!_showAnswer)
                                     Text(
@@ -768,6 +803,14 @@ class Flashcard {
   final String id;
   final String question;
   final String answer;
+  final String? sourceLabel;
+  final String? sourceUrl;
 
-  Flashcard(this.id, this.question, this.answer);
+  Flashcard(
+    this.id,
+    this.question,
+    this.answer, {
+    this.sourceLabel,
+    this.sourceUrl,
+  });
 }
