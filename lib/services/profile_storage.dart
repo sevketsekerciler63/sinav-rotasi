@@ -426,6 +426,7 @@ class ProfileStorage {
         _validateDataPayload(entry.key, entry.value);
         legacyData[entry.key] = entry.value;
       }
+      _validateWeakTopicReferences(legacyData);
       _validateNetScores(legacyData);
       if (legacyData.isEmpty) {
         throw const FormatException(
@@ -513,6 +514,7 @@ class ProfileStorage {
           'içinde bulunduğu profil kimliğiyle eşleşen',
         );
       }
+      _validateWeakTopicReferences(profileValues);
       _validateNetScores(profileValues);
       validatedData[entry.key as String] = profileValues;
     }
@@ -858,7 +860,12 @@ class ProfileStorage {
           }
         }
       case 'weak_topics':
+        final ids = <String>{};
         _validateRecordList(value, key, (item, path) {
+          final id = item['id'];
+          if (id is! String || id.trim().isEmpty || !ids.add(id)) {
+            _invalid('$path.id', 'boş olmayan ve benzersiz zayıf konu kimliği');
+          }
           for (final field in [
             'id',
             'date',
@@ -951,6 +958,101 @@ class ProfileStorage {
         _validateCustomCurriculum(value, key);
       case 'schedule_preferences':
         StudySchedulePreferences.fromJson(_record(value, key));
+    }
+  }
+
+  void _validateWeakTopicReferences(Map<String, dynamic> profileValues) {
+    final weakTopics = profileValues['weak_topics'];
+    if (weakTopics is! List) return;
+
+    final topicSubjects = <String, Set<String>>{};
+    final subjectIds = <String>{};
+
+    void addTopic(String subjectId, dynamic value, String path) {
+      final topic = _record(value, path);
+      final topicId = topic['id'];
+      if (topicId is! String) return; // The curriculum validator reports it.
+      subjectIds.add(subjectId);
+      topicSubjects.putIfAbsent(topicId, () => <String>{}).add(subjectId);
+    }
+
+    for (final subject in getAllSubjects()) {
+      final subjectId = subject.storageId;
+      subjectIds.add(subjectId);
+      for (final topic in subject.topics) {
+        topicSubjects.putIfAbsent(topic.id, () => <String>{}).add(subjectId);
+      }
+    }
+
+    final curriculum = profileValues['custom_curriculum'];
+    if (curriculum is Map) {
+      final customSubjects = curriculum['customSubjects'];
+      if (customSubjects is List) {
+        for (var index = 0; index < customSubjects.length; index++) {
+          final subject = _record(
+            customSubjects[index],
+            'custom_curriculum.customSubjects[$index]',
+          );
+          final subjectId = subject['id'] as String;
+          subjectIds.add(subjectId);
+          final topics = subject['topics'];
+          if (topics is List) {
+            for (var topicIndex = 0; topicIndex < topics.length; topicIndex++) {
+              addTopic(
+                subjectId,
+                topics[topicIndex],
+                'custom_curriculum.customSubjects[$index].topics[$topicIndex]',
+              );
+            }
+          }
+        }
+      }
+      final customTopics = curriculum['customTopics'];
+      if (customTopics is List) {
+        for (var index = 0; index < customTopics.length; index++) {
+          final item = _record(
+            customTopics[index],
+            'custom_curriculum.customTopics[$index]',
+          );
+          final subjectId = item['subjectId'] as String;
+          addTopic(
+            subjectId,
+            item['topic'],
+            'custom_curriculum.customTopics[$index].topic',
+          );
+        }
+      }
+    }
+
+    for (var index = 0; index < weakTopics.length; index++) {
+      final path = 'weak_topics[$index]';
+      final item = _record(weakTopics[index], path);
+      final subjectId = item['subjectId'];
+      final topicId = item['topicId'];
+      if (subjectId is String && !subjectIds.contains(subjectId)) {
+        _invalid(
+          '$path.subjectId',
+          'bu profildeki katalogda bulunan ders kimliği',
+        );
+      }
+      if (topicId is String) {
+        final topicParents = topicSubjects[topicId];
+        if (topicParents == null || topicParents.isEmpty) {
+          _invalid(
+            '$path.topicId',
+            'bu profildeki katalogda bulunan konu kimliği',
+          );
+        }
+        if (subjectId is String && !topicParents.contains(subjectId)) {
+          _invalid('$path.topicId', 'belirtilen derse ait konu kimliği');
+        }
+        if (subjectId == null && topicParents.length > 1) {
+          _invalid(
+            '$path.subjectId',
+            'konu kimliğini tekil yapan ders kimliği',
+          );
+        }
+      }
     }
   }
 

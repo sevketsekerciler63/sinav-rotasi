@@ -14,6 +14,8 @@ class WeeklyReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         // Calculate this week's stats
         final now = DateTime.now();
         final weekStart = now.subtract(Duration(days: now.weekday - 1));
@@ -168,6 +170,7 @@ class WeeklyReportScreen extends StatelessWidget {
                 Row(
                   children: [
                     _statCard(
+                      context,
                       '📅',
                       'Çalışılan Gün',
                       totalDaysThisWeek == 0
@@ -177,6 +180,7 @@ class WeeklyReportScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     _statCard(
+                      context,
                       '📝',
                       'Çözülen Soru',
                       '$questionsThisWeek',
@@ -188,6 +192,7 @@ class WeeklyReportScreen extends StatelessWidget {
                 Row(
                   children: [
                     _statCard(
+                      context,
                       '🔥',
                       'Aktif Seri',
                       '${state.streak} gün',
@@ -195,6 +200,7 @@ class WeeklyReportScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     _statCard(
+                      context,
                       '📚',
                       'Toplam Konu',
                       '$topicsCompleted/${state.totalTopics}',
@@ -206,6 +212,7 @@ class WeeklyReportScreen extends StatelessWidget {
                 Row(
                   children: [
                     _statCard(
+                      context,
                       '⏱️',
                       'Tamamlanan Odak Seansı',
                       '$focusSessionCount',
@@ -213,6 +220,7 @@ class WeeklyReportScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     _statCard(
+                      context,
                       '⌛',
                       'Odak Süresi',
                       '$focusMinutes dk',
@@ -238,11 +246,13 @@ class WeeklyReportScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 if (dailyBreakdown.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Text(
                       'Bu hafta için planlanmış çalışma veya kayıt yok.',
-                      style: TextStyle(color: Colors.white54),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ...dailyBreakdown.map(
@@ -250,12 +260,12 @@ class WeeklyReportScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.cardDark,
+                      color: colors.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: day.completed
-                            ? AppTheme.accentGreen.withValues(alpha: 0.3)
-                            : AppTheme.borderDark,
+                            ? colors.secondary.withValues(alpha: 0.35)
+                            : colors.outlineVariant,
                       ),
                     ),
                     child: Row(
@@ -265,15 +275,15 @@ class WeeklyReportScreen extends StatelessWidget {
                           height: 32,
                           decoration: BoxDecoration(
                             color: day.completed
-                                ? AppTheme.accentGreen
-                                : Colors.white.withValues(alpha: 0.05),
+                                ? colors.secondary
+                                : colors.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
                             day.completed ? Icons.check : Icons.circle_outlined,
                             color: day.completed
-                                ? Colors.white
-                                : Colors.white24,
+                                ? colors.onSecondary
+                                : colors.onSurfaceVariant,
                             size: 16,
                           ),
                         ),
@@ -284,8 +294,8 @@ class WeeklyReportScreen extends StatelessWidget {
                             children: [
                               Text(
                                 '${day.date.day}.${day.date.month.toString().padLeft(2, '0')} ${turkishWeekdayName(day.date)}',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurface,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13,
                                 ),
@@ -293,24 +303,24 @@ class WeeklyReportScreen extends StatelessWidget {
                               if (day.log != null)
                                 Text(
                                   day.log!.studyHours,
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colors.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
                               if (day.completed && day.log == null)
-                                const Text(
+                                Text(
                                   'Önceki plan görevinden çalışma kaydı',
-                                  style: TextStyle(
-                                    color: Colors.white38,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colors.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
                               if (day.sessions > 0)
                                 Text(
                                   '${day.sessions} tamamlanan seans · ${day.minutes} dk',
-                                  style: const TextStyle(
-                                    color: Colors.white38,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colors.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -324,13 +334,13 @@ class WeeklyReportScreen extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.accentBlue.withValues(alpha: 0.2),
+                              color: colors.primary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               '${day.questions} soru',
                               style: TextStyle(
-                                color: AppTheme.accentBlue,
+                                color: colors.primary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -371,13 +381,13 @@ class WeeklyReportScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.cardDark,
+                        color: colors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.borderDark),
+                        border: Border.all(color: colors.outlineVariant),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.history, color: AppTheme.accentCyan),
+                          Icon(Icons.history, color: colors.primary),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -385,8 +395,8 @@ class WeeklyReportScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   dateLabel,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colors.onSurface,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
                                   ),
@@ -394,8 +404,8 @@ class WeeklyReportScreen extends StatelessWidget {
                                 if (details.isNotEmpty)
                                   Text(
                                     details.join(' · '),
-                                    style: const TextStyle(
-                                      color: Colors.white54,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colors.onSurfaceVariant,
                                       fontSize: 11,
                                     ),
                                   ),
@@ -421,7 +431,7 @@ class WeeklyReportScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.cardDark,
+                        color: colors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: AppTheme.accentOrange.withValues(alpha: 0.3),
@@ -440,8 +450,8 @@ class WeeklyReportScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   exam.type,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: colors.onSurface,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
                                   ),
@@ -449,7 +459,7 @@ class WeeklyReportScreen extends StatelessWidget {
                                 Text(
                                   'Hedef: ${exam.targetNet}',
                                   style: TextStyle(
-                                    color: AppTheme.accentOrange,
+                                    color: colors.primary,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -460,7 +470,7 @@ class WeeklyReportScreen extends StatelessWidget {
                             Text(
                               _netSummary(exam, state),
                               style: TextStyle(
-                                color: AppTheme.accentGreen,
+                                color: colors.secondary,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 13,
                               ),
@@ -492,8 +502,8 @@ class WeeklyReportScreen extends StatelessWidget {
                               : daysCompleted >= totalDaysThisWeek / 2
                               ? 'İyi gidiyorsun! Kalan günleri de tamamla!'
                               : 'Bu hafta biraz geride kaldın, hızlanmalısın!',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colors.onPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
@@ -511,14 +521,25 @@ class WeeklyReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _statCard(String emoji, String label, String value, Color color) {
+  Widget _statCard(
+    BuildContext context,
+    String emoji,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final valueColor = Theme.of(context).brightness == Brightness.light
+        ? HSLColor.fromColor(color).withLightness(0.36).toColor()
+        : color;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.borderDark),
+          border: Border.all(color: colors.outlineVariant),
         ),
         child: Column(
           children: [
@@ -527,14 +548,16 @@ class WeeklyReportScreen extends StatelessWidget {
             Text(
               value,
               style: TextStyle(
-                color: color,
+                color: valueColor,
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
               ),
             ),
             Text(
               label,
-              style: const TextStyle(color: Colors.white54, fontSize: 10),
+              style: textTheme.labelSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),

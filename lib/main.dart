@@ -113,6 +113,8 @@ class AppGate extends StatefulWidget {
 class _AppGateState extends State<AppGate> {
   bool _showOnboarding = false;
   bool _loaded = false;
+  bool _checkingFirstLaunch = false;
+  String? _firstLaunchError;
 
   @override
   void initState() {
@@ -121,12 +123,25 @@ class _AppGateState extends State<AppGate> {
   }
 
   Future<void> _checkFirstLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
-    final seen = prefs.getBool('onboarding_seen') ?? false;
+    if (_checkingFirstLaunch) return;
     setState(() {
-      _showOnboarding = !seen;
-      _loaded = true;
+      _checkingFirstLaunch = true;
+      _firstLaunchError = null;
     });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final seen = prefs.getBool('onboarding_seen') ?? false;
+      if (!mounted) return;
+      setState(() {
+        _showOnboarding = !seen;
+        _loaded = true;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _firstLaunchError = error.toString());
+    } finally {
+      if (mounted) setState(() => _checkingFirstLaunch = false);
+    }
   }
 
   Future<void> _completeOnboarding() async {
@@ -192,6 +207,54 @@ class _AppGateState extends State<AppGate> {
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: appState.loadData,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Yeniden dene'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_firstLaunchError != null) {
+      final colors = Theme.of(context).colorScheme;
+      return Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.settings_backup_restore_rounded,
+                    size: 44,
+                    color: colors.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Başlangıç tercihi okunamadı',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Yerel çalışma kayıtlarına dokunulmadı. Tercihi yeniden okumayı deneyebilirsin.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(
+                    _firstLaunchError!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: _checkingFirstLaunch ? null : _checkFirstLaunch,
                     icon: const Icon(Icons.refresh_rounded),
                     label: const Text('Yeniden dene'),
                   ),
