@@ -5,7 +5,6 @@ import '../models/mock_exam.dart';
 import '../models/net_score.dart';
 import '../models/subject.dart';
 import '../providers/app_state.dart';
-import '../theme/app_theme.dart';
 
 class ExamComparisonScreen extends StatefulWidget {
   const ExamComparisonScreen({super.key});
@@ -22,6 +21,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final colors = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
         final completedExams =
             state.mockExams.where((e) => e.isCompleted).toList()..sort((
               first,
@@ -33,19 +34,23 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
 
         if (completedExams.length < 2) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Deneme Karsilastirma')),
-            body: const Center(
+            appBar: AppBar(title: const Text('Deneme Karşılaştırma')),
+            body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'En az 2 deneme girmelisin',
-                    style: TextStyle(color: Colors.white54),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                   SizedBox(height: 8),
                   Text(
                     'Denemelere girip netleri kaydet',
-                    style: TextStyle(color: Colors.white30, fontSize: 12),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -86,7 +91,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Deneme Karsilastirma')),
+          appBar: AppBar(title: const Text('Deneme Karşılaştırma')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -97,10 +102,10 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         initialValue: _exam1Index,
-                        dropdownColor: AppTheme.cardDarkAlt,
+                        dropdownColor: colors.surfaceContainerHighest,
                         decoration: InputDecoration(
                           labelText: 'Deneme 1',
-                          labelStyle: TextStyle(color: AppTheme.accentBlue),
+                          labelStyle: TextStyle(color: colors.primary),
                         ),
                         items: List.generate(
                           completedExams.length,
@@ -129,10 +134,10 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         initialValue: _exam2Index,
-                        dropdownColor: AppTheme.cardDarkAlt,
+                        dropdownColor: colors.surfaceContainerHighest,
                         decoration: InputDecoration(
                           labelText: 'Deneme 2',
-                          labelStyle: TextStyle(color: AppTheme.accentPurple),
+                          labelStyle: TextStyle(color: colors.secondary),
                         ),
                         items: List.generate(
                           completedExams.length,
@@ -165,34 +170,38 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
+                    color: colors.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.borderDark),
+                    border: Border.all(color: colors.outlineVariant),
                   ),
                   child: Column(
                     children: [
-                      const Text(
+                      Text(
                         'Ortak girilmiş dersler',
-                        style: TextStyle(
-                          color: Colors.white,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: colors.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         'Ölçek: mümkün olan en düşük netten en yüksek nete',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white38, fontSize: 10),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       if (comparisonSubjects.length < 3)
-                        const SizedBox(
+                        SizedBox(
                           height: 120,
                           child: Center(
                             child: Text(
                               'Radar için iki denemede de net girilmiş en az 3 ortak ders gerekli.',
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white54),
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
                             ),
                           ),
                         )
@@ -210,10 +219,10 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                         ),
                                       )
                                       .toList(),
-                                  fillColor: AppTheme.accentBlue.withValues(
+                                  fillColor: colors.primary.withValues(
                                     alpha: 0.2,
                                   ),
-                                  borderColor: AppTheme.accentBlue,
+                                  borderColor: colors.primary,
                                   borderWidth: 2,
                                 ),
                                 RadarDataSet(
@@ -224,22 +233,22 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                         ),
                                       )
                                       .toList(),
-                                  fillColor: AppTheme.accentPurple.withValues(
+                                  fillColor: colors.secondary.withValues(
                                     alpha: 0.2,
                                   ),
-                                  borderColor: AppTheme.accentPurple,
+                                  borderColor: colors.secondary,
                                   borderWidth: 2,
                                 ),
                               ],
                               radarBackgroundColor: Colors.transparent,
                               borderData: FlBorderData(show: false),
                               radarBorderData: BorderSide(
-                                color: AppTheme.borderDark,
+                                color: colors.outlineVariant,
                                 width: 1,
                               ),
                               titlePositionPercentageOffset: 0.2,
-                              titleTextStyle: const TextStyle(
-                                color: Colors.white54,
+                              titleTextStyle: textTheme.labelSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                                 fontSize: 10,
                               ),
                               tickCount: 4,
@@ -247,12 +256,12 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                 color: Colors.transparent,
                               ),
                               tickBorderData: BorderSide(
-                                color: AppTheme.borderDark.withValues(
+                                color: colors.outlineVariant.withValues(
                                   alpha: 0.3,
                                 ),
                               ),
                               gridBorderData: BorderSide(
-                                color: AppTheme.borderDark.withValues(
+                                color: colors.outlineVariant.withValues(
                                   alpha: 0.5,
                                 ),
                               ),
@@ -276,9 +285,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _legend(AppTheme.accentBlue, _examLegendLabel(exam1)),
+                    _legend(context, colors.primary, _examLegendLabel(exam1)),
                     const SizedBox(width: 16),
-                    _legend(AppTheme.accentPurple, _examLegendLabel(exam2)),
+                    _legend(context, colors.secondary, _examLegendLabel(exam2)),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -286,9 +295,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                 // Comparison table
                 Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
+                    color: colors.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.borderDark),
+                    border: Border.all(color: colors.outlineVariant),
                   ),
                   child: Column(
                     children: [
@@ -296,19 +305,19 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.cardDarkAlt,
+                          color: colors.surfaceContainerHighest,
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(16),
                           ),
                         ),
                         child: Row(
                           children: [
-                            const Expanded(
+                            Expanded(
                               flex: 2,
                               child: Text(
                                 'Ders',
-                                style: TextStyle(
-                                  color: Colors.white54,
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: colors.onSurfaceVariant,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
                                 ),
@@ -319,7 +328,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                 'D1',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppTheme.accentBlue,
+                                  color: colors.primary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
                                 ),
@@ -330,18 +339,18 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                 'D2',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: AppTheme.accentPurple,
+                                  color: colors.secondary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
                                 ),
                               ),
                             ),
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 'Fark',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white54,
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: colors.onSurfaceVariant,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
                                 ),
@@ -376,7 +385,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: AppTheme.borderDark.withValues(
+                                color: colors.outlineVariant.withValues(
                                   alpha: 0.3,
                                 ),
                               ),
@@ -391,8 +400,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                     RegExp(r'^(TYT|AYT) '),
                                     '',
                                   ),
-                                  style: const TextStyle(
-                                    color: Colors.white70,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colors.onSurfaceVariant,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -403,8 +412,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: hasN1
-                                        ? AppTheme.accentBlue
-                                        : Colors.white38,
+                                        ? colors.primary
+                                        : colors.onSurfaceVariant,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -415,8 +424,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: hasN2
-                                        ? AppTheme.accentPurple
-                                        : Colors.white38,
+                                        ? colors.secondary
+                                        : colors.onSurfaceVariant,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -429,12 +438,12 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: diff == null
-                                        ? Colors.white38
+                                        ? colors.onSurfaceVariant
                                         : diff > 0
-                                        ? AppTheme.accentGreen
+                                        ? colors.secondary
                                         : diff < 0
-                                        ? AppTheme.accentRed
-                                        : Colors.white38,
+                                        ? colors.error
+                                        : colors.onSurfaceVariant,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
                                   ),
@@ -445,6 +454,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                         );
                       }),
                       _totalComparisonRow(
+                        context,
                         'TYT RESMÎ TOPLAM',
                         exam1.hasScoresForSubjects(
                               state.tytSubjects.where(
@@ -472,6 +482,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                       ),
                       if (state.aytSubjects.isNotEmpty)
                         _totalComparisonRow(
+                          context,
                           'AYT RESMÎ TOPLAM',
                           exam1.type.contains('AYT') &&
                                   exam1.hasScoresForSubjects(
@@ -512,18 +523,21 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
   }
 
   Widget _totalComparisonRow(
+    BuildContext context,
     String label,
     double? value1,
     double? value2, {
     required bool isLast,
   }) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final difference = value1 != null && value2 != null
         ? value2 - value1
         : null;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.cardDarkAlt,
+        color: colors.surfaceContainerHighest,
         borderRadius: isLast
             ? const BorderRadius.vertical(bottom: Radius.circular(16))
             : null,
@@ -534,8 +548,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
             flex: 2,
             child: Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: textTheme.labelMedium?.copyWith(
+                color: colors.onSurface,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -546,7 +560,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
               value1 == null ? '—' : NetScore.format(value1),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppTheme.accentBlue,
+                color: value1 == null
+                    ? colors.onSurfaceVariant
+                    : colors.primary,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -557,7 +573,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
               value2 == null ? '—' : NetScore.format(value2),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppTheme.accentPurple,
+                color: value2 == null
+                    ? colors.onSurfaceVariant
+                    : colors.secondary,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -571,10 +589,10 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: difference == null
-                    ? Colors.white38
+                    ? colors.onSurfaceVariant
                     : difference >= 0
-                    ? AppTheme.accentGreen
-                    : AppTheme.accentRed,
+                    ? colors.secondary
+                    : colors.error,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -602,7 +620,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
     return '$date · ${exam.id}';
   }
 
-  Widget _legend(Color color, String label) {
+  Widget _legend(BuildContext context, Color color, String label) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       children: [
         Container(
@@ -616,7 +636,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
+          style: textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
         ),
       ],
     );
