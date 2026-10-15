@@ -3,10 +3,9 @@
     "short_name": "Sınav Rotası",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#0D1B20",
+    "theme_color": "#0D1B20",
+    "description": "YKS çalışma planını, konu ilerlemeni, denemelerini ve hedeflerini takip et.",
     "prefer_related_applications": false,
     "icons": [
         {

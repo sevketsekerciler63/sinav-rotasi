@@ -545,7 +545,7 @@ class SettingsScreen extends StatelessWidget {
             _privacyDetail(
               dialogContext,
               'Ne zaman dış bağlantı kurulur?',
-              '“YouTube’da ara” seçildiğinde arama ifadesi YouTube’a açılır. Kullanılan Google Fonts yazı tipleri cihazda/önbellekte yoksa Google font sunucusundan indirilebilir. Diğer ders ve plan içeriği uygulamanın içinde bulunur.',
+              '“YouTube’da ara” seçildiğinde arama ifadesi YouTube’a açılır. Uygulamanın Inter ve Space Grotesk yazı tipleri uygulama dosyasına gömülüdür; yazı görünümü için Google font sunucusuna istek gönderilmez. Diğer ders ve plan içeriği de uygulamanın içinde bulunur.',
             ),
             _privacyDetail(
               dialogContext,
