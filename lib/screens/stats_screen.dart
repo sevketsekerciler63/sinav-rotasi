@@ -24,7 +24,7 @@ class StatsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Key metrics
-                _buildKeyMetrics(state),
+                _buildKeyMetrics(context, state),
                 const SizedBox(height: 20),
 
                 // TYT Progress
@@ -33,7 +33,7 @@ class StatsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                _buildSubjectBars(state.tytSubjects),
+                _buildSubjectBars(context, state.tytSubjects),
                 const SizedBox(height: 20),
 
                 // AYT Progress
@@ -42,7 +42,7 @@ class StatsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                _buildSubjectBars(state.aytSubjects),
+                _buildSubjectBars(context, state.aytSubjects),
                 const SizedBox(height: 20),
 
                 // Priority distribution
@@ -51,7 +51,7 @@ class StatsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                _buildPriorityChart(state),
+                _buildPriorityChart(context, state),
                 const SizedBox(height: 20),
 
                 // Daily completion rate
@@ -60,7 +60,7 @@ class StatsScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
-                _buildWeeklyChart(state),
+                _buildWeeklyChart(context, state),
 
                 const SizedBox(height: 40),
               ],
@@ -131,7 +131,7 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildKeyMetrics(AppState state) {
+  Widget _buildKeyMetrics(BuildContext context, AppState state) {
     final metrics = [
       _MetricData('🔥', 'Seri', '${state.streak} gün', AppTheme.accentOrange),
       _MetricData(
@@ -160,6 +160,7 @@ class StatsScreen extends StatelessWidget {
                 (metric) => SizedBox(
                   width: cardWidth,
                   child: _metricCard(
+                    context,
                     metric.emoji,
                     metric.label,
                     metric.value,
@@ -173,13 +174,24 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _metricCard(String emoji, String label, String value, Color color) {
+  Widget _metricCard(
+    BuildContext context,
+    String emoji,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final valueColor = Theme.of(context).brightness == Brightness.light
+        ? HSLColor.fromColor(color).withLightness(0.36).toColor()
+        : color;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
         children: [
@@ -188,31 +200,38 @@ class StatsScreen extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: color,
+              color: valueColor,
               fontWeight: FontWeight.w800,
               fontSize: 16,
             ),
           ),
           Text(
             label,
-            style: const TextStyle(color: Colors.white54, fontSize: 10),
+            style: textTheme.labelSmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSubjectBars(List<dynamic> subjects) {
+  Widget _buildSubjectBars(BuildContext context, List<dynamic> subjects) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
         children: subjects.map((s) {
-          final color = AppTheme.getSubjectColor(s.name);
+          final rawColor = AppTheme.getSubjectColor(s.name);
+          final color = Theme.of(context).brightness == Brightness.light
+              ? HSLColor.fromColor(rawColor).withLightness(0.36).toColor()
+              : rawColor;
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Column(
@@ -222,8 +241,8 @@ class StatsScreen extends StatelessWidget {
                   children: [
                     Text(
                       '${s.emoji} ${s.name}',
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                         fontSize: 12,
                       ),
                     ),
@@ -243,7 +262,7 @@ class StatsScreen extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: s.progress,
                     minHeight: 8,
-                    backgroundColor: AppTheme.borderDark,
+                    backgroundColor: colors.outlineVariant,
                     valueColor: AlwaysStoppedAnimation(color),
                   ),
                 ),
@@ -255,7 +274,8 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPriorityChart(AppState state) {
+  Widget _buildPriorityChart(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
     int critical = 0, important = 0, medium = 0, low = 0;
     int criticalDone = 0, importantDone = 0, mediumDone = 0, lowDone = 0;
 
@@ -280,35 +300,51 @@ class StatsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Column(
         children: [
           _priorityRow(
+            context,
             '🔴 ÇOK KRİTİK',
             criticalDone,
             critical,
-            AppTheme.accentRed,
+            colors.error,
           ),
           const SizedBox(height: 10),
           _priorityRow(
+            context,
             '🟠 ÖNEMLİ',
             importantDone,
             important,
-            AppTheme.accentOrange,
+            colors.tertiary,
           ),
           const SizedBox(height: 10),
-          _priorityRow('🟡 ORTA', mediumDone, medium, const Color(0xFFD29922)),
+          _priorityRow(
+            context,
+            '🟡 ORTA',
+            mediumDone,
+            medium,
+            colors.secondary,
+          ),
           const SizedBox(height: 10),
-          _priorityRow('🔵 DÜŞÜK', lowDone, low, AppTheme.accentBlue),
+          _priorityRow(context, '🔵 DÜŞÜK', lowDone, low, colors.primary),
         ],
       ),
     );
   }
 
-  Widget _priorityRow(String label, int done, int total, Color color) {
+  Widget _priorityRow(
+    BuildContext context,
+    String label,
+    int done,
+    int total,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final progress = total == 0 ? 0.0 : done / total;
     return Column(
       children: [
@@ -317,7 +353,9 @@ class StatsScreen extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              style: textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
             Text(
               '$done/$total',
@@ -335,7 +373,7 @@ class StatsScreen extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 6,
-            backgroundColor: AppTheme.borderDark,
+            backgroundColor: colors.outlineVariant,
             valueColor: AlwaysStoppedAnimation(color),
           ),
         ),
@@ -343,7 +381,8 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWeeklyChart(AppState state) {
+  Widget _buildWeeklyChart(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final currentWeek = today.subtract(Duration(days: today.weekday - 1));
@@ -379,8 +418,8 @@ class StatsScreen extends StatelessWidget {
             BarChartRodData(
               toY: completed.toDouble(),
               color: entry.value.isNotEmpty && completed == entry.value.length
-                  ? AppTheme.accentGreen
-                  : AppTheme.accentBlue,
+                  ? colors.secondary
+                  : colors.primary,
               width: 12,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(4),
@@ -395,9 +434,9 @@ class StatsScreen extends StatelessWidget {
       height: 160,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: BarChart(
         BarChartData(
@@ -411,7 +450,10 @@ class StatsScreen extends StatelessWidget {
                 interval: 2,
                 getTitlesWidget: (v, m) => Text(
                   v.toInt().toString(),
-                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ),
@@ -420,7 +462,7 @@ class StatsScreen extends StatelessWidget {
                 showTitles: true,
                 getTitlesWidget: (v, m) => Text(
                   'H${v.toInt() + 1}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 9),
+                  style: TextStyle(color: colors.onSurfaceVariant, fontSize: 9),
                 ),
               ),
             ),
