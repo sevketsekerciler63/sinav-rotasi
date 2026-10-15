@@ -52,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Motivation wall
-                      _buildMotivationCard(quote),
+                      _buildMotivationCard(context, quote),
                       const SizedBox(height: 16),
 
                       _buildCountdownCard(state),
@@ -61,7 +61,7 @@ class DashboardScreen extends StatelessWidget {
                         _buildExpiredTargetBanner(context),
                         const SizedBox(height: 16),
                       ],
-                      _buildStatsRow(state),
+                      _buildStatsRow(context, state),
                       const SizedBox(height: 16),
 
                       // Achievement notification
@@ -112,13 +112,15 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMotivationCard(MotivationQuote quote) {
+  Widget _buildMotivationCard(BuildContext context, MotivationQuote quote) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Row(
         children: [
@@ -126,12 +128,12 @@ class DashboardScreen extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: AppTheme.accentGreen.withValues(alpha: 0.14),
+              color: colors.secondary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(13),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.format_quote_rounded,
-              color: AppTheme.accentGreen,
+              color: colors.secondary,
               size: 22,
             ),
           ),
@@ -142,8 +144,8 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 Text(
                   '"${quote.text}"',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurface,
                     fontStyle: FontStyle.italic,
                     fontSize: 13,
                     height: 1.4,
@@ -152,7 +154,9 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '— ${quote.author}',
-                  style: TextStyle(color: AppTheme.accentGreen, fontSize: 11),
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colors.secondary,
+                  ),
                 ),
               ],
             ),
@@ -212,6 +216,8 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildActiveGoals(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final activeGoals = state.goals
         .where((g) => !g.isCompleted)
         .take(2)
@@ -226,15 +232,12 @@ class DashboardScreen extends StatelessWidget {
               '🎯 Aktif Hedefler',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            GestureDetector(
-              onTap: () => Navigator.push(
+            TextButton(
+              onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const GoalsScreen()),
               ),
-              child: Text(
-                'Tümü →',
-                style: TextStyle(color: AppTheme.accentBlue, fontSize: 12),
-              ),
+              child: const Text('Tümü →'),
             ),
           ],
         ),
@@ -244,9 +247,9 @@ class DashboardScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.cardDark,
+              color: colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.borderDark),
+              border: Border.all(color: colors.outlineVariant),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,8 +259,8 @@ class DashboardScreen extends StatelessWidget {
                   children: [
                     Text(
                       goal.title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurface,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -265,7 +268,7 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       '${goal.currentCount}/${goal.targetCount}',
                       style: TextStyle(
-                        color: AppTheme.accentBlue,
+                        color: colors.primary,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
@@ -278,10 +281,8 @@ class DashboardScreen extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: goal.progress,
                     minHeight: 5,
-                    backgroundColor: AppTheme.borderDark,
-                    valueColor: const AlwaysStoppedAnimation(
-                      AppTheme.accentBlue,
-                    ),
+                    backgroundColor: colors.outlineVariant,
+                    valueColor: AlwaysStoppedAnimation(colors.primary),
                   ),
                 ),
               ],
@@ -293,6 +294,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
     final hour = DateTime.now().hour;
     String greeting;
     if (hour < 12) {
@@ -343,7 +345,7 @@ class DashboardScreen extends StatelessWidget {
                     Text(
                       '${state.unlockedAchievements}',
                       style: TextStyle(
-                        color: AppTheme.accentOrange,
+                        color: colors.primary,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
@@ -562,24 +564,24 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildExpiredTargetBanner(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.accentOrange.withValues(alpha: 0.1),
+        color: colors.errorContainer,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppTheme.accentOrange.withValues(alpha: 0.35),
-        ),
+        border: Border.all(color: colors.error.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.event_busy_rounded, color: AppTheme.accentOrange),
+          Icon(Icons.event_busy_rounded, color: colors.onErrorContainer),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Text(
               'Hedef tarihi geçti. Planı yeni tarihe göre düzenlemek için sınav profilini güncelle.',
-              style: TextStyle(
-                color: Colors.white70,
+              style: textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
                 fontSize: 12,
                 height: 1.35,
               ),
@@ -597,25 +599,28 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow(AppState state) {
+  Widget _buildStatsRow(BuildContext context, AppState state) {
     final today = DateTime.now();
     return Column(
       children: [
         Row(
           children: [
             _statCard(
+              context,
               '📚 Konular',
               '${state.completedTopics}/${state.totalTopics}',
               AppTheme.accentPurple,
             ),
             const SizedBox(width: 10),
             _statCard(
+              context,
               '📅 Günler',
               '${state.completedDays}/${state.totalDays}',
               AppTheme.accentGreen,
             ),
             const SizedBox(width: 10),
             _statCard(
+              context,
               '📝 Denemeler',
               '${state.completedExams}/${state.mockExams.length}',
               AppTheme.accentOrange,
@@ -626,12 +631,14 @@ class DashboardScreen extends StatelessWidget {
         Row(
           children: [
             _statCard(
+              context,
               '🧮 Bugün soru',
               '${state.solvedQuestionsOn(today)}',
               AppTheme.accentBlue,
             ),
             const SizedBox(width: 10),
             _statCard(
+              context,
               '⏱️ Odak seansı',
               '${state.completedStudySessionsOn(today)}',
               AppTheme.accentCyan,
@@ -657,14 +664,24 @@ class DashboardScreen extends StatelessWidget {
     'Aralık',
   ][month - 1];
 
-  Widget _statCard(String label, String value, Color color) {
+  Widget _statCard(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final valueColor = Theme.of(context).brightness == Brightness.light
+        ? HSLColor.fromColor(color).withLightness(0.36).toColor()
+        : color;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.borderDark),
+          border: Border.all(color: colors.outlineVariant),
         ),
         child: Column(
           children: [
@@ -673,13 +690,15 @@ class DashboardScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: color,
+                color: valueColor,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(fontSize: 11, color: Colors.white54),
+              style: textTheme.labelSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -688,15 +707,17 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildTodayCard(BuildContext context, AppState state, DailyLog today) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: today.isCompleted
-              ? AppTheme.accentGreen.withValues(alpha: 0.5)
-              : AppTheme.borderDark,
+              ? colors.secondary.withValues(alpha: 0.5)
+              : colors.outlineVariant,
         ),
       ),
       child: Column(
@@ -728,14 +749,16 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     today.dayName,
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
               Text(
                 today.studyHours,
                 style: TextStyle(
-                  color: AppTheme.accentCyan,
+                  color: colors.primary,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -754,15 +777,15 @@ class DashboardScreen extends StatelessWidget {
                   color: AppTheme.accentOrange.withValues(alpha: 0.3),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Text('🏆', style: TextStyle(fontSize: 20)),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'DENEME GÜNÜ!',
-                      style: TextStyle(
-                        color: Colors.white,
+                      style: textTheme.titleSmall?.copyWith(
+                        color: colors.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -773,7 +796,7 @@ class DashboardScreen extends StatelessWidget {
           Text(
             '📐 TYT',
             style: TextStyle(
-              color: AppTheme.accentBlue,
+              color: colors.primary,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
@@ -781,8 +804,8 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             today.tytContent,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
               fontSize: 13,
               height: 1.4,
             ),
@@ -792,7 +815,7 @@ class DashboardScreen extends StatelessWidget {
             Text(
               '🔢 AYT',
               style: TextStyle(
-                color: AppTheme.accentPurple,
+                color: colors.primary,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
@@ -800,8 +823,8 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               today.aytContent,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -811,7 +834,7 @@ class DashboardScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.accentGreen.withValues(alpha: 0.08),
+              color: colors.secondary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -821,8 +844,8 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: Text(
                     today.motivationNote,
-                    style: TextStyle(
-                      color: AppTheme.accentGreen,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.secondary,
                       fontSize: 12,
                       fontStyle: FontStyle.italic,
                     ),
@@ -859,8 +882,8 @@ class DashboardScreen extends StatelessWidget {
                         : 'Göreve başla',
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppTheme.accentBlue,
-                    foregroundColor: AppTheme.primaryDark,
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
                     minimumSize: const Size(0, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -887,11 +910,11 @@ class DashboardScreen extends StatelessWidget {
                   style: IconButton.styleFrom(
                     minimumSize: const Size(50, 50),
                     foregroundColor: today.isCompleted
-                        ? AppTheme.accentGreen
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? colors.secondary
+                        : colors.onSurface,
                     backgroundColor: today.isCompleted
-                        ? AppTheme.accentGreen.withValues(alpha: 0.14)
-                        : Theme.of(context).colorScheme.surfaceContainerHighest,
+                        ? colors.secondary.withValues(alpha: 0.14)
+                        : colors.surfaceContainerHighest,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -914,6 +937,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildSubjectProgress(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
     return Column(
       children: [
         ...state.tytSubjects.map((s) => _subjectProgressTile(context, s)),
@@ -921,13 +945,13 @@ class DashboardScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: AppTheme.accentPurple.withValues(alpha: 0.1),
+            color: colors.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Text(
+          child: Text(
             'AYT',
-            style: TextStyle(
-              color: Colors.white70,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: colors.onSurfaceVariant,
               fontWeight: FontWeight.w600,
               fontSize: 12,
             ),
@@ -940,72 +964,84 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _subjectProgressTile(BuildContext context, Subject subject) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SubjectDetailScreen(subject: subject),
-        ),
-      ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: colors.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.borderDark),
+          side: BorderSide(color: colors.outlineVariant),
         ),
-        child: Row(
-          children: [
-            Text(subject.emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    subject.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: subject.progress,
-                      minHeight: 5,
-                      backgroundColor: AppTheme.borderDark,
-                      valueColor: AlwaysStoppedAnimation(
-                        AppTheme.getSubjectColor(subject.name),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SubjectDetailScreen(subject: subject),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Text(subject.emoji, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        subject.name,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurface,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: subject.progress,
+                          minHeight: 5,
+                          backgroundColor: colors.outlineVariant,
+                          valueColor: AlwaysStoppedAnimation(
+                            AppTheme.getSubjectColor(subject.name),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  '${subject.completedCount}/${subject.topics.length}',
+                  style: TextStyle(
+                    color: subject.progress == 1.0
+                        ? colors.secondary
+                        : colors.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.chevron_right,
+                  color: colors.onSurfaceVariant,
+                  size: 20,
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text(
-              '${subject.completedCount}/${subject.topics.length}',
-              style: TextStyle(
-                color: subject.progress == 1.0
-                    ? AppTheme.accentGreen
-                    : Colors.white54,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 20),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildQuickAccess(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final items = [
       _QuickItem(
         icon: Icons.timer_outlined,
@@ -1160,7 +1196,7 @@ class DashboardScreen extends StatelessWidget {
                       Text(
                         'ROTA ARAÇLARI',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppTheme.accentBlue,
+                          color: colors.primary,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.4,
                         ),
@@ -1228,6 +1264,8 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildNextExam(BuildContext context, AppState state) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final next = state.nextUpcomingMockExam!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -1237,7 +1275,7 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.accentOrange.withValues(alpha: 0.3)),
       ),
@@ -1249,8 +1287,8 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Text(
                 next.type,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1261,16 +1299,16 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: daysUntil <= 3
-                      ? AppTheme.accentRed.withValues(alpha: 0.2)
-                      : AppTheme.accentOrange.withValues(alpha: 0.2),
+                      ? colors.errorContainer
+                      : colors.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   daysUntil <= 0 ? 'Bugün!' : '$daysUntil gün sonra',
                   style: TextStyle(
                     color: daysUntil <= 3
-                        ? AppTheme.accentRed
-                        : AppTheme.accentOrange,
+                        ? colors.onErrorContainer
+                        : colors.primary,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -1281,11 +1319,15 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Hedef: ${next.targetNet}',
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
           ),
           Text(
             'Süre: ${next.duration}',
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),
