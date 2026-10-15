@@ -26,6 +26,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _settingsCard(
+                context,
                 icon: Icons.school_rounded,
                 title: state.activeProfile.name,
                 subtitle:
@@ -73,6 +74,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               _settingsCard(
+                context,
                 icon: Icons.cloud_download,
                 title: 'Veriyi Disa Aktar',
                 subtitle: 'Tum ilerlemenizi JSON olarak kopyala',
@@ -81,6 +83,7 @@ class SettingsScreen extends StatelessWidget {
               ),
 
               _settingsCard(
+                context,
                 icon: Icons.cloud_upload,
                 title: 'Veriyi Ice Aktar',
                 subtitle: 'JSON verisini yapistirarak geri yukle',
@@ -89,6 +92,7 @@ class SettingsScreen extends StatelessWidget {
               ),
 
               _settingsCard(
+                context,
                 icon: Icons.privacy_tip_outlined,
                 title: 'Veri ve gizlilik',
                 subtitle: 'Yerel kayıt, dış bağlantı ve yedek kapsamı',
@@ -97,6 +101,7 @@ class SettingsScreen extends StatelessWidget {
               ),
 
               _settingsCard(
+                context,
                 icon: Icons.delete_forever,
                 title: 'Çalışma Verilerini Sil',
                 subtitle: 'İlerleme, plan ve çalışma tercihleri silinir.',
@@ -109,50 +114,49 @@ class SettingsScreen extends StatelessWidget {
               // About
               const Text(
                 'Hakkinda',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 12),
 
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.cardDark,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.borderDark),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Sınav Rotası v1.0',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       '107 konu - 95 günlük plan - 13 deneme\n29 rozet - Pomodoro - Hedef takibi',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                        height: 1.5,
-                      ),
+                      style: TextStyle(fontSize: 12, height: 1.5),
                     ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        _infoBadge('${state.completedTopics}', 'Konu'),
+                        _infoBadge(context, '${state.completedTopics}', 'Konu'),
                         const SizedBox(width: 8),
-                        _infoBadge('${state.completedDays}', 'Gun'),
+                        _infoBadge(context, '${state.completedDays}', 'Gün'),
                         const SizedBox(width: 8),
-                        _infoBadge('${state.completedExams}', 'Deneme'),
+                        _infoBadge(
+                          context,
+                          '${state.completedExams}',
+                          'Deneme',
+                        ),
                         const SizedBox(width: 8),
-                        _infoBadge('${state.unlockedAchievements}', 'Rozet'),
+                        _infoBadge(
+                          context,
+                          '${state.unlockedAchievements}',
+                          'Rozet',
+                        ),
                       ],
                     ),
                   ],
@@ -166,22 +170,25 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _settingsCard({
+  Widget _settingsCard(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
     required Color color,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.borderDark),
+          border: Border.all(color: colors.outlineVariant),
         ),
         child: Row(
           children: [
@@ -201,20 +208,22 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(color: Colors.white38, fontSize: 11),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 20),
+            Icon(Icons.chevron_right, color: colors.onSurfaceVariant, size: 20),
           ],
         ),
       ),
@@ -225,12 +234,13 @@ class SettingsScreen extends StatelessWidget {
     return Consumer<ThemeState>(
       builder: (context, themeState, _) {
         final isDark = themeState.isDark;
+        final theme = Theme.of(context);
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppTheme.cardDark,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppTheme.borderDark),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
           child: Row(
             children: [
@@ -252,16 +262,16 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Tema',
-                      style: TextStyle(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
                     ),
                     Text(
                       isDark ? 'Karanlik Mod' : 'Aydinlik Mod',
-                      style: const TextStyle(fontSize: 11),
+                      style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
                     ),
                   ],
                 ),
@@ -295,6 +305,7 @@ class SettingsScreen extends StatelessWidget {
         .map((weekday) => dayNames[weekday - 1])
         .join(' · ');
     return _settingsCard(
+      context,
       icon: Icons.tune_rounded,
       title: 'Çalışma planını kişiselleştir',
       subtitle: '$days\nGünlük hedef: ${preferences.dailyStudyMinutes} dakika',
@@ -328,7 +339,7 @@ class SettingsScreen extends StatelessWidget {
               ? '$activeDays çalışma gününe 95 görev dağıtılacak; günde yaklaşık ${(95 + activeDays - 1) ~/ activeDays} görev birleşebilir. Kaçırılan görev sonraki uygun güne taşınır. Dakika seçimi günlük hedeftir; görev süresi ayrıca hesaplanmıyor.'
               : '$activeDays çalışma günü var. İlk 95 görev uygun günlere dağıtılır; kalan uygun günlerde tekrar ve deneme analizi gösterilir. Kaçırılan görev sonraki uygun güne taşınır. Dakika seçimi günlük hedeftir; görev süresi ayrıca hesaplanmıyor.';
           return AlertDialog(
-            backgroundColor: AppTheme.cardDark,
+            backgroundColor: Theme.of(dialogContext).colorScheme.surface,
             scrollable: true,
             title: const Text('Çalışma planı'),
             content: Column(
@@ -337,7 +348,7 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Hangi günler çalışabileceğini ve günlük hedef süreni seç.',
-                  style: TextStyle(color: Colors.white60, fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                 ),
                 const SizedBox(height: 12),
                 Wrap(
@@ -388,11 +399,9 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   scheduleMessage,
-                  style: const TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
+                  style: Theme.of(
+                    dialogContext,
+                  ).textTheme.bodySmall?.copyWith(fontSize: 12, height: 1.4),
                 ),
               ],
             ),
@@ -454,27 +463,29 @@ class SettingsScreen extends StatelessWidget {
     return count;
   }
 
-  Widget _infoBadge(String value, String label) {
+  Widget _infoBadge(BuildContext context, String value, String label) {
+    final theme = Theme.of(context);
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.cardDarkAlt,
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
+              style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),
             ),
             Text(
               label,
-              style: const TextStyle(color: Colors.white38, fontSize: 10),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -581,7 +592,7 @@ class SettingsScreen extends StatelessWidget {
     final selectedProfileId = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppTheme.cardDark,
+        backgroundColor: Theme.of(dialogContext).colorScheme.surface,
         title: const Text('Sınav profili seç'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -594,7 +605,7 @@ class SettingsScreen extends StatelessWidget {
                     : Icons.radio_button_off,
                 color: profile.id == state.activeProfile.id
                     ? AppTheme.accentBlue
-                    : Colors.white54,
+                    : Theme.of(dialogContext).colorScheme.onSurfaceVariant,
               ),
               title: Text(profile.name),
               subtitle: Text(_formatDate(profile.targetDate)),
@@ -634,15 +645,17 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: Theme.of(dialogContext).colorScheme.surface,
           scrollable: true,
           title: const Text('Yeni YKS profili'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Tarih kişisel plan hedefidir; resmî YKS tarihi değildir.',
-                style: TextStyle(color: Colors.white60, fontSize: 12),
+                style: Theme.of(
+                  dialogContext,
+                ).textTheme.bodySmall?.copyWith(fontSize: 12),
                 textAlign: TextAlign.left,
               ),
               TextField(
@@ -757,19 +770,23 @@ class SettingsScreen extends StatelessWidget {
                 label: '${minutes.toInt()} dk',
                 onChanged: (value) => setDialogState(() => minutes = value),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Seçimin yalnızca yeni profile kaydedilir; daha sonra Ayarlar’dan değiştirilebilir.',
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                  style: Theme.of(
+                    dialogContext,
+                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
                 ),
               ),
               if (state.completedExams > 0)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 8),
                   child: Text(
                     'Mevcut profilindeki kayıtlar korunur; yeni profil boş başlar.',
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                    style: Theme.of(
+                      dialogContext,
+                    ).textTheme.bodySmall?.copyWith(fontSize: 12),
                   ),
                 ),
             ],
@@ -837,7 +854,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: Theme.of(dialogContext).colorScheme.surface,
           title: const Text('Kişisel plan hedefini düzenle'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -885,11 +902,13 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Bu tarih planını düzenler; resmî YKS tarihi değildir.',
-                  style: TextStyle(color: Colors.white60, fontSize: 12),
+                  style: Theme.of(
+                    dialogContext,
+                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
                 ),
               ),
               if (showDateError)
@@ -901,11 +920,13 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               if (state.completedExams > 0)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 8),
                   child: Text(
                     'Tamamlanan günler ve deneme sonuçları hedef tarihini değiştirsen de bu profilde kalır. Yeni sınav dönemi için yeni profil açabilirsin.',
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                    style: Theme.of(
+                      dialogContext,
+                    ).textTheme.bodySmall?.copyWith(fontSize: 12),
                   ),
                 ),
             ],
@@ -970,18 +991,17 @@ class SettingsScreen extends StatelessWidget {
       final rawBackup = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: Theme.of(ctx).colorScheme.surface,
           scrollable: true,
-          title: const Text(
-            'Veri içe aktar',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: const Text('Veri içe aktar'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Yedek JSON verisini yapıştır. Önce biçimi doğrulanıp içeriği gösterilecek.',
-                style: TextStyle(color: Colors.white54, fontSize: 12),
+                style: Theme.of(
+                  ctx,
+                ).textTheme.bodySmall?.copyWith(fontSize: 12),
               ),
               const SizedBox(height: 8),
               Align(
@@ -1060,15 +1080,12 @@ class SettingsScreen extends StatelessWidget {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: Theme.of(ctx).colorScheme.surface,
           scrollable: true,
-          title: const Text(
-            'Yedek doğrulandı',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: const Text('Yedek doğrulandı'),
           content: Text(
             preview.isLegacy ? legacyDetails : profileDetails,
-            style: const TextStyle(color: Colors.white70),
+            style: Theme.of(ctx).textTheme.bodyMedium,
           ),
           actions: [
             TextButton(
@@ -1112,11 +1129,11 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.cardDark,
-        title: const Text('Emin misin?', style: TextStyle(color: Colors.white)),
-        content: const Text(
+        backgroundColor: Theme.of(ctx).colorScheme.surface,
+        title: const Text('Emin misin?'),
+        content: Text(
           'Tüm profillerdeki ilerleme, plan kayıtları ve çalışma gün/süre tercihleri, denemeler, zayıf konular, hedefler, rozetler, bilgi kartı durumu ve özel ders/konu kataloğu silinecek. Sınav profilleri ve görünüm tercihleri korunur. Bu işlem geri alınamaz.',
-          style: TextStyle(color: Colors.white54),
+          style: Theme.of(ctx).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
