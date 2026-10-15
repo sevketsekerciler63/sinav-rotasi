@@ -70,6 +70,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildTrendChart(
+                    context,
                     examsWithAttemptDate,
                     officialTytSubjects,
                     officialAytSubjects,
@@ -77,7 +78,11 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   const SizedBox(height: 24),
                 ],
                 if (completedExams.isNotEmpty) ...[
-                  _buildSummaryRow(completedExams, officialTytSubjects),
+                  _buildSummaryRow(
+                    context,
+                    completedExams,
+                    officialTytSubjects,
+                  ),
                   const SizedBox(height: 20),
                 ],
                 Text(
@@ -97,10 +102,12 @@ class _MockExamScreenState extends State<MockExamScreen> {
   }
 
   Widget _buildTrendChart(
+    BuildContext context,
     List<MockExam> completedExams,
     List<Subject> officialTytSubjects,
     List<Subject> officialAytSubjects,
   ) {
+    final colors = Theme.of(context).colorScheme;
     final tytSpots = <FlSpot>[];
     final aytSpots = <FlSpot>[];
 
@@ -128,9 +135,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
       height: 200,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderDark),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: LineChart(
         LineChartData(
@@ -139,7 +146,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
             drawVerticalLine: false,
             horizontalInterval: 10,
             getDrawingHorizontalLine: (value) =>
-                FlLine(color: AppTheme.borderDark, strokeWidth: 1),
+                FlLine(color: colors.outlineVariant, strokeWidth: 1),
           ),
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
@@ -149,7 +156,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 reservedSize: 30,
                 getTitlesWidget: (value, meta) => Text(
                   value.toInt().toString(),
-                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ),
@@ -159,7 +169,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 interval: 1,
                 getTitlesWidget: (value, meta) => Text(
                   'D${value.toInt() + 1}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 10),
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ),
@@ -175,42 +188,42 @@ class _MockExamScreenState extends State<MockExamScreen> {
             LineChartBarData(
               spots: tytSpots,
               isCurved: true,
-              color: AppTheme.accentBlue,
+              color: colors.primary,
               barWidth: 3,
               dotData: FlDotData(
                 show: true,
                 getDotPainter: (spot, percent, bar, index) =>
                     FlDotCirclePainter(
                       radius: 4,
-                      color: AppTheme.accentBlue,
+                      color: colors.primary,
                       strokeWidth: 2,
-                      strokeColor: Colors.white,
+                      strokeColor: colors.surface,
                     ),
               ),
               belowBarData: BarAreaData(
                 show: true,
-                color: AppTheme.accentBlue.withValues(alpha: 0.1),
+                color: colors.primary.withValues(alpha: 0.1),
               ),
             ),
             if (aytSpots.isNotEmpty)
               LineChartBarData(
                 spots: aytSpots,
                 isCurved: true,
-                color: AppTheme.accentPurple,
+                color: colors.secondary,
                 barWidth: 3,
                 dotData: FlDotData(
                   show: true,
                   getDotPainter: (spot, percent, bar, index) =>
                       FlDotCirclePainter(
                         radius: 4,
-                        color: AppTheme.accentPurple,
+                        color: colors.secondary,
                         strokeWidth: 2,
-                        strokeColor: Colors.white,
+                        strokeColor: colors.surface,
                       ),
                 ),
                 belowBarData: BarAreaData(
                   show: true,
-                  color: AppTheme.accentPurple.withValues(alpha: 0.1),
+                  color: colors.secondary.withValues(alpha: 0.1),
                 ),
               ),
           ],
@@ -236,9 +249,11 @@ class _MockExamScreenState extends State<MockExamScreen> {
   }
 
   Widget _buildSummaryRow(
+    BuildContext context,
     List<MockExam> completedExams,
     List<Subject> officialTytSubjects,
   ) {
+    final colors = Theme.of(context).colorScheme;
     final tytExams = completedExams
         .where(
           (exam) =>
@@ -259,40 +274,50 @@ class _MockExamScreenState extends State<MockExamScreen> {
     return Row(
       children: [
         _summaryCard(
+          context,
           'Son TYT',
           lastTyt == null ? '—' : NetScore.format(lastTyt),
-          hasTyt ? AppTheme.accentBlue : Colors.white38,
+          hasTyt ? colors.primary : colors.onSurfaceVariant,
         ),
         const SizedBox(width: 10),
         _summaryCard(
-          'Ilerleme',
+          context,
+          'İlerleme',
           tytGain == null
               ? '—'
               : '${tytGain >= 0 ? "+" : ""}${NetScore.format(tytGain)}',
           tytGain == null
-              ? Colors.white38
+              ? colors.onSurfaceVariant
               : tytGain >= 0
-              ? AppTheme.accentGreen
-              : AppTheme.accentRed,
+              ? colors.secondary
+              : colors.error,
         ),
         const SizedBox(width: 10),
         _summaryCard(
+          context,
           'Deneme',
           '${completedExams.length}',
-          AppTheme.accentOrange,
+          colors.primary,
         ),
       ],
     );
   }
 
-  Widget _summaryCard(String label, String value, Color color) {
+  Widget _summaryCard(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.borderDark),
+          border: Border.all(color: colors.outlineVariant),
         ),
         child: Column(
           children: [
@@ -307,7 +332,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: Colors.white54),
+              style: textTheme.labelSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -316,6 +343,8 @@ class _MockExamScreenState extends State<MockExamScreen> {
   }
 
   Widget _buildExamCard(BuildContext context, AppState state, MockExam exam) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final scheduledDate = DateTime(
@@ -390,13 +419,13 @@ class _MockExamScreenState extends State<MockExamScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: exam.isCompleted
-            ? AppTheme.accentGreen.withValues(alpha: 0.06)
-            : AppTheme.cardDark,
+            ? colors.secondary.withValues(alpha: 0.08)
+            : colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: exam.isCompleted
-              ? AppTheme.accentGreen.withValues(alpha: 0.3)
-              : AppTheme.borderDark,
+              ? colors.secondary.withValues(alpha: 0.4)
+              : colors.outlineVariant,
         ),
       ),
       child: Column(
@@ -411,16 +440,16 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   children: [
                     Text(
                       exam.type,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurface,
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
                       ),
                     ),
                     Text(
                       'Planlanan: ${_formatDate(exam.date)} · ${exam.dayName}',
-                      style: const TextStyle(
-                        color: Colors.white54,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                         fontSize: 11,
                       ),
                     ),
@@ -429,16 +458,16 @@ class _MockExamScreenState extends State<MockExamScreen> {
                         exam.completedAt == null
                             ? 'Gerçekleşme tarihi kayıtta yok'
                             : 'Gerçekleşti: ${_formatDate(exam.completedAt!)}',
-                        style: const TextStyle(
-                          color: Colors.white54,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
                           fontSize: 11,
                         ),
                       ),
                     if (exam.updatedAt != null)
                       Text(
                         'Son düzenleme: ${_formatDate(exam.updatedAt!)}',
-                        style: const TextStyle(
-                          color: Colors.white38,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
                           fontSize: 10,
                         ),
                       ),
@@ -480,12 +509,17 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 '${exam.hasScoresForSubjects(extraTytSubjects) && exam.hasScoresForSubjects(trackedExtraAytSubjects) ? ' · ' : ''}'
                 '${exam.hasScoresForSubjects(trackedExtraAytSubjects) ? 'AYT ${NetScore.format(exam.totalForSubjects(trackedExtraAytSubjects))}' : ''} '
                 '(resmî toplam dışında)',
-                style: const TextStyle(color: Colors.white54, fontSize: 11),
+                style: textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
           Text(
             'Hedef: ${exam.targetNet}',
-            style: TextStyle(color: AppTheme.accentOrange, fontSize: 12),
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.primary,
+              fontSize: 12,
+            ),
           ),
 
           if (isPast || isToday || exam.isCompleted) ...[
@@ -499,7 +533,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
                             !_explicitAttemptDates.contains(sliderKey)
                         ? 'Gerçekleşme tarihi belirtilmemiş'
                         : 'Sonuç tarihi: ${_formatDate(attemptDate)}',
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 TextButton.icon(
@@ -516,10 +552,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
             ),
             const SizedBox(height: 16),
             if (officialTytSubjects.isNotEmpty) ...[
-              const Text(
+              Text(
                 'TYT Netleri · resmî dersler:',
-                style: TextStyle(
-                  color: Colors.white54,
+                style: textTheme.labelMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -528,6 +564,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
             ],
             ...officialTytSubjects.map(
               (subject) => _netSlider(
+                context,
                 sliderKey,
                 MockExam.netKeyForSubject(subject.type, subject.name),
                 subject.totalQuestions,
@@ -535,10 +572,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
             ),
             if (extraTytSubjects.isNotEmpty) ...[
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Kişisel TYT ek dersleri · resmî toplam dışında:',
-                style: TextStyle(
-                  color: Colors.white54,
+                style: textTheme.labelMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -546,6 +583,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
               const SizedBox(height: 8),
               ...extraTytSubjects.map(
                 (subject) => _netSlider(
+                  context,
                   sliderKey,
                   MockExam.netKeyForSubject(subject.type, subject.name),
                   subject.totalQuestions,
@@ -555,10 +593,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
             if (exam.type.contains('AYT')) ...[
               const SizedBox(height: 12),
               if (officialAytSubjects.isNotEmpty) ...[
-                const Text(
+                Text(
                   'AYT Netleri · resmî dersler:',
-                  style: TextStyle(
-                    color: Colors.white54,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -567,6 +605,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
               ],
               ...officialAytSubjects.map(
                 (subject) => _netSlider(
+                  context,
                   sliderKey,
                   MockExam.netKeyForSubject(subject.type, subject.name),
                   subject.totalQuestions,
@@ -574,10 +613,10 @@ class _MockExamScreenState extends State<MockExamScreen> {
               ),
               if (extraAytSubjects.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Kişisel AYT ek dersleri · resmî toplam dışında:',
-                  style: TextStyle(
-                    color: Colors.white54,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -585,6 +624,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 const SizedBox(height: 8),
                 ...extraAytSubjects.map(
                   (subject) => _netSlider(
+                    context,
                     sliderKey,
                     MockExam.netKeyForSubject(subject.type, subject.name),
                     subject.totalQuestions,
@@ -598,28 +638,30 @@ class _MockExamScreenState extends State<MockExamScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.cardDarkAlt,
+                color: colors.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _totalBadge(
+                    context,
                     'TYT',
                     tytKeys.fold(
                       0.0,
                       (s, k) => s + (_sliderValues[sliderKey]?[k] ?? 0),
                     ),
-                    AppTheme.accentBlue,
+                    colors.primary,
                   ),
                   if (exam.type.contains('AYT'))
                     _totalBadge(
+                      context,
                       'AYT',
                       aytKeys.fold(
                         0.0,
                         (s, k) => s + (_sliderValues[sliderKey]?[k] ?? 0),
                       ),
-                      AppTheme.accentPurple,
+                      colors.secondary,
                     ),
                 ],
               ),
@@ -630,7 +672,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 'Kişisel ek dersler (resmî toplama dahil değil): '
                 '${NetScore.format(extraKeys.fold(0.0, (sum, key) => sum + (_sliderValues[sliderKey]?[key] ?? 0)))} net',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white54, fontSize: 11),
+                style: textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ],
             const SizedBox(height: 12),
@@ -698,15 +742,18 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: exam.isCompleted
-                      ? AppTheme.accentGreen
-                      : AppTheme.accentBlue,
+                      ? colors.secondary
+                      : colors.primary,
+                  foregroundColor: exam.isCompleted
+                      ? colors.onSecondary
+                      : colors.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: Text(
-                  exam.isCompleted ? 'Guncellendi' : 'Netleri Kaydet',
+                  exam.isCompleted ? 'Güncellendi' : 'Netleri Kaydet',
                 ),
               ),
             ),
@@ -745,7 +792,14 @@ class _MockExamScreenState extends State<MockExamScreen> {
   String _formatDate(DateTime date) =>
       '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year}';
 
-  Widget _netSlider(String sliderKey, String subject, int questionCount) {
+  Widget _netSlider(
+    BuildContext context,
+    String sliderKey,
+    String subject,
+    int questionCount,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final shortName = subject.replaceFirst(RegExp(r'^(TYT|AYT) '), '');
     final val = _sliderValues[sliderKey]?[subject] ?? 0;
     final safeQuestionCount = questionCount < 0 ? 0 : questionCount;
@@ -766,7 +820,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
             width: 70,
             child: Text(
               shortName,
-              style: const TextStyle(color: Colors.white54, fontSize: 11),
+              style: textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
           Expanded(
@@ -775,9 +831,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 trackHeight: 4,
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-                activeTrackColor: AppTheme.accentBlue,
-                inactiveTrackColor: AppTheme.borderDark,
-                thumbColor: AppTheme.accentBlue,
+                activeTrackColor: colors.primary,
+                inactiveTrackColor: colors.outlineVariant,
+                thumbColor: colors.primary,
               ),
               child: Slider(
                 value: value,
@@ -813,7 +869,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
               ),
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: val == 0 ? Colors.white54 : AppTheme.accentBlue,
+                color: val == 0 ? colors.onSurfaceVariant : colors.primary,
                 fontWeight: FontWeight.w700,
                 fontSize: 12,
               ),
@@ -848,7 +904,14 @@ class _MockExamScreenState extends State<MockExamScreen> {
     );
   }
 
-  Widget _totalBadge(String label, double total, Color color) {
+  Widget _totalBadge(
+    BuildContext context,
+    String label,
+    double total,
+    Color color,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
@@ -861,7 +924,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
         ),
         Text(
           '$label Toplam',
-          style: const TextStyle(color: Colors.white38, fontSize: 10),
+          style: textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
         ),
       ],
     );
