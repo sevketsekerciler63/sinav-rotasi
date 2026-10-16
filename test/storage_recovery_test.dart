@@ -909,4 +909,34 @@ void main() {
       expect(state.weakTopics.single.reviewRepetitions, 1);
     },
   );
+  test(
+    'badge write failure cannot publish an unlocked badge before durable retry',
+    () async {
+      final topic = state.subjects.first.topics.first;
+      store.failSuffix = '__achievements_data';
+      expect(await state.toggleTopic(topic.id), isTrue);
+      expect(topic.isCompleted, isTrue);
+      expect(
+        state.achievements
+            .firstWhere((badge) => badge.id == 'topic_1')
+            .isUnlocked,
+        isFalse,
+      );
+      expect(state.lastUnlockedAchievement, isNull);
+      await state.checkAchievements();
+      expect(
+        state.achievements
+            .firstWhere((badge) => badge.id == 'topic_1')
+            .isUnlocked,
+        isTrue,
+      );
+      await state.loadData();
+      expect(
+        state.achievements
+            .firstWhere((badge) => badge.id == 'topic_1')
+            .isUnlocked,
+        isTrue,
+      );
+    },
+  );
 }

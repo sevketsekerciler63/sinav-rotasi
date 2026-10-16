@@ -142,3 +142,11 @@ Android yedek kuralları ve ayrı cihaz tercihi deposu uygulandı; hatırlatıc�
 ## SOL-02 · Eski günlük kayıt işlemleri
 
 Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son kalıcı veri üzerinde tek işlemde yazılır; başarısızlıkta ekrandaki gün/soru/tekrar sayısı değişmez. Kimlikli tamamla → geri al → tamamla kabulü yeni async sonuçla yeniden geçti. Günlük ve soru gruplarından birinin yazımı başarısızken diğerinin de geri alınması ve yeniden yükleme testi geçti. İlgili sayaçlar yazım sırasında kilitli. Kalan bu dilim: rozet ve flashcard sonuç sırası.
+
+
+## 17 Ekim · SOL-02 kart ve rozet sonucu
+
+- Kart değerlendirmesi ve sıfırlaması ayrı bekleyen taslakla yazılır. Yazılamazsa kart, bilinen sayısı ve tekrar geçmişi değişmez; “Yeniden kaydet” aynı taslağı yazar. Başarıdan sonra sonraki karta geçilir. Profil değişiminde eski bekleyen sonuç yeni profile uygulanmaz.
+- Rozetler ayrı aday listesinde hesaplanır, son kalıcı rozetlerle birleştirilir; yazılamayan rozet açılmış görünmez ve başarı başlığı yayımlanmaz. Kaynak günü, yeni serbest deneme ve zayıf konu başarısı da rozet hesabını tetikler. Eski 13 takvim rozetinin adı, sınırsız yeni denemeler bitmiş gibi anlaşılmayacak şekilde açıklandı.
+- Gerçek kart ekranında ikinci grup yazımı hatası → kart değişmedi → aynı değerlendirmeyi yeniden yaz → sonraki kart kabulü geçti. Rozet disk hatası → temel konu kaydı korunur fakat rozet kapalı → kalıcı retry → yeniden açılış kabulü geçti.
+- Odaklı 22 test geçti (21 depolama + 1 kart ekranı). Tam son çalışma/derlemeler ayrıca yapılacak. AUD-12 eski görünen ad net kimlikleri sonraki kaynak işi.

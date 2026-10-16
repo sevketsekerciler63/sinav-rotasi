@@ -1440,15 +1440,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _saveAchievements() async {
-    final profileId = _activeProfile.id;
-    final Map<String, dynamic> data = {};
-    for (var a in achievements) {
-      data[a.id] = a.toJson();
-    }
-    await _writeProfileData(profileId, {'achievements_data': jsonEncode(data)});
-  }
-
   Future<bool> _writeProfileData(
     String profileId,
     Map<String, String> values,
@@ -1593,7 +1584,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           .any((topic) => topic.id == topicId && topic.isCompleted)) {
         onCelebrate?.call();
       }
-      checkAchievements();
+      await checkAchievements();
       notifyListeners();
     }
     return saved;
@@ -1749,7 +1740,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         }
         _applyWeakTopicReviews();
         recordSaveError = null;
-        checkAchievements();
+        await checkAchievements();
       }
       return true;
     } catch (error) {
@@ -1845,7 +1836,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             exam.fromJson(Map<String, dynamic>.from(data[exam.id] as Map));
           }
         }
-        checkAchievements();
+        await checkAchievements();
         notifyListeners();
       }
       return true;
@@ -1892,6 +1883,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           ),
         );
         notifyListeners();
+        await checkAchievements();
       }
       return true;
     } catch (error) {
@@ -1936,6 +1928,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         );
         _examAttemptError = null;
         notifyListeners();
+        await checkAchievements();
       }
       return true;
     } catch (error) {
@@ -2073,33 +2066,40 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   Future<bool> _changeWeakTopics(
     String id,
     void Function(List<WeakTopic>) change,
-  ) => _changeRecordGroup(
-    'weak_topics',
-    id,
-    weakTopics.map((topic) => topic.toJson()).toList(),
-    (raw) {
-      final list = (raw as List)
-          .map(
-            (item) =>
-                WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
-          )
-          .toList();
-      change(list);
-      if (list.map((topic) => topic.id).toSet().length != list.length) {
-        throw const FormatException('Konu kimliği yineleniyor.');
-      }
-      return list.map((topic) => topic.toJson()).toList();
-    },
-    (raw) {
-      weakTopics = (raw as List)
-          .map(
-            (item) =>
-                WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
-          )
-          .toList();
-      _applyWeakTopicReviews();
-    },
-  );
+  ) async {
+    final profile = activeProfile.id;
+    final saved = await _changeRecordGroup(
+      'weak_topics',
+      id,
+      weakTopics.map((topic) => topic.toJson()).toList(),
+      (raw) {
+        final list = (raw as List)
+            .map(
+              (item) =>
+                  WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
+            )
+            .toList();
+        change(list);
+        if (list.map((topic) => topic.id).toSet().length != list.length) {
+          throw const FormatException('Konu kimliği yineleniyor.');
+        }
+        return list.map((topic) => topic.toJson()).toList();
+      },
+      (raw) {
+        weakTopics = (raw as List)
+            .map(
+              (item) =>
+                  WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
+            )
+            .toList();
+        _applyWeakTopicReviews();
+      },
+    );
+    if (saved && profile == activeProfile.id && !isProfileTransitioning)
+      await checkAchievements();
+    return saved;
+  }
+
   Future<bool> addWeakTopic(WeakTopic topic) {
     final copy = WeakTopic.fromJson(topic.toJson());
     return _changeWeakTopics(topic.id, (list) {
@@ -2283,9 +2283,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ─── Achievement Checker ───────────────────────
-  void checkAchievements() {
-    final newlyUnlocked = AchievementProgressMetrics.unlockEligibleAchievements(
-      achievements: achievements,
+  Future<void> checkAchievements() async {
+    if (isProfileTransitioning) return;
+    final profile = activeProfile.id;
+    final proposed = getDefaultAchievements();
+    for (final achievement in proposed) {
+      final existing = achievements
+          .where((item) => item.id == achievement.id)
+          .firstOrNull;
+      if (existing != null) achievement.fromJson(existing.toJson());
+    }
+    final newly = AchievementProgressMetrics.unlockEligibleAchievements(
+      achievements: proposed,
       subjects: subjects,
       mockExams: mockExams,
       weakTopics: weakTopics,
@@ -2294,10 +2303,44 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       totalTopics: totalTopics,
       completedDays: completedDays,
       now: DateTime.now(),
+      attempts: examAttemptBook.attempts,
     );
-    if (newlyUnlocked != null) {
-      lastUnlockedAchievement = newlyUnlocked;
-      _saveAchievements();
+    if (newly == null) return;
+    final candidate = {
+      for (final achievement in proposed.where((item) => item.isUnlocked))
+        achievement.id: achievement.toJson(),
+    };
+    String? earned;
+    final saved = await _changeRecordGroup(
+      'achievements_data',
+      'unlock',
+      {},
+      (raw) {
+        final data = Map<String, dynamic>.from(raw as Map);
+        for (final entry in candidate.entries) {
+          final current = data[entry.key];
+          if (current is! Map || current['isUnlocked'] != true) {
+            data[entry.key] = entry.value;
+            earned = proposed.firstWhere((item) => item.id == entry.key).title;
+          }
+        }
+        return data;
+      },
+      (raw) {
+        for (final achievement in achievements) {
+          final value = raw[achievement.id];
+          if (value is Map) {
+            achievement.fromJson(Map<String, dynamic>.from(value));
+          }
+        }
+      },
+    );
+    if (saved &&
+        profile == activeProfile.id &&
+        !isProfileTransitioning &&
+        earned != null) {
+      lastUnlockedAchievement = earned;
+      notifyListeners();
     }
   }
 

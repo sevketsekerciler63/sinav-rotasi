@@ -1,5 +1,6 @@
 import '../data/achievements_data.dart';
 import '../models/mock_exam.dart';
+import '../models/exam_attempt.dart';
 import '../models/subject.dart';
 import '../models/weak_topic.dart';
 
@@ -31,6 +32,7 @@ class AchievementProgressMetrics {
     required int totalTopics,
     required int completedDays,
     required DateTime now,
+    Iterable<ExamAttempt> attempts = const [],
   }) {
     final dateStr = DateTime(now.year, now.month, now.day).toIso8601String();
     var anyNew = false;
@@ -89,11 +91,15 @@ class AchievementProgressMetrics {
     );
     if (allAytDone && officialAytSubjects.isNotEmpty) unlock('all_ayt');
 
-    final completedExams = mockExams.where((exam) => exam.isCompleted).length;
+    final activeAttempts = attempts
+        .where((attempt) => !attempt.archived)
+        .toList();
+    final legacyCompleted = mockExams.where((exam) => exam.isCompleted).length;
+    final completedExams = legacyCompleted + activeAttempts.length;
     if (completedExams >= 1) unlock('exam_1');
     if (completedExams >= 5) unlock('exam_5');
     if (completedExams >= 10) unlock('exam_10');
-    if (mockExams.isNotEmpty && completedExams >= mockExams.length) {
+    if (mockExams.isNotEmpty && legacyCompleted >= mockExams.length) {
       unlock('exam_all');
     }
 
@@ -109,6 +115,13 @@ class AchievementProgressMetrics {
       }
     }
 
+    for (final attempt in activeAttempts.where(
+      (attempt) => attempt.session == 'TYT',
+    )) {
+      if (attempt.totalNet >= 40) unlock('tyt_40');
+      if (attempt.totalNet >= 50) unlock('tyt_50');
+      if (attempt.totalNet >= 60) unlock('tyt_60');
+    }
     if (completedDays >= 1) unlock('day_first');
     if (completedDays >= 7) unlock('day_7');
     if (completedDays >= 30) unlock('day_30');

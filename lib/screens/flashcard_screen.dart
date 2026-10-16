@@ -9,7 +9,8 @@ import '../services/profile_storage.dart';
 import '../theme/app_theme.dart';
 
 class FlashcardScreen extends StatefulWidget {
-  const FlashcardScreen({super.key});
+  final ProfileStorage? profileStorage;
+  const FlashcardScreen({super.key, this.profileStorage});
 
   @override
   State<FlashcardScreen> createState() => _FlashcardScreenState();
@@ -27,6 +28,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   bool _knownLoaded = false;
   bool _isSavingKnown = false;
   String? _knownStorageError;
+  List<String>? _pendingKnownIds;
+  Map<String, FlashcardReview>? _pendingReviews;
+  bool _pendingRatingAdvance = false, _pendingReset = false;
+  ProfileStorage get _storage =>
+      widget.profileStorage ?? ProfileStorage.instance;
 
   final Map<String, List<Flashcard>> _cards = {
     'Matematik': [
@@ -204,12 +210,16 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     _knownLoaded = false;
     _isSavingKnown = false;
     _knownStorageError = null;
+    _pendingKnownIds = null;
+    _pendingReviews = null;
+    _pendingRatingAdvance = false;
+    _pendingReset = false;
     _loadKnown(profileId, ++_loadGeneration);
   }
 
   Future<void> _loadKnown(String profileId, int generation) async {
     try {
-      final storage = ProfileStorage.instance;
+      final storage = _storage;
       final values = await Future.wait([
         storage.readStringForProfile(profileId, 'flashcard_known'),
         storage.readStringForProfile(profileId, 'flashcard_reviews'),
@@ -252,30 +262,71 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     }
   }
 
-  Future<void> _saveKnown() async {
-    if (!_knownLoaded || _isSavingKnown) return;
+  Future<bool> _saveKnown({
+    List<String>? ids,
+    Map<String, FlashcardReview>? reviews,
+  }) async {
+    if (!_knownLoaded || _isSavingKnown) return false;
     final profileId = _loadedProfileId;
-    if (profileId == null) return;
+    if (profileId == null) return false;
     final generation = _loadGeneration;
+    final nextIds = List<String>.of(ids ?? _pendingKnownIds ?? _knownIds);
+    final nextReviews = Map<String, FlashcardReview>.of(
+      reviews ?? _pendingReviews ?? _reviews,
+    );
+    _pendingKnownIds = nextIds;
+    _pendingReviews = nextReviews;
     setState(() => _isSavingKnown = true);
     try {
-      await ProfileStorage.instance.writeStringsForProfile(profileId, {
-        'flashcard_known': jsonEncode(_knownIds),
+      await _storage.writeStringsForProfile(profileId, {
+        'flashcard_known': jsonEncode(nextIds),
         'flashcard_reviews': jsonEncode(
-          FlashcardReviewData(Map.unmodifiable(_reviews)).toJson(),
+          FlashcardReviewData(Map.unmodifiable(nextReviews)).toJson(),
         ),
       });
-      if (!mounted || generation != _loadGeneration) return;
+      if (!mounted || generation != _loadGeneration) return false;
       setState(() {
+        _knownIds
+          ..clear()
+          ..addAll(nextIds);
+        _reviews
+          ..clear()
+          ..addAll(nextReviews);
+        _pendingKnownIds = null;
+        _pendingReviews = null;
         _isSavingKnown = false;
         _knownStorageError = null;
       });
+      return true;
     } catch (_) {
-      if (!mounted || generation != _loadGeneration) return;
+      if (!mounted || generation != _loadGeneration) return false;
       setState(() {
         _isSavingKnown = false;
-        _knownStorageError = 'Kart ilerlemesi kaydedilemedi.';
+        _knownStorageError =
+            'Kart ilerlemesi kaydedilemedi. Kart değişmedi; yeniden dene.';
       });
+      return false;
+    }
+  }
+
+  void _finishSavedCardChange() {
+    final advance = _pendingRatingAdvance, reset = _pendingReset;
+    _pendingRatingAdvance = false;
+    _pendingReset = false;
+    if (reset) {
+      setState(() {
+        _currentIndex = 0;
+        _showAnswer = false;
+      });
+    } else if (advance) {
+      if (_dueOnly) {
+        setState(() {
+          if (_currentIndex >= _visibleCards.length) _currentIndex = 0;
+          _showAnswer = false;
+        });
+      } else {
+        _nextCard();
+      }
     }
   }
 
@@ -283,7 +334,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     final profileId = _loadedProfileId;
     if (profileId == null) return;
     if (_knownLoaded) {
-      await _saveKnown();
+      if (await _saveKnown() && mounted) _finishSavedCardChange();
     } else {
       setState(() => _knownStorageError = null);
       await _loadKnown(profileId, ++_loadGeneration);
@@ -294,7 +345,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     BuildContext context,
     List<Flashcard> cards,
   ) async {
-    if (!_knownLoaded) return;
+    if (!_knownLoaded || _isSavingKnown || _pendingReviews != null) return;
     final cardIds = cards.map((card) => card.id).toSet();
     final categoryReviewCount = _reviews.keys.where(cardIds.contains).length;
     if (categoryReviewCount == 0) return;
@@ -318,13 +369,13 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    setState(() {
-      _knownIds.removeWhere(cardIds.contains);
-      _reviews.removeWhere((id, _) => cardIds.contains(id));
-      _currentIndex = 0;
-      _showAnswer = false;
-    });
-    await _saveKnown();
+    final ids = _knownIds.where((id) => !cardIds.contains(id)).toList();
+    final reviews = Map<String, FlashcardReview>.of(_reviews)
+      ..removeWhere((id, _) => cardIds.contains(id));
+    _pendingReset = true;
+    if (await _saveKnown(ids: ids, reviews: reviews) && mounted) {
+      _finishSavedCardChange();
+    }
   }
 
   Future<void> _openSource(String url) async {
@@ -355,7 +406,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
 
   Future<void> _rateCard(FlashcardRating rating) async {
     final cards = _visibleCards;
-    if (!_knownLoaded || _isSavingKnown || !_showAnswer || cards.isEmpty) {
+    if (!_knownLoaded ||
+        _isSavingKnown ||
+        _pendingReviews != null ||
+        !_showAnswer ||
+        cards.isEmpty) {
       return;
     }
     final card = cards[_currentIndex.clamp(0, cards.length - 1).toInt()];
@@ -370,23 +425,17 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                   nextReviewAt: null,
                 ))
             .rate(rating, DateTime.now());
-    setState(() {
-      _reviews[card.id] = review;
-      if (rating == FlashcardRating.remembered) {
-        if (!_knownIds.contains(card.id)) _knownIds.add(card.id);
-      } else {
-        _knownIds.remove(card.id);
-      }
-    });
-    await _saveKnown();
-    if (!mounted) return;
-    if (_dueOnly) {
-      setState(() {
-        if (_currentIndex >= _visibleCards.length) _currentIndex = 0;
-        _showAnswer = false;
-      });
+    final reviews = Map<String, FlashcardReview>.of(_reviews)
+      ..[card.id] = review;
+    final ids = List<String>.of(_knownIds);
+    if (rating == FlashcardRating.remembered) {
+      if (!ids.contains(card.id)) ids.add(card.id);
     } else {
-      _nextCard();
+      ids.remove(card.id);
+    }
+    _pendingRatingAdvance = true;
+    if (await _saveKnown(ids: ids, reviews: reviews) && mounted) {
+      _finishSavedCardChange();
     }
   }
 
@@ -465,7 +514,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                         fontSize: 13,
                       ),
                       onSelected: (selected) {
-                        if (!selected) return;
+                        if (!selected ||
+                            _isSavingKnown ||
+                            _pendingReviews != null) {
+                          return;
+                        }
                         setState(() {
                           _selectedCategory = cat;
                           _currentIndex = 0;
@@ -510,7 +563,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                   avatar: const Icon(Icons.replay_rounded, size: 18),
                   label: Text('Çalışılacak · $dueCount'),
                   selected: _dueOnly,
-                  onSelected: !_knownLoaded || _isSavingKnown
+                  onSelected:
+                      !_knownLoaded || _isSavingKnown || _pendingReviews != null
                       ? null
                       : (selected) => setState(() {
                           _dueOnly = selected;
@@ -808,6 +862,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                       enabled:
                           _knownLoaded &&
                           !_isSavingKnown &&
+                          _pendingReviews == null &&
                           _showAnswer &&
                           cards.isNotEmpty,
                     ),
@@ -820,6 +875,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                       enabled:
                           _knownLoaded &&
                           !_isSavingKnown &&
+                          _pendingReviews == null &&
                           _showAnswer &&
                           cards.isNotEmpty,
                     ),
@@ -832,6 +888,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                       enabled:
                           _knownLoaded &&
                           !_isSavingKnown &&
+                          _pendingReviews == null &&
                           _showAnswer &&
                           cards.isNotEmpty,
                     ),
@@ -841,7 +898,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton.icon(
-                      onPressed: cards.isEmpty || _currentIndex == 0
+                      onPressed:
+                          _pendingReviews != null ||
+                              _isSavingKnown ||
+                              cards.isEmpty ||
+                              _currentIndex == 0
                           ? null
                           : () => setState(() {
                               _currentIndex--;
@@ -860,7 +921,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                       ),
                     ),
                     TextButton.icon(
-                      onPressed: cards.isEmpty ? null : () => _nextCard(),
+                      onPressed:
+                          _pendingReviews != null ||
+                              _isSavingKnown ||
+                              cards.isEmpty
+                          ? null
+                          : () => _nextCard(),
                       iconAlignment: IconAlignment.end,
                       icon: const Icon(Icons.arrow_forward_rounded, size: 16),
                       label: const Text('Atla'),
@@ -876,6 +942,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   }
 
   void _nextCard() {
+    if (_pendingReviews != null || _isSavingKnown) return;
     final cards = _visibleCards;
     if (cards.isEmpty) {
       setState(() {

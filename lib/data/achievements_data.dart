@@ -204,8 +204,8 @@ List<Achievement> getDefaultAchievements() {
     Achievement(
       id: 'exam_all',
       emoji: '🏆',
-      title: 'Tüm Denemeler Bitti!',
-      description: '13 denemenin hepsine gir',
+      title: 'Eski Takvim Tamamlandı',
+      description: 'Eski hazır takvimin 13 deneme kaydını tamamla',
       category: 'exam',
     ),
     Achievement(
