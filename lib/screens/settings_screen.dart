@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../providers/theme_state.dart';
+import '../models/exam_profile.dart';
 import '../models/study_schedule_preferences.dart';
 import '../services/profile_storage.dart';
 import '../services/backup_history_service.dart';
@@ -35,7 +36,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.school_rounded,
                 title: state.activeProfile.name,
                 subtitle:
-                    '${state.activeProfile.examSystem} • ${state.activeProfile.examType.replaceAll('_', ' + ')}\nKişisel plan hedefi: ${_formatDate(state.activeProfile.targetDate)}\nResmî sınav tarihi olarak değerlendirilmemelidir.${state.daysRemaining < 0 ? '\nBu tarih geçti. Yeni tarih seçince plan ve denemeler hizalanır.' : ''}',
+                    '${state.activeProfile.examSystem} • ${state.activeProfile.examType.replaceAll('_', ' + ')}\nPuan türü: ${ExamProfile.scoreTypeLabels[state.activeProfile.scoreType]} • Başlangıç: ${ExamProfile.startingLevelLabels[state.activeProfile.startingLevel]}\nKişisel plan hedefi: ${_formatDate(state.activeProfile.targetDate)}\nResmî sınav tarihi olarak değerlendirilmemelidir.${state.daysRemaining < 0 ? '\nBu tarih geçti. Yeni tarih seçince plan ve denemeler hizalanır.' : ''}',
                 color: AppTheme.accentPurple,
                 onTap: () => _editProfile(context, state),
               ),
@@ -706,6 +707,8 @@ class SettingsScreen extends StatelessWidget {
     final currentPreferences = state.schedulePreferences;
     var availableDays = currentPreferences.availableWeekdays.toSet();
     var minutes = currentPreferences.dailyStudyMinutes.toDouble();
+    var scoreType = ExamProfile.unspecified;
+    var startingLevel = ExamProfile.unspecified;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final activeDate = state.activeProfile.targetDate;
@@ -715,6 +718,8 @@ class SettingsScreen extends StatelessWidget {
     var showNameError = false;
     var showDateError = false;
     var showDayError = false;
+    var showScoreTypeError = false;
+    var showStartingLevelError = false;
     final lastDate = DateTime(now.year + 10, 12, 31);
     final fallbackDate = today.add(const Duration(days: 180));
 
@@ -749,6 +754,48 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
+              DropdownButtonFormField<String>(
+                initialValue: scoreType,
+                decoration: InputDecoration(
+                  labelText: 'Puan türü',
+                  errorText: showScoreTypeError ? 'Bir puan türü seç.' : null,
+                ),
+                items: ExamProfile.scoreTypeLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) => setDialogState(() {
+                  scoreType = value ?? ExamProfile.unspecified;
+                  showScoreTypeError = false;
+                }),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: startingLevel,
+                decoration: InputDecoration(
+                  labelText: 'Başlangıç seviyen (öz değerlendirme)',
+                  errorText: showStartingLevelError
+                      ? 'Bir başlangıç seviyesi seç.'
+                      : null,
+                ),
+                items: ExamProfile.startingLevelLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) => setDialogState(() {
+                  startingLevel = value ?? ExamProfile.unspecified;
+                  showStartingLevelError = false;
+                }),
+              ),
+              const SizedBox(height: 8),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Kişisel hedef tarihi'),
@@ -851,7 +898,7 @@ class SettingsScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Seçimin yalnızca yeni profile kaydedilir; daha sonra Ayarlar’dan değiştirilebilir.',
+                  'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Puan türü ve seviye yeni profile kaydedilir; planı şimdilik otomatik değiştirmez.',
                   style: Theme.of(
                     dialogContext,
                   ).textTheme.bodySmall?.copyWith(fontSize: 12),
@@ -888,6 +935,14 @@ class SettingsScreen extends StatelessWidget {
                   setDialogState(() => showDayError = true);
                   return;
                 }
+                if (scoreType == ExamProfile.unspecified) {
+                  setDialogState(() => showScoreTypeError = true);
+                  return;
+                }
+                if (startingLevel == ExamProfile.unspecified) {
+                  setDialogState(() => showStartingLevelError = true);
+                  return;
+                }
                 Navigator.of(dialogContext).pop(true);
               },
               child: const Text('Oluştur'),
@@ -901,6 +956,8 @@ class SettingsScreen extends StatelessWidget {
       if (saved == true && targetDate != null) {
         await state.createYksProfile(
           name: nameController.text.trim(),
+          scoreType: scoreType,
+          startingLevel: startingLevel,
           targetDate: targetDate!,
           schedulePreferences: StudySchedulePreferences(
             availableWeekdays: availableDays.toList()..sort(),
@@ -925,6 +982,8 @@ class SettingsScreen extends StatelessWidget {
     final profile = state.activeProfile;
     final nameController = TextEditingController(text: profile.name);
     var targetDate = profile.targetDate;
+    var scoreType = profile.scoreType;
+    var startingLevel = profile.startingLevel;
     var showNameError = false;
     var showDateError = false;
 
@@ -933,6 +992,7 @@ class SettingsScreen extends StatelessWidget {
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
           backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+          scrollable: true,
           title: const Text('Kişisel plan hedefini düzenle'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -949,6 +1009,49 @@ class SettingsScreen extends StatelessWidget {
                     setDialogState(() => showNameError = false);
                   }
                 },
+              ),
+              DropdownButtonFormField<String>(
+                initialValue: scoreType,
+                decoration: const InputDecoration(labelText: 'Puan türü'),
+                items: ExamProfile.scoreTypeLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) => setDialogState(
+                  () => scoreType = value ?? ExamProfile.unspecified,
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: startingLevel,
+                decoration: const InputDecoration(
+                  labelText: 'Başlangıç seviyen (öz değerlendirme)',
+                ),
+                items: ExamProfile.startingLevelLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) => setDialogState(
+                  () => startingLevel = value ?? ExamProfile.unspecified,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Bu kişisel bilgiler plan görevlerini ve sürelerini henüz otomatik uyarlamaz.',
+                  style: Theme.of(
+                    dialogContext,
+                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                ),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -1045,6 +1148,8 @@ class SettingsScreen extends StatelessWidget {
       if (saved == true) {
         await state.updateActiveProfile(
           name: nameController.text.trim(),
+          scoreType: scoreType,
+          startingLevel: startingLevel,
           targetDate: targetDate,
         );
         if (context.mounted) {

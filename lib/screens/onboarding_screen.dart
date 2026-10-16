@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/exam_profile.dart';
 import '../models/study_schedule_preferences.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
@@ -25,6 +26,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _targetDateKey = 'yks_onboarding_target_date';
   static const _weekdaysKey = 'yks_onboarding_weekdays';
   static const _minutesKey = 'yks_onboarding_minutes';
+  static const _scoreTypeKey = 'yks_onboarding_score_type';
+  static const _startingLevelKey = 'yks_onboarding_starting_level';
 
   final PageController _controller = PageController();
   int _current = 0;
@@ -33,6 +36,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   DateTime _targetDate = DateTime.now();
   List<int> _availableWeekdays = const [1, 2, 3, 4, 5, 6, 7];
   int _dailyStudyMinutes = 180;
+  String _scoreType = ExamProfile.unspecified;
+  String _startingLevel = ExamProfile.unspecified;
   String? _draftError;
   String? _setupError;
   Timer? _draftSaveTimer;
@@ -84,6 +89,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       widget.appState.schedulePreferences.availableWeekdays,
     );
     _dailyStudyMinutes = widget.appState.schedulePreferences.dailyStudyMinutes;
+    _scoreType = widget.appState.activeProfile.scoreType;
+    _startingLevel = widget.appState.activeProfile.startingLevel;
     _restoreDraft();
   }
 
@@ -101,6 +108,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           .whereType<int>()
           .toList();
       final savedMinutes = prefs.getInt(_minutesKey);
+      final savedScoreType = prefs.getString(_scoreTypeKey);
+      final savedStartingLevel = prefs.getString(_startingLevelKey);
       setState(() {
         if (savedPage != null) {
           _current = savedPage < 0
@@ -127,6 +136,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             savedMinutes % 15 == 0) {
           _dailyStudyMinutes = savedMinutes;
         }
+        if (savedScoreType != null &&
+            ExamProfile.scoreTypeLabels.containsKey(savedScoreType)) {
+          _scoreType = savedScoreType;
+        }
+        if (savedStartingLevel != null &&
+            ExamProfile.startingLevelLabels.containsKey(savedStartingLevel)) {
+          _startingLevel = savedStartingLevel;
+        }
         _draftLoaded = true;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -148,6 +165,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final targetDate = _targetDate.toIso8601String();
     final weekdays = _availableWeekdays.join(',');
     final minutes = _dailyStudyMinutes;
+    final scoreType = _scoreType;
+    final startingLevel = _startingLevel;
     final pending = _draftSaveQueue.then((_) async {
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -156,6 +175,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           await prefs.setString(_targetDateKey, targetDate),
           await prefs.setString(_weekdaysKey, weekdays),
           await prefs.setInt(_minutesKey, minutes),
+          await prefs.setString(_scoreTypeKey, scoreType),
+          await prefs.setString(_startingLevelKey, startingLevel),
         ];
         if (results.any((saved) => !saved)) {
           throw StateError('Taslak ayarlar saklanamadı.');
@@ -184,6 +205,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.remove(_targetDateKey);
     await prefs.remove(_weekdaysKey);
     await prefs.remove(_minutesKey);
+    await prefs.remove(_scoreTypeKey);
+    await prefs.remove(_startingLevelKey);
   }
 
   Future<void> _finishWithoutSetup() async {
@@ -221,6 +244,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       setState(() => _setupError = 'En az bir uygun gün seç.');
       return;
     }
+    if (_scoreType == ExamProfile.unspecified ||
+        _startingLevel == ExamProfile.unspecified) {
+      setState(() => _setupError = 'Puan türünü ve başlangıç seviyeni seç.');
+      return;
+    }
 
     setState(() {
       _isSaving = true;
@@ -229,6 +257,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       await widget.appState.updateActiveProfile(
         targetDate: target,
+        scoreType: _scoreType,
+        startingLevel: _startingLevel,
         schedulePreferences: StudySchedulePreferences(
           availableWeekdays: List<int>.of(_availableWeekdays)..sort(),
           dailyStudyMinutes: _dailyStudyMinutes,
@@ -479,13 +509,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Bu sürüm YKS · TYT + AYT planını destekler. Puan türü ve başlangıç neti henüz bu kurulumda saklanmıyor.',
+                          'Bu seçimler YKS profiline kaydedilir. Planın görev ve sürelerini henüz otomatik değiştirmez.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                initialValue: _scoreType,
+                decoration: const InputDecoration(labelText: 'Puan türü'),
+                items: ExamProfile.scoreTypeLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _scoreType = value;
+                    _setupError = null;
+                  });
+                  _queueDraftSave();
+                },
+              ),
+              const SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                initialValue: _startingLevel,
+                decoration: const InputDecoration(
+                  labelText: 'Başlangıç seviyen (öz değerlendirme)',
+                ),
+                items: ExamProfile.startingLevelLabels.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _startingLevel = value;
+                    _setupError = null;
+                  });
+                  _queueDraftSave();
+                },
               ),
               const SizedBox(height: 14),
               Text(

@@ -75,6 +75,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> updateActiveProfile({
     String? name,
+    String? scoreType,
+    String? startingLevel,
     DateTime? targetDate,
     StudySchedulePreferences? schedulePreferences,
   }) async {
@@ -85,6 +87,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final previousExams = {for (final exam in mockExams) exam.id: exam};
     final updatedProfile = _activeProfile.copyWith(
       name: name,
+      scoreType: scoreType,
+      startingLevel: startingLevel,
       targetDate: targetDate,
     );
     final validatedSchedulePreferences = schedulePreferences == null
@@ -140,6 +144,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> createYksProfile({
     required String name,
+    required String scoreType,
+    required String startingLevel,
     required DateTime targetDate,
     required StudySchedulePreferences schedulePreferences,
   }) async {
@@ -167,6 +173,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       name: name.trim(),
       examSystem: 'YKS',
       examType: 'TYT_AYT',
+      scoreType: scoreType,
+      startingLevel: startingLevel,
       targetDate: normalizedTarget,
       templateId: 'yks_tyt_ayt_2026',
     );

@@ -5,6 +5,7 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
 ## Mevcut kapsam
 
 - TYT/AYT ders ve konu takibi; profile özel ders ve konu ekleme
+- YKS profilinde SAY/EA/SÖZ/DİL puan türü ve kullanıcının Başlangıç/Temel/Orta/İleri öz değerlendirmesi; JSON yedeğinde saklanır, eski profiller “Belirtilmedi” olur
 - Haftalık uygun gün ve süre hedefiyle bugünden sınava kadar oluşturulan plan; 95 temel görev, dinlenme günleri ve zayıf konulara göre tekrar dönemi
 - Hedefler, zayıf konular, istatistik, rozet ve Pomodoro
 - Bilgi kartı ve zayıf konularda yerel aralıklı tekrar; tamamlanan günlük tekrar görevi bağlı zayıf konunun tarihini ilerletir
@@ -33,6 +34,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Günlük dakika tercihi hedef olarak gösterilir; mevcut görevlerin gerçek süre tahmini bu tercihe göre henüz yeniden hesaplanmıyor. Temel görevleri bir güne sığdırmak için birleştirme gerekebilir.
 - Yeni kurulumun kişisel plan hedefi kurulum anından 180 gün sonrasına ayarlanır; kayıtlı profiller otomatik değişmez. Bu tarih resmî sınav tarihi değildir. Kullanıcı Ayarlar'dan kendi hedefini güncelleyebilir; resmî tarih açıklanmadan YKS tarihi uydurulmamalıdır.
 - YKS kataloğu tüm puan türlerini kapsamaz; KPSS şablonu ve ekranları henüz yoktur.
+- Puan türü ve öz değerlendirme profil bilgisidir; günlük görevler ve süreler bu seçime göre henüz kişiselleştirilmez. Müfredat/puan türü kapsam eşlemesi ayrıca doğrulanmalıdır.
 - Yedek panoya kopyalanabilir veya JSON dosyası olarak kaydedilebilir; içe aktarmada dosya seçme, panodan yapıştırma ve metin alanı desteklenir. Önizleme ve etki onayı korunur; yükleme sonrası kısa süreli geri alma sunulur.
 - Eski toplam soru sayısı korunur fakat tarih bilgisi olmadığı için günlük/haftalık soru raporuna katılmaz; tarih anahtarı korunmuş eski plan kayıtları raporda ayrı gösterilir.
 - Profil geçişi, çok anahtarlı yazma ve Pomodoro devamı için kaynak korumaları eklendi. Net girişleri negatif/çeyrek değerleri koruyup soru sınırlarını doğrular; kaydedilmemiş Pomodoro sonucu kararlı kimlik ve bitiş bilgisiyle yeniden denenir. Analyzer ve web release derlemesi temiz. Davranış/regresyon testleri, işlem kesintisi enjeksiyonu, yedek round-trip ve gerçek cihazdaki zorla kapatıp açma doğrulaması bekliyor.
