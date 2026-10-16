@@ -321,7 +321,11 @@ class ProfileStorage {
         final value =
             _prefs!.getString(_scopedKey(profile.id, key)) ??
             (_isLegacyCompatible(profile) ? _prefs!.getString(key) : null);
-        if (value != null) data[key] = jsonDecode(value);
+        if (value != null) {
+          data[key] = key == 'goals_data'
+              ? _exportableGoalsPayload(value)
+              : jsonDecode(value);
+        }
       }
       profileData[profile.id] = data;
     }
@@ -889,7 +893,12 @@ class ProfileStorage {
           _optionalInt(item, 'reviewIntervalDays', path, min: 0, max: 30);
         });
       case 'goals_data':
-        _validateRecordList(value, key, (item, path) {
+        if (value is! List) _invalid(key, 'hedef listesi');
+        for (var index = 0; index < value.length; index++) {
+          final path = '$key[$index]';
+          final entry = value[index];
+          if (Goal.isQuarantinedRecord(entry)) continue;
+          final item = _record(entry, path);
           for (final field in ['id', 'title', 'subject', 'unit', 'deadline']) {
             if (item[field] is! String) _invalid('$path.$field', 'metin');
           }
@@ -944,7 +953,7 @@ class ProfileStorage {
             );
           }
           _optionalBool(item, 'isCompleted', path);
-        });
+        }
       case 'achievements_data':
         final achievements = _record(value, key);
         for (final entry in achievements.entries) {
@@ -971,6 +980,26 @@ class ProfileStorage {
       case 'schedule_preferences':
         StudySchedulePreferences.fromJson(_record(value, key));
     }
+  }
+
+  List<dynamic> _exportableGoalsPayload(String rawPayload) {
+    Object? decoded;
+    try {
+      decoded = jsonDecode(rawPayload);
+    } catch (_) {
+      return [Goal.quarantineRecord(rawPayload)];
+    }
+    if (decoded is! List) return [Goal.quarantineRecord(decoded)];
+
+    return decoded.map((entry) {
+      if (Goal.isQuarantinedRecord(entry)) return entry;
+      try {
+        _validateDataPayload('goals_data', [entry]);
+        return entry;
+      } catch (_) {
+        return Goal.quarantineRecord(entry);
+      }
+    }).toList();
   }
 
   void _validateWeakTopicReferences(Map<String, dynamic> profileValues) {

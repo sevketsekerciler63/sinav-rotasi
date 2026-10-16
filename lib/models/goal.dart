@@ -10,6 +10,8 @@ class Goal {
   final DateTime? dueDate;
 
   static const int maxTargetCount = 1000000;
+  static const String quarantinedRecordMarker = '__srGoalRecoveryVersion';
+  static const int quarantinedRecordVersion = 1;
   static const Set<String> supportedUnits = {'soru', 'konu', 'saat', 'deneme'};
   static const Set<String> supportedDeadlines = {
     'bu_hafta',
@@ -87,6 +89,53 @@ class Goal {
       );
     }
   }
+
+  /// Validates a goal using the same permissive date rules as stored backups.
+  /// Legacy goals may have no due date, but malformed values must not be
+  /// written back as active goal records.
+  void validateForPersistence() {
+    if (id.trim().isEmpty ||
+        title.isEmpty ||
+        title.length > 120 ||
+        subject.trim().isEmpty) {
+      throw const FormatException('Hedef kimliği veya metin alanı geçersiz.');
+    }
+    if (!hasValidTarget) {
+      throw const FormatException('Hedef sayısı geçersiz.');
+    }
+    if (currentCount < 0 || currentCount > targetCount * 2) {
+      throw const FormatException('Hedef ilerlemesi geçersiz.');
+    }
+    if (!supportedUnits.contains(unit) ||
+        !supportedDeadlines.contains(deadline)) {
+      throw const FormatException('Hedef birimi veya süresi geçersiz.');
+    }
+    if (dueDate != null) {
+      final createdDay = DateTime(
+        createdAt.year,
+        createdAt.month,
+        createdAt.day,
+      );
+      final dueDay = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+      if (dueDay.isBefore(createdDay)) {
+        throw const FormatException('Hedef tarihi oluşturulma gününden önce.');
+      }
+    }
+  }
+
+  static Map<String, dynamic> quarantineRecord(Object? rawValue) => {
+    quarantinedRecordMarker: quarantinedRecordVersion,
+    'raw': rawValue,
+  };
+
+  static bool isQuarantinedRecord(Object? value) =>
+      value is Map &&
+      value.length == 2 &&
+      value[quarantinedRecordMarker] == quarantinedRecordVersion &&
+      value.containsKey('raw');
+
+  static Object? quarantinedRawValue(Object? value) =>
+      isQuarantinedRecord(value) ? (value as Map)['raw'] : value;
 
   double get progress =>
       hasValidTarget ? (currentCount / targetCount).clamp(0.0, 1.0) : 0;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/goal.dart';
@@ -23,7 +25,7 @@ class GoalsScreen extends StatelessWidget {
             backgroundColor: colors.primary,
             foregroundColor: colors.onPrimary,
           ),
-          body: state.goals.isEmpty
+          body: state.goals.isEmpty && state.quarantinedGoalRecords.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -65,12 +67,165 @@ class GoalsScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       ...completed.map((g) => _goalCard(context, state, g)),
                     ],
+                    if (state.quarantinedGoalRecords.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        'Kurtarılan eski kayıtlar (${state.quarantinedGoalRecords.length})',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Okunamayan hedefler profilin açılmasını engellemez. Ham verileri yedeklerde korunur; istersen inceleyip kaldırabilirsin.',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...state.quarantinedGoalRecords.indexed.map(
+                        (entry) => _quarantinedGoalCard(
+                          context,
+                          state,
+                          entry.$2,
+                          entry.$1,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 80),
                   ],
                 ),
         );
       },
     );
+  }
+
+  Widget _quarantinedGoalCard(
+    BuildContext context,
+    AppState state,
+    Object? rawValue,
+    int index,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      color: colors.errorContainer.withValues(alpha: 0.35),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Okunamayan hedef kaydı ${index + 1}',
+              style: TextStyle(
+                color: colors.onSurface,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Bu kayıt etkin hedef olarak yüklenemedi. Ham içerik yeni yedeklerde korunur.',
+              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                TextButton.icon(
+                  onPressed: () => _showQuarantinedValue(context, rawValue),
+                  icon: const Icon(Icons.data_object_outlined),
+                  label: const Text('Ham veriyi gör'),
+                ),
+                TextButton.icon(
+                  onPressed: () =>
+                      _removeQuarantinedGoalWithUndo(context, state, index),
+                  icon: Icon(Icons.delete_outline, color: colors.error),
+                  label: Text(
+                    'Kaydı kaldır',
+                    style: TextStyle(color: colors.error),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQuarantinedValue(BuildContext context, Object? rawValue) {
+    final rawText = rawValue is String
+        ? rawValue
+        : const JsonEncoder.withIndent('  ').convert(rawValue);
+    final preview = rawText.length > 4000
+        ? '${rawText.substring(0, 4000)}\n… (önizleme kısaltıldı)'
+        : rawText;
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Korunan ham hedef verisi'),
+        content: SizedBox(
+          width: 560,
+          child: SingleChildScrollView(child: SelectableText(preview)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _removeQuarantinedGoalWithUndo(
+    BuildContext context,
+    AppState state,
+    int index,
+  ) async {
+    if (state.isProfileTransitioning ||
+        index < 0 ||
+        index >= state.quarantinedGoalRecords.length) {
+      return;
+    }
+    final rawValue = state.quarantinedGoalRecords[index];
+    final shouldRemove = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Okunamayan hedefi kaldır?'),
+        content: const Text(
+          'Ham kayıt cihazdaki etkin listeden çıkarılır. Önce profil yedeği alabilir veya kaldırma sonrası kısa süre içinde geri alabilirsin.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Kaldır'),
+          ),
+        ],
+      ),
+    );
+    if (shouldRemove != true || !context.mounted) return;
+    final profileId = state.activeProfile.id;
+    state.removeQuarantinedGoalRecord(index);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: const Text('Okunamayan hedef kaydı kaldırıldı.'),
+          action: SnackBarAction(
+            label: 'Geri al',
+            onPressed: () => state.restoreQuarantinedGoalRecord(
+              rawValue,
+              index: index,
+              profileId: profileId,
+            ),
+          ),
+        ),
+      );
   }
 
   Widget _goalCard(BuildContext context, AppState state, Goal goal) {

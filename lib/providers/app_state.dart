@@ -29,6 +29,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   late List<MockExam> mockExams;
   List<WeakTopic> weakTopics = [];
   List<Goal> goals = [];
+  final List<Object?> _quarantinedGoalRecords = [];
   List<QuestionEvent> questionEvents = [];
   List<StudySession> studySessions = [];
   PomodoroTimerState? pomodoroTimerState;
@@ -55,6 +56,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   String? get loadErrorMessage => _loadError?.toString();
   String? get persistenceError => _persistenceError;
   List<ExamProfile> get profiles => _profileStorage.profiles;
+  List<Object?> get quarantinedGoalRecords =>
+      List.unmodifiable(_quarantinedGoalRecords);
   StudySchedulePreferences get schedulePreferences => _schedulePreferences;
   List<WeakTopic> get prioritizedWeakTopics =>
       _prioritizedWeakTopicsFor(DateTime.now());
@@ -334,6 +337,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _dailyLogHistory = {};
     weakTopics = [];
     goals = [];
+    _quarantinedGoalRecords.clear();
     questionEvents = [];
     studySessions = [];
     pomodoroTimerState = null;
@@ -499,8 +503,33 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
     if (!isCurrentRequest()) return;
     if (goalsJson != null) {
-      final List<dynamic> data = jsonDecode(goalsJson);
-      goals = data.map((e) => Goal.fromJson(e)).toList();
+      try {
+        final decoded = jsonDecode(goalsJson);
+        if (decoded is! List) {
+          _quarantinedGoalRecords.add(decoded);
+        } else {
+          for (final value in decoded) {
+            if (Goal.isQuarantinedRecord(value)) {
+              _quarantinedGoalRecords.add(Goal.quarantinedRawValue(value));
+              continue;
+            }
+            try {
+              if (value is! Map) {
+                throw const FormatException('Hedef kaydı nesne değil.');
+              }
+              final goal = Goal.fromJson(Map<String, dynamic>.from(value));
+              goal.validateForPersistence();
+              goals.add(goal);
+            } catch (_) {
+              _quarantinedGoalRecords.add(value);
+            }
+          }
+        }
+      } catch (_) {
+        // Keep the original bytes as an inert recovery value. A later save or
+        // export wraps it in a versioned record instead of discarding it.
+        _quarantinedGoalRecords.add(goalsJson);
+      }
     }
 
     // Load achievements
@@ -1482,9 +1511,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> _saveGoals() async {
     final profileId = _activeProfile.id;
-    await _writeProfileData(profileId, {
-      'goals_data': jsonEncode(goals.map((e) => e.toJson()).toList()),
-    });
+    final savedGoals = [
+      ...goals.map((goal) => goal.toJson()),
+      ..._quarantinedGoalRecords.map(Goal.quarantineRecord),
+    ];
+    await _writeProfileData(profileId, {'goals_data': jsonEncode(savedGoals)});
   }
 
   Future<void> _saveAchievements() async {
@@ -1771,6 +1802,29 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void removeGoal(String id) {
     if (_isProfileTransitioning) return;
     goals.removeWhere((g) => g.id == id);
+    _saveGoals();
+    notifyListeners();
+  }
+
+  void removeQuarantinedGoalRecord(int index) {
+    if (_isProfileTransitioning ||
+        index < 0 ||
+        index >= _quarantinedGoalRecords.length) {
+      return;
+    }
+    _quarantinedGoalRecords.removeAt(index);
+    _saveGoals();
+    notifyListeners();
+  }
+
+  void restoreQuarantinedGoalRecord(
+    Object? rawValue, {
+    required int index,
+    required String profileId,
+  }) {
+    if (_isProfileTransitioning || profileId != _activeProfile.id) return;
+    final insertionIndex = index.clamp(0, _quarantinedGoalRecords.length);
+    _quarantinedGoalRecords.insert(insertionIndex, rawValue);
     _saveGoals();
     notifyListeners();
   }
