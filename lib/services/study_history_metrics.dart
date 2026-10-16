@@ -38,6 +38,61 @@ class StudyHistoryMetrics {
     });
   }
 
+  static void setSolvedQuestionsForProgressOn({
+    required List<QuestionEvent> events,
+    required String profileId,
+    required String progressId,
+    required int targetCount,
+    required DateTime studyDate,
+    required String Function() nextEventId,
+  }) {
+    final day = _day(studyDate);
+    final dateKey = _dateKey(day);
+    final currentCount = solvedQuestionsForProgressOn(events, progressId, day);
+    if (targetCount > currentCount) {
+      events.add(
+        QuestionEvent(
+          id: nextEventId(),
+          profileId: profileId,
+          progressId: progressId,
+          topicId: null,
+          occurredAt: day,
+          questionCount: targetCount - currentCount,
+        ),
+      );
+      return;
+    }
+    if (targetCount == currentCount) return;
+
+    var toRemove = currentCount - targetCount;
+    final dated =
+        events
+            .where(
+              (event) =>
+                  event.progressId == progressId &&
+                  !event.isLegacyUnattributed &&
+                  event.occurredAt != null &&
+                  _dateKey(event.occurredAt!) == dateKey,
+            )
+            .toList()
+          ..sort(
+            (first, second) => second.occurredAt!.compareTo(first.occurredAt!),
+          );
+    for (final event in dated) {
+      if (toRemove == 0) break;
+      final removed = event.questionCount < toRemove
+          ? event.questionCount
+          : toRemove;
+      toRemove -= removed;
+      if (removed == event.questionCount) {
+        events.remove(event);
+      } else {
+        final index = events.indexOf(event);
+        events[index] = event.withQuestionCount(event.questionCount - removed);
+      }
+    }
+  }
+
   static int legacyUnattributedQuestionCount(Iterable<QuestionEvent> events) =>
       events
           .where((event) => event.isLegacyUnattributed)

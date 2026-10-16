@@ -623,69 +623,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     'events': questionEvents.map((event) => event.toJson()).toList(),
   };
 
-  int _questionCountForProgressIdOnDate(String progressId, DateTime date) {
-    return StudyHistoryMetrics.solvedQuestionsForProgressOn(
-      questionEvents,
-      progressId,
-      date,
-    );
-  }
-
-  void _setQuestionCountForProgressId(
-    String profileId,
-    String progressId,
-    int targetCount,
-    DateTime studyDate,
-  ) {
-    final day = DateTime(studyDate.year, studyDate.month, studyDate.day);
-    final dateKey = _dailyDateKey(day);
-    final currentCount = _questionCountForProgressIdOnDate(progressId, day);
-    if (targetCount > currentCount) {
-      questionEvents.add(
-        QuestionEvent(
-          id: '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
-          profileId: profileId,
-          progressId: progressId,
-          topicId: null,
-          occurredAt: day,
-          questionCount: targetCount - currentCount,
-        ),
-      );
-      return;
-    }
-    if (targetCount == currentCount) return;
-
-    var toRemove = currentCount - targetCount;
-    final dated =
-        questionEvents
-            .where(
-              (event) =>
-                  event.progressId == progressId &&
-                  !event.isLegacyUnattributed &&
-                  event.occurredAt != null &&
-                  _dailyDateKey(event.occurredAt!) == dateKey,
-            )
-            .toList()
-          ..sort(
-            (first, second) => second.occurredAt!.compareTo(first.occurredAt!),
-          );
-    for (final event in dated) {
-      if (toRemove == 0) break;
-      final removed = event.questionCount < toRemove
-          ? event.questionCount
-          : toRemove;
-      toRemove -= removed;
-      if (removed == event.questionCount) {
-        questionEvents.remove(event);
-      } else {
-        final index = questionEvents.indexOf(event);
-        questionEvents[index] = event.withQuestionCount(
-          event.questionCount - removed,
-        );
-      }
-    }
-  }
-
   Future<bool> recordStudySession(StudySession session) async {
     try {
       final profileId = session.profileId;
@@ -1399,11 +1336,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
               : targetCount % log.progressIds.length;
           final profileId = _activeProfile.id;
           for (var index = 0; index < log.progressIds.length; index++) {
-            _setQuestionCountForProgressId(
-              profileId,
-              log.progressIds[index],
-              each + (index < remainder ? 1 : 0),
-              log.date,
+            StudyHistoryMetrics.setSolvedQuestionsForProgressOn(
+              events: questionEvents,
+              profileId: profileId,
+              progressId: log.progressIds[index],
+              targetCount: each + (index < remainder ? 1 : 0),
+              studyDate: log.date,
+              nextEventId: () =>
+                  '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
             );
           }
           log.solvedQuestions = targetCount;
@@ -1753,6 +1693,3 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       achievements.where((a) => a.isUnlocked).length;
   int get activeGoals => goals.where((g) => !g.isCompleted).length;
 }
-
-String _dailyDateKey(DateTime date) =>
-    '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
