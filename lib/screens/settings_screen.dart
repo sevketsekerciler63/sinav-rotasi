@@ -926,7 +926,7 @@ class SettingsScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Puan türü ve seviye yeni profile kaydedilir; planı şimdilik otomatik değiştirmez.',
+                  'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Bu sürüm TYT + AYT kataloğuyla sınırlıdır; YDT içeriği yok. Puan türü ve seviye yeni profile kaydedilir, planı değiştirmez.',
                   style: Theme.of(
                     dialogContext,
                   ).textTheme.bodySmall?.copyWith(fontSize: 12),
@@ -1075,7 +1075,7 @@ class SettingsScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Bu kişisel bilgiler plan görevlerini ve sürelerini henüz otomatik uyarlamaz.',
+                  'Bu sürüm TYT + AYT kataloğuyla sınırlıdır; YDT içeriği yok. Kişisel bilgiler planı henüz uyarlamaz.',
                   style: Theme.of(
                     dialogContext,
                   ).textTheme.bodySmall?.copyWith(fontSize: 12),

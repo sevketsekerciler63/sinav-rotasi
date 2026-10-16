@@ -509,7 +509,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Bu seçimler YKS profiline kaydedilir. Planın görev ve sürelerini henüz otomatik değiştirmez.',
+                          'Bu sürüm TYT + AYT kataloğunu destekler; YDT içeriği henüz yok. Puan türü ve seviye profile kaydedilir, planı değiştirmez.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
