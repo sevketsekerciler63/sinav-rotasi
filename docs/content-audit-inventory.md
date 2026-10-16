@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 43 | TYT Matematik 25/25 ve TYT Türkçe 17/17 kayıt kaynaklı; diğer 65 konuda kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 50 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7 kaynaklı; diğer 58 kaydın 57'sinde kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 43 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik ve TYT Türkçe dışındaki 65 kayıt için kaynak bağı eksik.
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 50 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik, TYT Türkçe ve TYT Fizik dışındaki 58 kaydın 57'sinde kaynak bağı eksik (Biyoloji Hücre kaydının eski kaynağı mevcut).
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -88,6 +88,22 @@ TYT Türkçe kataloğundaki 17/17 kaydın tamamına kaynak eklendi veya mevcut T
 Bu turda genelleme oluşturan sorunlu ipuçları kaldırıldı: başlık için “en genel cümle”, deyimde mutlaka fiil bulunması, tüm cümle tamamlama sorularının yalnız iki komşu cümleye dayanması ve p/ç/t/k sonlarının her durumda yumuşaması gibi katı kurallar kullanılmıyor. Çekimli fiil/fiilimsi ayrımı, sözcük türünde bağlam, atasözü/deyim tanımı, cümle türlerinin sınıflandırma ölçütleri ve noktalama işaretlerinin işlevleri kapsamlılaştırıldı.
 
 **Açık takip:** 17 başlığın hedef YKS yılı/kohortuna göre resmi kapsam eşlemesi; gramer terimlerinin güncel program sürümü; konu örneklerinin satır bazlı doğrulanması ve Türkçe alan uzmanı kabulü. OGM materyalinin bölüm başı URL'leri konu kaynağını gösterir; her kısa açıklamadaki her alt kural için sayfa/soru denetimi değildir.
+
+## TYT Fizik konu kaynak turu — 2026-10-16
+
+TYT Fizik kataloğundaki 7/7 kayda MEB OGM Materyal kaynak etiketi ve URL eklendi. Birimlerde SI'nın yedi temel birimi tamamlandı; Newton yasalarında net kuvvet ve etki-tepki kuvvetlerinin farklı cisimler üzerindeki etkisi netleştirildi. İş, basınç, ısı/sıcaklık, elektrik akımı ve dalga/optik açıklamalarına gerekli model/ortam koşulları işlendi.
+
+| Topic ID | Konu | MEB OGM kaynak |
+| --- | --- | --- |
+| `tyt_fiz_1` | Ölçme ve birimler | [Dört Dörtlük TYT Fizik, Fizik Bilimine Giriş](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page12.html) |
+| `tyt_fiz_2` | Newton kanunları | [Fizik 11, Newton’ın Hareket Yasaları](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fizik/11/unite1/files/basic-html/page32.html) |
+| `tyt_fiz_3` | İş, güç ve enerji | [Dört Dörtlük TYT Fizik, İş-Güç-Enerji](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page79.html) |
+| `tyt_fiz_4` | Basınç | [Defterim Fizik 10, Basınç](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/fizik/files/basic-html/page88.html) |
+| `tyt_fiz_5` | Isı ve sıcaklık | [Dört Dörtlük TYT Fizik, Isı ve Sıcaklık](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page113.html) |
+| `tyt_fiz_6` | Elektrik temeli | [Dört Dörtlük TYT Fizik, Elektrik ve Manyetizma](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page155.html) |
+| `tyt_fiz_7` | Dalgalar ve optik | [Dört Dörtlük TYT Fizik, Dalgalar s. 247](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page247.html); [Optik s. 299](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page299.html) |
+
+**Açık takip:** TYT Fizik başlıklarının güncel hedef sınav yılı/kohortuna göre resmi kapsam eşlemesi; açıklama örneklerinin alan uzmanı denetimi; iş ve enerji formüllerinde okul düzeyindeki model kabullerinin örneklerle gösterilmesi; “Dalgalar ve Optik” birleşik başlığının öğrenciler için kapsam/yük bakımından uygunluğunun incelenmesi.
 
 ## Kaynaklı düzeltmeler — 2026-10-16
 

@@ -592,7 +592,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_1',
           name: 'Ölçme ve Birimler',
           description:
-              'SI birimleri: uzunluk=m, kütle=kg, zaman=s, akım=A. Türetilmiş birimler: Newton(N)=kg×m/s², Joule(J)=N×m.',
+              'SI temel birimleri: uzunluk metre (m), kütle kilogram (kg), zaman saniye (s), elektrik akımı amper (A), sıcaklık kelvin (K), madde miktarı mol (mol), ışık şiddeti kandela (cd). Türetilmiş birim örnekleri: kuvvet newton (N=kg·m/s²), enerji joule (J=N·m).',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Fizik Bilimine Giriş',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page12.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -602,7 +605,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_2',
           name: 'Kuvvet ve Hareket — Newton Kanunları',
           description:
-              '1.Kanun: kuvvet yoksa hareket değişmez (atalet). 2.Kanun: F=m×a. 3.Kanun: etki-tepki.',
+              'Newton I: net kuvvet sıfırsa cisim durur veya sabit hızla hareket eder. Newton II: net kuvvet ΣF=ma bağıntısını sağlar. Newton III: etki-tepki kuvvetleri eşit büyüklükte, zıt yönlü ve farklı cisimler üzerindedir; birbirini aynı cisim üzerinde yok etmez.',
+          sourceLabel: 'MEB OGM Materyal · Fizik 11, Newton’ın Hareket Yasaları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fizik/11/unite1/files/basic-html/page32.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -612,7 +618,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_3',
           name: 'Enerji – İş – Güç',
           description:
-              'İş: W=F×d×cosθ. Kinetik enerji: Ek=½mv². Potansiyel: Ep=mgh. Güç=İş/zaman.',
+              'Sabit kuvvetin yaptığı iş W=Fd cosθ (θ, kuvvet ile yer değiştirme arasındaki açı); kinetik enerji Eₖ=½mv² (Newton mekaniğinde). Dünya yüzeyine yakın ve g yaklaşık sabitken, seçilen referans düzeyine göre çekim potansiyel enerjisi Eₚ=mgh; ortalama güç yapılan iş/zamandır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, İş, Güç ve Enerji',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page79.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -621,7 +630,11 @@ List<Subject> getAllSubjects() {
         Topic(
           id: 'tyt_fiz_4',
           name: 'Basınç',
-          description: 'Katıda: P=F/A. Sıvıda: P=ρgh. Atmosfer basıncı.',
+          description:
+              'Basınç, yüzeye dik kuvvetin alana oranıdır: P=F⊥/A. Durgun, homojen sıvıda g sabitken serbest yüzeyden h derinlikteki gösterge basıncı p=ρgh; mutlak basınçta açık yüzey basıncı da eklenir. SI birimi pascal (Pa=N/m²).',
+          sourceLabel: 'MEB OGM Materyal · Defterim Fizik 10, Basınç',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/fizik/files/basic-html/page88.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -631,7 +644,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_5',
           name: 'Isı ve Sıcaklık',
           description:
-              'Sıcaklık: tanecik ortalama enerjisi (°C, K). Isı: aktarılan enerji. Q=m×c×ΔT.',
+              'Sıcaklık, taneciklerin ortalama kinetik enerjisiyle ilişkili bir ölçüdür; °C veya K ile ifade edilir. Isı, sıcaklık farkı nedeniyle sistemler arasında aktarılan enerjidir. Hal değişimi olmayan ve c sabit kabul edilen durumda Q=mcΔT kullanılabilir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Isı ve Sıcaklık',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page113.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -641,7 +657,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_6',
           name: 'Elektrik Temeli',
           description:
-              'Akım I (Amper): elektronların hareketi. Gerilim V (Volt): itici güç. Direnç R (Ohm). Ohm: V=I×R.',
+              'Elektrik akımı, yüklerin yönlü hareketidir; metal iletkende hareketli yükler elektronlardır, geleneksel akım yönü elektronların sürüklenme yönüne terstir. Potansiyel farkı birim yük başına enerji değişimidir. Ohm yasası, ohmik iletkende fiziksel koşullar sabitken V=IR bağıntısıdır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Elektrik ve Manyetizma',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page155.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -651,7 +670,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_fiz_7',
           name: 'Dalgalar ve Optik',
           description:
-              'Dalga: enerji taşır madde taşımaz. v=λ×f. Yansıma: gelen=yansıyan açı. Kırılma: ortam değişince yön değişir.',
+              'İdeal mekanik dalgada ortam tanecikleri denge konumu çevresinde titreşirken dalga enerji taşır; aynı ortamda dalga hızı v=fλ. Yansıma açısı gelme açısına eşittir (açılar normale göre ölçülür). Işık, yansıma ve kırılmanın yanında gölge, ayna ve merceklerle incelenir; kırılmada ışının yönü her gelişte değişmek zorunda değildir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Dalgalar ve Optik',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/index.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟡 ORTA',
