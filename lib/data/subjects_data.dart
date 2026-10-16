@@ -697,7 +697,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_1',
           name: 'Atom Modeli — Sıfırdan',
           description:
-              'Proton (+, çekirdekte), Nötron (yüksüz, çekirdekte), Elektron (-, çekirdek etrafı). Atom numarası=proton sayısı. Kütle numarası=proton+nötron.',
+              'Proton (+) ve nötron (yüksüz) çekirdekte; elektronlar çekirdek çevresindeki orbitallerde bulunur. Atom numarası proton sayısıdır; kütle numarası proton+nötron sayısıdır. Nötron sayısı=kütle numarası−atom numarası; nötr atomda elektron sayısı proton sayısına eşittir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Atom Modelleri ve Atomun Yapısı',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page51.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -707,7 +710,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_2',
           name: 'Periyodik Tablo — Temeli',
           description:
-              'Gruplar (sütun): benzer özellik. Periyotlar (satır): enerji seviyesi. Metal: sol taraf. Ametal: sağ taraf. Halojenler: 7A. Soy gazlar: 8A.',
+              'Periyodik tabloda gruplar sütun, periyotlar satırdır. Aynı ana grup elementleri benzer kimyasal özellikler gösterebilir. Modern numaralandırmada gruplar 1–18’dir; halojenler 17., soy gazlar 18. gruptadır. Metaller çoğunlukla sol/orta, ametaller sağ üst bölgede; yarı metaller arada yer alır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Periyodik Sistem',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page67.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -717,7 +723,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_3',
           name: 'Kimyasal Bağlar',
           description:
-              'İyonik: metal+ametal, elektron transferi (NaCl). Kovalent: ametal+ametal, elektron paylaşımı (H₂O). Metalik: metaller arası.',
+              'İyonik bağ zıt yüklü iyonlar arasındaki elektrostatik çekimdir (NaCl); kovalent bağ atomların elektron çiftlerini paylaşmasıyla oluşur (H₂O’da polar kovalent bağ); metalik bağ, metal örgüsündeki tanecikler ve delokalize elektronlar arasındaki etkileşimle açıklanır. “Metal+ametal” ve “ametal+ametal” tipik örüntüdür, mutlak sınıflandırma kuralı değildir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Türler Arası Etkileşimler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page93.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -727,7 +736,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_4',
           name: 'Madde ve Karışımlar',
           description:
-              'Saf madde: element+bileşik. Karışım: homojen (çözelti)+heterojen. Ayırma: süzme, damıtma, buharlaştırma.',
+              'Saf maddeler element veya bileşiktir; belirli bileşimleri vardır. Karışımlar, maddelerin kimyasal kimlikleri korunarak fiziksel olarak bir araya gelmesiyle oluşur; homojen veya heterojen olabilir. Ayırma yöntemi bileşenlerin fiziksel özellik farkına göre seçilir (süzme, damıtma, buharlaştırma gibi).',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Karışımlar ve Ayırma Teknikleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page219.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -737,7 +749,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_5',
           name: 'Asit-Baz (TYT)',
           description:
-              'Asit: H⁺ verir (pH<7), ekşi. Baz: OH⁻ verir (pH>7), acı. Nötr: pH=7. İndikatör: turnusol (asit→kırmızı, baz→mavi).',
+              'Sulu çözeltide asit H₃O⁺ derişimini, baz OH⁻ derişimini artırır; Brønsted tanımında asit proton verir, baz proton alır. 25 °C’de pH<7 asidik, pH=7 nötr, pH>7 bazik çözeltiyi gösterir. İndikatörler renk değiştirir; maddeleri tatma veya dokunarak tanıma yöntemi değildir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Asitler, Bazlar ve Tuzlar',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page251.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -747,7 +762,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_6',
           name: 'Kimyasal Tepkimeler',
           description:
-              'Kütle korunumu: tepkimeye giren=çıkan kütle. Denkleştirme: katsayılarla atom sayılarını eşitle.',
+              'Kapalı sistemde kimyasal tepkimede toplam kütle korunur. Denklem denkleştirilirken formüllerin indisleri değiştirilmez; katsayılar, her elementin atom sayıları tepkime öncesi ve sonrasında eşit olacak şekilde seçilir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Tepkimeler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page201.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -757,7 +775,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_kim_7',
           name: 'Mol Kavramı (Temel TYT)',
           description:
-              '1 mol = 6.02×10²³ tanecik (Avogadro sayısı). n=m/M (mol=kütle÷mol kütlesi). H₂O mol kütlesi: 2+16=18 g/mol.',
+              '1 mol, tam olarak 6,02214076×10²³ belirtilmiş temel varlık içerir. Kütlesi m ve mol kütlesi M olan örnek için n=m/M (M g/mol, m g ise n mol). Okul düzeyinde H₂O’nun mol kütlesi yaklaşık 18 g/mol’dür (2×1+16).',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyanın Temel Kanunları ve Mol Kavramı',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page181.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',

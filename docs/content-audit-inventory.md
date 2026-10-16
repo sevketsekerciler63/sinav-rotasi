@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 50 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7 kaynaklı; diğer 58 kaydın 57'sinde kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 57 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7 kaynaklı; diğer 51 kaydın 50'sinde kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 50 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik, TYT Türkçe ve TYT Fizik dışındaki 58 kaydın 57'sinde kaynak bağı eksik (Biyoloji Hücre kaydının eski kaynağı mevcut).
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 57 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; dört TYT alanında 56/56 kayıt kaynaklı, diğer 51 kaydın 50'sinde kaynak bağı eksik (Biyoloji Hücre kaydının eski kaynağı mevcut).
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -104,6 +104,22 @@ TYT Fizik kataloğundaki 7/7 kayda MEB OGM Materyal kaynak etiketi ve URL eklend
 | `tyt_fiz_7` | Dalgalar ve optik | [Dört Dörtlük TYT Fizik, Dalgalar s. 247](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page247.html); [Optik s. 299](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page299.html) |
 
 **Açık takip:** TYT Fizik başlıklarının güncel hedef sınav yılı/kohortuna göre resmi kapsam eşlemesi; açıklama örneklerinin alan uzmanı denetimi; iş ve enerji formüllerinde okul düzeyindeki model kabullerinin örneklerle gösterilmesi; “Dalgalar ve Optik” birleşik başlığının öğrenciler için kapsam/yük bakımından uygunluğunun incelenmesi.
+
+## TYT Kimya konu kaynak turu — 2026-10-16
+
+TYT Kimya kataloğundaki 7/7 kayda MEB OGM'nin Dört Dörtlük TYT Kimya konu bölümleri kaynak olarak eklendi. Atom tanecikleri/numara-kütle sayısı, grup numaralandırması ve metal/metalloid dağılımı, kimyasal bağların kesin olmayan tür eşlemesi, fiziksel ayırma, 25 °C pH koşulu, kapalı sistemde kütle korunumu ve molün Avogadro sabiti tanımı açıklığa kavuşturuldu.
+
+| Topic ID | Konu | MEB OGM kaynak |
+| --- | --- | --- |
+| `tyt_kim_1` | Atom modelleri ve yapı | [Dört Dörtlük TYT Kimya, s. 51'den başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page51.html) |
+| `tyt_kim_2` | Periyodik sistem | [Dört Dörtlük TYT Kimya, s. 67'den başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page67.html) |
+| `tyt_kim_3` | Kimyasal bağlar | [Dört Dörtlük TYT Kimya, Kimyasal Türler Arası Etkileşimler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page93.html) |
+| `tyt_kim_4` | Madde ve karışımlar | [Dört Dörtlük TYT Kimya, Karışımlar ve Ayırma Teknikleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page219.html) |
+| `tyt_kim_5` | Asit-baz | [Dört Dörtlük TYT Kimya, Asitler, Bazlar ve Tuzlar](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page251.html) |
+| `tyt_kim_6` | Kimyasal tepkimeler | [Dört Dörtlük TYT Kimya, Kimyasal Tepkimeler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page201.html) |
+| `tyt_kim_7` | Mol kavramı | [Dört Dörtlük TYT Kimya, Kimyanın Temel Kanunları ve Mol Kavramı](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page181.html) |
+
+**Açık takip:** yedi konu başlığının hedef sınav yılı/kohortunun resmi kapsamıyla eşleştirilmesi; asit-baz kapsam derinliği ve bağ ayrıntılarının YKS seviyesine uygunluğu; kısa açıklamaların örneklerinin kimya alan uzmanı tarafından denetlenmesi.
 
 ## Kaynaklı düzeltmeler — 2026-10-16
 
