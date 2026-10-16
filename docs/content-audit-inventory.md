@@ -10,8 +10,8 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
-| Biyoloji formül/kısa bilgi kartları | 8 | 0 | Kaynak eşlemesi ve koşul denetimi açık |
-| **Toplam formül kartı** | **44** | **36** | **8 kartta kaynak alanı yok** |
+| Biyoloji formül/kısa bilgi kartları | 8 | 8 | Tüm kartlara MEB OGM/IUPAC/OpenStax kaynakları bağlandı; Hardy–Weinberg'in hedef YKS kapsamı ayrıca teyit edilmeli |
+| **Toplam formül kartı** | **44** | **44** | **Tüm kartlarda kaynak alanı var; içerik/kapsam uzman incelemesi açık** |
 
 Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtlarının statik sayımıdır. Özel kullanıcı içeriği, kapsam doğruluğu veya sınav müfredatına uygunluk sonucu değildir.
 
@@ -22,14 +22,14 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 | Matematik (14) | Pisagor Teoremi; İkinci Dereceden Denklem; Aritmetik Dizi Toplamı; Geometrik Dizi Toplamı; Permütasyon; Kombinasyon; Binom Açılımı; Daire Alanı; Küre Hacmi; Silindir Hacmi; Koni Hacmi; Logaritma Kuralı; Türev Kuralı; İntegral Kuralı | 14 kartın tümü MEB OGM kaynağına etiketli; kaynak eşlemesi formülün tam kapsamını ve müfredat uygunluğunu tek başına kanıtlamaz |
 | Fizik (12) | Newton'ın 2. Yasası; Kinetik Enerji; Potansiyel Enerji; İş; Hız Formülü; Yer Değiştirme Formülü; Ohm Yasası; Güç; Coulomb Yasası; Dalga Hızı; Esneklik Potansiyel Enerjisi; Tork (Kuvvet Momenti) | 12 kartın tümü MEB OGM kaynağına etiketli; her kaynak ve koşul uzman incelemesi bekliyor |
 | Kimya (10) | Mol Hesabi; Ideal Gaz; Molarite; Molalite; pH Hesabi; pOH Hesabi; Denge Sabiti; Avogadro; Gibbs Serbest Enerjisi; Tepkime Entalpisi | 10 kartın tümü MEB OGM/IUPAC kaynağına etiketli; kaynak eşlemesi tam kapsamı ve güncel YKS uygunluğunu tek başına kanıtlamaz |
-| Biyoloji (8) | Fotosentez; Solunum; DNA Baz Eslesmesi; Chargaff Kurali; Hardy-Weinberg; Osmotik Basinc; Hücresel Solunumda ATP; Mitoz | Hepsinde kaynak alanı yok; kaynak eşlemesi ve koşul denetimi açık |
+| Biyoloji (8) | Fotosentez; Oksijenli Solunum; DNA Baz Eşleşmesi; Chargaff Kuralı; Hardy–Weinberg; Osmotik Basınç; Hücresel Solunumda ATP; Mitoz | 8 kartın tümü kaynaklı. Hardy–Weinberg için bilimsel denklem OpenStax ile kaynaklandı; hedef YKS kohortunun güncel programında kapsam yeri teyit edilmeli. |
 
 ## Öncelikli koşul ve anlam denetimi
 
 - **Matematik:** logaritma çarpım kartında `a > 0`, `a ≠ 1`, `x,y > 0`; ikinci derece denklemde `a ≠ 0` ve gerçek kök için `Δ ≥ 0`; geometrik toplamda `r = 1` özel durumu; permütasyon/kombinasyonda `n,r ∈ ℕ`, `r ≤ n` ve sıralama farkı; binomda pozitif tam sayı üssü; türevde pozitif tam sayı kuvveti; integralde `n ∈ ℚ`, `n ≠ −1` ve integral sabiti belirtiliyor. Matematik 14/14 kartın MEB OGM kaynağı eklendi; kaynakların içerik uzmanı tarafından ve güncel YKS kapsamına göre gözden geçirilmesi açık.
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
-- **Biyoloji:** hücresel solunumdaki ATP miktarının modele bağlılığı; Hardy–Weinberg varsayımları; ozmotik basınçta ideal/seyreltik çözelti; mitozda ana hücrenin kromozom yapısı ve yavru hücre sonucu.
+- **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
 - **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Dört kaynak etiketi bütün kataloğun doğrulandığı anlamına gelmez.
 
 ## Kaynaklı düzeltmeler — 2026-10-16
@@ -64,7 +64,15 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - pH ve hidrojen iyonu derişimi: [MEB OGM Materyal · Fen Lisesi Kimya 11, s. 34](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite6/files/basic-html/page34.html).
 - Avogadro sabiti, mol başına tanecik sayısı: [MEB OGM Materyal · Defterim Kimya 10, s. 25](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/kimya/files/basic-html/page25.html).
 - Gibbs enerjisinin entalpi ve entropi bağıntısı: [IUPAC Gold Book · Gibbs energy](https://goldbook.iupac.org/terms/view/G02629).
+- Oksijenli fotosentezin net denklemi, ışık ve klorofil koşulu: [MEB OGM Materyal · Biyoloji 12, s. 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/files/basic-html/page11.html).
+- Oksijenli solunumun ürünleri ve ATP üretimi: [MEB OGM Materyal · Biyoloji 12, Çalışma Defteri 5, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f5/12/biyoloji/biyoloji.pdf).
+- Çift iplikli DNA'da A–T ve G–C eşleşmesi: [MEB OGM Materyal · Biyoloji 9, s. 54](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/9/unite1/files/basic-html/page54.html).
+- Chargaff oranları ve tür özgü A+T/G+C oranı: [MEB OGM Materyal · Fen Lisesi Biyoloji 12, s. 10](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite1/files/basic-html/page10.html).
+- Hardy–Weinberg alel/genotip sıklıkları ve denge ilkesi: [OpenStax · Biology 2e, 19.1 Population Evolution](https://openstax.org/books/biology-2e/pages/19-1-population-evolution). MEB'in 2026 biyoloji programında terim eşlemesi bulunamadı; hedef YKS kohortu için kapsam kararı açık.
+- Seyreltik ideal çözelti için ozmotik basınç: [IUPAC Gold Book · Osmotic pressure](https://goldbook.iupac.org/terms/view/O04344).
+- Oksijenli solunumun glikoliz, pirüvat oksidasyonu, Krebs ve ETS aşamaları: [MEB OGM Materyal · Fen Lisesi Biyoloji 12, s. 26](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite2/files/basic-html/page26.html).
+- Mitozda kromozom yapısının korunması ve iki yavru hücre: [MEB OGM Materyal · Biyoloji 10, s. 8](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/10/unite1/files/basic-html/page8.html).
 
 ## Kapanış ölçütü
 
-Her kayıt için güvenilir birincil/kurumsal kaynak, güncelleme tarihi, gerekli tanım koşulu, en az bir denetlenmiş örnek ve kapsam eşlemesi yazılmalı. Kaynağı bulunamayan veya uzman değerlendirmesi isteyen içerik “taslak/doğrulanmadı” diye işaretlenmeli. Matematik/fizik formüllerinde kaynak etiketi kapsam ve örnek doğrulamasını tamamlamaz. Tam editoryal onay yalnız bu envanter ve kaynakların içerik uzmanı tarafından kontrol edilmesiyle verilebilir.
+Her kayıt için güvenilir birincil/kurumsal kaynak, güncelleme tarihi, gerekli tanım koşulu, en az bir denetlenmiş örnek ve kapsam eşlemesi yazılmalı. Kaynağı bulunamayan veya uzman değerlendirmesi isteyen içerik “taslak/doğrulanmadı” diye işaretlenmeli. 44/44 kartta URL bulunması içerik, kapsam, örnek veya editoryal doğrulamayı tamamlamaz. Tam editoryal onay yalnız bu envanter ve kaynakların içerik uzmanı tarafından kontrol edilmesiyle verilebilir.

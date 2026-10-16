@@ -309,39 +309,66 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
     'Biyoloji': [
       FormulaItem(
         'Fotosentez',
-        '6CO2 + 6H2O -> C6H12O6 + 6O2',
-        'Isik enerjisi gerekir',
+        '6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂',
+        'Oksijenli fotosentezin net denklemi; ışık enerjisi ve pigment gerekir.',
+        sourceLabel: 'MEB OGM Materyal · Biyoloji 12, s. 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/files/basic-html/page11.html',
       ),
       FormulaItem(
-        'Solunum',
-        'C6H12O6 + 6O2 -> 6CO2 + 6H2O + ATP',
-        'Hucrsel solunum',
+        'Oksijenli Solunum',
+        'C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O',
+        'Genel net denklem; ATP üretilir ancak miktarı bu denklemde sabit bir katsayı değildir.',
+        sourceLabel: 'MEB OGM Materyal · Biyoloji 12, Çalışma Defteri 5',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f5/12/biyoloji/biyoloji.pdf',
       ),
       FormulaItem(
-        'DNA Baz Eslesmesi',
-        'A-T ve G-C',
-        'Adenin=Timin, Guanin=Sitozin',
-      ),
-      FormulaItem('Chargaff Kurali', 'A = T, G = C', 'Baz esitligi'),
-      FormulaItem(
-        'Hardy-Weinberg',
-        'p\u00B2 + 2pq + q\u00B2 = 1',
-        'p + q = 1, populasyon genetigi',
+        'DNA Baz Eşleşmesi',
+        'A–T ve G–C',
+        'Çift iplikli DNA’da karşılıklı baz eşleşmesi: adenin-timin, guanin-sitozin.',
+        sourceLabel: 'MEB OGM Materyal · Biyoloji 9, s. 54',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/9/unite1/files/basic-html/page54.html',
       ),
       FormulaItem(
-        'Osmotik Basinc',
-        '\u03C0 = MRT',
-        'M: molarite, R: gaz sabiti',
+        'Chargaff Kuralı',
+        'A = T; G = C',
+        'Çift iplikli DNA’da toplam baz sayıları eşittir; A+T/G+C oranı türe özgüdür.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Biyoloji 12, s. 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite1/files/basic-html/page10.html',
+      ),
+      FormulaItem(
+        'Hardy–Weinberg',
+        'p + q = 1; p² + 2pq + q² = 1',
+        'İki alelli lokus; p ve q alel sıklığıdır. Denge varsayımları: büyük popülasyon, rastgele eşleşme, mutasyon/göç/doğal seçilim yok. YKS kapsamı ayrıca doğrulanmalı.',
+        sourceLabel: 'OpenStax · Biology 2e, 19.1 Population Evolution',
+        sourceUrl:
+            'https://openstax.org/books/biology-2e/pages/19-1-population-evolution',
+      ),
+      FormulaItem(
+        'Osmotik Basınç',
+        'Π ≈ cRT',
+        'Seyreltik ideal çözeltide; c osmotik etkin tanecik derişimi, T (K). R ve c birimleri tutarlı seçilmelidir.',
+        sourceLabel: 'IUPAC Gold Book · Osmotic pressure',
+        sourceUrl: 'https://goldbook.iupac.org/terms/view/O04344',
       ),
       FormulaItem(
         'Hücresel Solunumda ATP',
-        'Glikoliz → Pirüvat oksidasyonu → Krebs → ETS',
-        'ATP verimi hücreye ve kullanılan hesaplama modeline göre değişir; tek bir toplam sayı olarak ezberleme.',
+        'Glikoliz → Pirüvat oksidasyonu → Krebs döngüsü → ETS',
+        'Oksijenli solunum basamakları; ATP verimi hücreye ve hesaplama modeline göre değişir.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Biyoloji 12, s. 26',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite2/files/basic-html/page26.html',
       ),
       FormulaItem(
         'Mitoz',
-        'Profaz->Metafaz->Anafaz->Telofaz',
-        '2n -> 2n (eslesiksiz bolunme)',
+        'Profaz → Metafaz → Anafaz → Telofaz',
+        'Diploit ana hücrede kromozom sayısı korunur (2n → 2n); sitokinezle, mutasyon olmadığı durumda iki genetik olarak aynı yavru hücre oluşur.',
+        sourceLabel: 'MEB OGM Materyal · Biyoloji 10, s. 8',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/10/unite1/files/basic-html/page8.html',
       ),
     ],
   };
