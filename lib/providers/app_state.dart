@@ -1303,27 +1303,21 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   // ─── Daily Log Actions ─────────────────────────
   void toggleDayCompleted(String dateKey) {
     if (_isProfileTransitioning) return;
-    for (var log in dailyLogs) {
-      if (log.dateKey == dateKey && !log.isRestDay) {
-        log.isCompleted = !log.isCompleted;
-        log.completedProgressCount = log.isCompleted
-            ? log.progressIds.length
-            : 0;
-        final now = DateTime.now();
-        log.activityAt = now;
-        log.completedAt = log.isCompleted ? now : null;
-        if (log.isCompleted &&
-            log.progressIds.length == 1 &&
-            log.progressIds.single.startsWith('review_') &&
-            log.reviewTopicId != null) {
-          _recordWeakTopicReview(log.reviewTopicId!, fromPlanTask: true);
-        }
-        _saveDailyLogs(log, completedOverride: log.isCompleted);
-        checkAchievements();
-        notifyListeners();
-        return;
-      }
+    final log = DailyPlanMetrics.toggleCompletionForDate(
+      logs: dailyLogs,
+      dateKey: dateKey,
+      changedAt: DateTime.now(),
+    );
+    if (log == null) return;
+    if (log.isCompleted &&
+        log.progressIds.length == 1 &&
+        log.progressIds.single.startsWith('review_') &&
+        log.reviewTopicId != null) {
+      _recordWeakTopicReview(log.reviewTopicId!, fromPlanTask: true);
     }
+    _saveDailyLogs(log, completedOverride: log.isCompleted);
+    checkAchievements();
+    notifyListeners();
   }
 
   void updateDailyLog(

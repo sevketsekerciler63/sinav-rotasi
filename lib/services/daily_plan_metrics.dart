@@ -169,6 +169,22 @@ class DailyPlanMetrics {
     return null;
   }
 
+  static DailyLog? toggleCompletionForDate({
+    required Iterable<DailyLog> logs,
+    required String dateKey,
+    required DateTime changedAt,
+  }) {
+    for (final log in logs) {
+      if (log.dateKey != dateKey || log.isRestDay) continue;
+      log.isCompleted = !log.isCompleted;
+      log.completedProgressCount = log.isCompleted ? log.progressIds.length : 0;
+      log.activityAt = changedAt;
+      log.completedAt = log.isCompleted ? changedAt : null;
+      return log;
+    }
+    return null;
+  }
+
   static int totalStudyDays({
     required Iterable<String> completedDateKeys,
     required Iterable<DailyLog> logs,
