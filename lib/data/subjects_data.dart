@@ -1288,7 +1288,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_1',
           name: 'Dinamik — Bağlı Cisimler ve Eğik Düzlem',
           description:
-              'F=ma genişletildi. İp gerilmesi. Eğik düzlem: W×sinθ (harekete yönde), W×cosθ (yüzeye dik). Sürtünme: f=μN.',
+              'Her cisim için serbest cisim diyagramı çiz ve ΣF=ma uygula. Eğik düzlemde ağırlığın bileşenleri mg sinθ (eğim boyunca aşağı) ve mg cosθ (yüzeye dik) olur. Kinetik sürtünme fₖ=μₖN; statik sürtünme gerektiği kadar değer alır ve |fₛ|≤μₛN koşulunu sağlar.',
+          sourceLabel:
+              'MEB OGM Materyal · Fen Lisesi Fizik 11, Eğik Düzlem ve Sürtünme',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/11/unite1/bolum2/files/basic-html/page129.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1298,7 +1302,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_2',
           name: 'Enerji ve Momentum',
           description:
-              'İmpuls: J=F×t=Δ(mv). Momentum: p=mv. Korunumu: m₁v₁+m₂v₂=m₁v₁\'+m₂v₂\'. Elastik vs plastik çarpışma.',
+              'Momentum p=mv; net itme I=∫F dt=Δp, sabit net kuvvette I=FΔt olur. Dış net itmenin ihmal edildiği sistemde toplam momentum korunur. Esnek çarpışmada kinetik enerji de korunur; esnek olmayan çarpışmada korunmaz. Mekanik enerji korunumu için kayıplara yol açan iş ayrıca hesaba katılır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Enerji ve Momentum',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page115.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1308,7 +1316,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_3',
           name: 'Basit Harmonik Hareket',
           description:
-              'Yay-kütle: T=2π√(m/k). Sarkaç: T=2π√(L/g). Genlik, hız max denge noktası, ivme max uç nokta.',
+              'İdeal yay-kütle sisteminde T=2π√(m/k); basit sarkaçta küçük açı yaklaşımıyla T=2π√(L/g). Hız denge noktasında, ivme ve geri çağırıcı kuvvet uç noktalarda en büyük büyüklüktedir. Genlik, denge noktasından en büyük uzaklıktır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Basit Harmonik Hareket',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page279.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1318,7 +1330,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_4',
           name: 'Elektrik ve Manyetizma',
           description:
-              'Coulomb: F=k×q₁q₂/r². Elektrik alan. Kondansatör: C=Q/V. Manyetik kuvvet. Lenz kanunu.',
+              'Noktasal yükler için Coulomb kuvveti F=k|q₁q₂|/r²; elektrik alan E=F/q₀’dır. Sığa C=Q/|ΔV| olarak tanımlanır. Manyetik alandaki yüklü parçacığa kuvvetin büyüklüğü |q|vB sinθ’dir. Lenz yasası indüksiyon akımının, manyetik akıdaki değişime karşı koyacak yönde oluştuğunu söyler.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Elektrik ve Manyetizma',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page211.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1328,7 +1344,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_5',
           name: 'Dalgalar ve Optik (AYT)',
           description:
-              '1/f=1/do+1/di. Büyütme: m=-di/do. Yakınsak/ıraksak mercek. Girişim, çift yarık.',
+              'Dalgalarda kırınım ve girişim, yarık genişliği ile dalga boyuna bağlıdır. Çift yarıkta aydınlık saçak için yol farkı mλ, karanlık saçak için (m+1/2)λ olur. İnce mercek bağıntısı 1/f=1/dₒ+1/dᵢ ve büyütme m=−dᵢ/dₒ, kullanılan işaret uzlaşımına göre uygulanır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Dalga Girişimi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page299.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1338,7 +1358,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_6',
           name: 'Çembersel Hareket',
           description:
-              'ac=v²/r. F_merkezcil=mv²/r. ω=v/r. Kepler: T²/R³=sabit.',
+              'Düzgün çembersel harekette merkezcil ivme aᶜ=v²/r=ω²r ve net radyal kuvvet ΣFᵣ=mv²/r’dir; merkezcil kuvvet ayrı bir etkileşim kuvveti değil, radyal bileşkedir. Aynı merkezî kütle çevresindeki dairesel yörüngelerde Kepler bağıntısı T²/r³ sabittir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Çembersel Hareket',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page247.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1348,7 +1372,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_fiz_7',
           name: 'Modern Fizik',
           description:
-              'Fotoelektrik: E=hf. Dalga-tanecik ikiliği: λ=h/mv. Radyoaktivite: alfa, beta, gama. Yarılanma.',
+              'Fotoelektrik olayda foton enerjisi hf, maksimum elektron kinetik enerjisi Kₘₐₓ=hf−W₀’dır. de Broglie dalga boyu λ=h/p (klasik hızlarda p=mv). Radyoaktif bozunmada alfa, beta ve gama ışımaları ayırt edilir; yarı ömür, örnek miktarının yarıya inme süresidir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Fizik, Fotoelektrik Olay',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page375.html',
           questionCount: 1,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
