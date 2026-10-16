@@ -63,3 +63,12 @@ Teslim: `6df0300`. Veri şeması artık 8; eski 1–7 işaretleri okunur, yeni v
 - Eski tamamlanmış plan kayıtları mevcut tekrar sayısı/tarihi korunarak işaretlenir. Önceki sürümde olaya ait başlangıç durumu tutulmadığından eski aralığı geri alırken tahmin edilmez; aynı eski olayı yeniden işaretlemek sayıyı artırmaz.
 - 4 model kontrolü ve kalıcı AppState/export/import kontrolü geçti. Tekrar + depolama için 14 odaklı test geçti; statik analiz temiz.
 - Kalan SOL-03: güncel günlük dakika kapasitesi ve bölünebilir kişisel görevler; geçmişte beklenen planın korunması. Kimlikleri rastgele bölüp eski çalışma kayıtlarını kaybetmemek için kaynak/görev modeliyle birlikte uygulanacak.
+
+## SOL-04 · Kalıcı kaynak, görev ve ilerleme çekirdeği
+
+Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel profil şeması 9; `learning_workspace` v1 grubu eklendi, eski veriler taşınmadan korunuyor.
+
+- Kaynak → ayrılmış görev aralığı → çalışılmış birim aralığı ilişkisi gerçek kalıcı veridir. Arşiv ve geri alma geçmişi silmez. Örneğin 11–15 çalışması geri alınırken 21–25 çalışması korunur; kalan aralıklar doğru çıkarılır.
+- Başarı kalıcı yazımdan sonra; çakışan görev/ilerleme, farklı olay içeriği, kopuk referans ve yabancı profil reddedilir.
+- Depo/yedek doğrulaması yeni grafiği ve profil kimliğini kontrol eder. 7 model + 12 depolama testi birlikte geçti; analiz temiz.
+- Kaynak ekranları şimdi bu API üzerine kuruluyor. Serbest deneme API'si ve ekranı, kapasite/plan geçmişi, kaynak ilerlemesinin rapor/timer bağı ve resmî ders takma adı AUD-12 henüz kapanmış değil. Bu dilim SOL-04'ün tamamı olarak işaretlenmedi.
