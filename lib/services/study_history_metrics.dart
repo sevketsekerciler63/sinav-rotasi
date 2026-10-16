@@ -7,6 +7,9 @@ import '../models/study_session.dart';
 class StudyHistoryMetrics {
   const StudyHistoryMetrics._();
 
+  static int totalSolvedQuestions(Iterable<QuestionEvent> events) =>
+      events.fold(0, (sum, event) => sum + event.questionCount);
+
   static int solvedQuestionsOn(Iterable<QuestionEvent> events, DateTime date) {
     final dateKey = _dateKey(date);
     return events.fold<int>(0, (sum, event) {

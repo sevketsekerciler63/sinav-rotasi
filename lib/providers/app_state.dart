@@ -1611,11 +1611,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return target.difference(DateTime(now.year, now.month, now.day)).inDays;
   }
 
-  int get totalTopics => subjects.fold(0, (sum, s) => sum + s.topics.length);
+  int get totalTopics => AchievementProgressMetrics.totalTopicCount(subjects);
   int get completedTopics =>
-      subjects.fold(0, (sum, s) => sum + s.completedCount);
+      AchievementProgressMetrics.completedTopicCount(subjects);
   double get overallProgress =>
-      totalTopics == 0 ? 0 : completedTopics / totalTopics;
+      AchievementProgressMetrics.topicProgress(subjects);
 
   int get completedDays => completedStudyDates.length;
   int get totalDays => DailyPlanMetrics.totalStudyDays(
@@ -1697,19 +1697,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       subjects.where((s) => s.type == 'AYT').toList();
 
   int get totalSolvedQuestions =>
-      questionEvents.fold(0, (sum, event) => sum + event.questionCount);
-  int get completedExams => mockExams.where((e) => e.isCompleted).length;
-  MockExam? get nextUpcomingMockExam {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    for (final exam in mockExams) {
-      final examDate = DateTime(exam.date.year, exam.date.month, exam.date.day);
-      if (!exam.isCompleted && !examDate.isBefore(today)) return exam;
-    }
-    return null;
-  }
+      StudyHistoryMetrics.totalSolvedQuestions(questionEvents);
+  int get completedExams => MockExamMetrics.completedCount(mockExams);
+  MockExam? get nextUpcomingMockExam =>
+      MockExamMetrics.nextUpcoming(mockExams, now: DateTime.now());
 
   int get unlockedAchievements =>
-      achievements.where((a) => a.isUnlocked).length;
+      AchievementProgressMetrics.unlockedCount(achievements);
   int get activeGoals => goals.where((g) => !g.isCompleted).length;
 }

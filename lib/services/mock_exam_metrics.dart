@@ -6,6 +6,21 @@ import '../models/subject.dart';
 class MockExamMetrics {
   const MockExamMetrics._();
 
+  static int completedCount(Iterable<MockExam> exams) =>
+      exams.where((exam) => exam.isCompleted).length;
+
+  static MockExam? nextUpcoming(
+    Iterable<MockExam> exams, {
+    required DateTime now,
+  }) {
+    final today = DateTime(now.year, now.month, now.day);
+    for (final exam in exams) {
+      final examDate = DateTime(exam.date.year, exam.date.month, exam.date.day);
+      if (!exam.isCompleted && !examDate.isBefore(today)) return exam;
+    }
+    return null;
+  }
+
   static bool areNetUpdatesValid({
     required Map<String, double> nets,
     required Iterable<Subject> subjects,

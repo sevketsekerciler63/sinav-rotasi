@@ -7,6 +7,20 @@ import '../models/weak_topic.dart';
 class AchievementProgressMetrics {
   const AchievementProgressMetrics._();
 
+  static int totalTopicCount(Iterable<Subject> subjects) =>
+      subjects.fold(0, (sum, subject) => sum + subject.topics.length);
+
+  static int completedTopicCount(Iterable<Subject> subjects) =>
+      subjects.fold(0, (sum, subject) => sum + subject.completedCount);
+
+  static double topicProgress(Iterable<Subject> subjects) {
+    final total = totalTopicCount(subjects);
+    return total == 0 ? 0 : completedTopicCount(subjects) / total;
+  }
+
+  static int unlockedCount(Iterable<Achievement> achievements) =>
+      achievements.where((achievement) => achievement.isUnlocked).length;
+
   static String? unlockEligibleAchievements({
     required List<Achievement> achievements,
     required List<Subject> subjects,
