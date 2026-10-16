@@ -13,7 +13,7 @@ Güncel bulgular ve devam kaydı: [Sol incelemesi](sol-review-and-progress-2026-
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
 - İlk devir noktası `9878621`; Luna `8b7c4ff` iş bölümü notundan başladı; mevcut kullanıcı değişikliği korunuyor. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`, LUNA-04 teslimi `9c799d4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
-- Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
+- Kayıt/yedek ilk kaynak düzeltmeleri ve tekrar olay geçmişi uygulandı; güncel şema 8, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
 Önce bu notu ve docs/storage-backup-progress-2026-10-16.md dosyasını oku. Sonra yalnız seçilen görevin ilgili koduna ve gereken araştırma bölümüne git. Uzun sohbeti veya tüm raporları her küçük işte tekrar taramak gerekmez. Kullanıcının sonraki düzeltmeleri bu nottan önceliklidir.
@@ -150,7 +150,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-03 · Plan motoru, geçmiş ve tekrar
 
-- [ ] Durum: başlanmadı.
+- [ ] Durum: tekrar olay kimliği/geri alma `6df0300` ile uygulandı ve odaklı testler geçti; kapasite ve tarihsel beklenti açık.
 - AUD-06/07/08: gerçek dakika kapasitesi; bölünebilir atomik görevler; taşan işi açıklama; tarihsel plan beklentisi; tekrar olay kimliği ve geri alma anlamı.
 - Seviye ve uygun gün tercihlerinin gerçek etkisi; hedef değişiminde geçmişin yeniden yazılmaması.
 - Kabul: 30 dakikalık gün 95 görevi uygulanabilir diye sunmaz; yeni başlayanla dört gün kaçıran aday ayrılır; tamamla–geri al–tamamla tekrar sayısını yapay artırmaz.

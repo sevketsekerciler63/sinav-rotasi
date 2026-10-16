@@ -53,3 +53,13 @@ Teslim: `bfd7b11`. `test/storage_recovery_test.dart` içinde 9 kontrol geçti; U
 - Test izolasyonu için bağımsız ProfileStorage ve AppState depo enjeksiyonu eklendi. Üretimde varsayılan singleton akışı aynı.
 
 Açık: ham acil arşivden seçici insan denetimli onarım aracı; gerçek cihazda dosya seçici/Drive/iCloud sağlayıcısı; kaldırıp yeniden kurma/farklı cihaz; eski gerçek yedekler. Diğer iyimser konu/hedef/gün eylemlerinin kalıcı sonuç sözleşmesi SOL-02 içinde açık kalıyor.
+
+## SOL-03 · Tekrar olaylarının geri alınması
+
+Teslim: `6df0300`. Veri şeması artık 8; eski 1–7 işaretleri okunur, yeni v8 yedeği eski uygulamaya yüklenmez.
+
+- AUD-08: tekrar olayları kalıcı kimlikle kaydedilir. Aynı planı tamamla → geri al → tamamla yeni bir tekrar eklemez. Eski olayı geri almak, sonradan yapılmış diğer tekrarları ve durum değişikliklerini silmez; çizelge etkin olaylardan yeniden kurulur.
+- Gün tamamlaması ile ona bağlı zayıf konu tekrarı aynı yerel işlemde yazılır. Diğer iyimser eylemler için genel kalıcı sonuç/taslak işi açık kalır.
+- Eski tamamlanmış plan kayıtları mevcut tekrar sayısı/tarihi korunarak işaretlenir. Önceki sürümde olaya ait başlangıç durumu tutulmadığından eski aralığı geri alırken tahmin edilmez; aynı eski olayı yeniden işaretlemek sayıyı artırmaz.
+- 4 model kontrolü ve kalıcı AppState/export/import kontrolü geçti. Tekrar + depolama için 14 odaklı test geçti; statik analiz temiz.
+- Kalan SOL-03: güncel günlük dakika kapasitesi ve bölünebilir kişisel görevler; geçmişte beklenen planın korunması. Kimlikleri rastgele bölüp eski çalışma kayıtlarını kaybetmemek için kaynak/görev modeliyle birlikte uygulanacak.
