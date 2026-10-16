@@ -357,10 +357,58 @@ class ProfileStorage {
     );
   }
 
+  /// Previews a full backup without reading possibly damaged local metadata.
+  /// Legacy backups need an active profile and therefore cannot be used here.
+  Future<BackupImportPreview> previewBackupForStartupRecovery(
+    Map<String, dynamic> backup,
+  ) async {
+    final prepared = _prepareBackup(backup);
+    if (prepared.isLegacy) {
+      throw const FormatException(
+        'Başlangıç kurtarması için profilleri içeren tam yedek gerekli.',
+      );
+    }
+    return BackupImportPreview(
+      isLegacy: false,
+      profileNames: prepared.profiles.map((profile) => profile.name).toList(),
+      dataGroupCount: prepared.data.values.fold(
+        0,
+        (total, profileData) => total + profileData.length,
+      ),
+    );
+  }
+
   Future<void> importBackup(Map<String, dynamic> backup) async {
     await initialize();
+    await _importBackup(backup, requireFullBackup: false);
+  }
+
+  /// Restores a complete, validated backup even when local profile metadata or
+  /// an interrupted transaction prevents normal initialization.
+  Future<void> importBackupForStartupRecovery(
+    Map<String, dynamic> backup,
+  ) async {
+    final previousPrefs = _prefs;
+    _prefs = await SharedPreferences.getInstance();
+    try {
+      await _importBackup(backup, requireFullBackup: true);
+    } catch (_) {
+      _prefs = previousPrefs;
+      rethrow;
+    }
+  }
+
+  Future<void> _importBackup(
+    Map<String, dynamic> backup, {
+    required bool requireFullBackup,
+  }) async {
     await _enqueueMutation(() async {
       final prepared = _prepareBackup(backup);
+      if (requireFullBackup && prepared.isLegacy) {
+        throw const FormatException(
+          'Başlangıç kurtarması için profilleri içeren tam yedek gerekli.',
+        );
+      }
       final updates = <String, Object?>{};
 
       if (prepared.isLegacy) {

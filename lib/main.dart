@@ -205,17 +205,15 @@ class _AppGateState extends State<AppGate> {
         throw const FormatException('Yedek JSON kökünde nesne bulunmalı.');
       }
       final backup = Map<String, dynamic>.from(decoded);
-      final preview = await ProfileStorage.instance.previewBackup(backup);
+      final preview = await ProfileStorage.instance
+          .previewBackupForStartupRecovery(backup);
       if (!mounted) return;
 
-      final details = preview.isLegacy
-          ? 'Eski biçimli yedek, etkin “${preview.profileNames.single}” '
-                'profilindeki ${preview.dataGroupCount} veri grubunu güncelleyecek; '
-                'yedekte olmayan kayıtlar korunacak.'
-          : '${preview.profileNames.length} profil ve '
-                '${preview.dataGroupCount} veri grubu yüklenecek:\n\n'
-                '${preview.profileNames.map((name) => '• $name').join('\n')}\n\n'
-                'Cihazdaki profil listesi ve çalışma verileri bu yedekle değişecek.';
+      final details =
+          '${preview.profileNames.length} profil ve '
+          '${preview.dataGroupCount} veri grubu yüklenecek:\n\n'
+          '${preview.profileNames.map((name) => '• $name').join('\n')}\n\n'
+          'Cihazdaki profil listesi ve çalışma verileri bu yedekle değişecek.';
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -236,7 +234,7 @@ class _AppGateState extends State<AppGate> {
       if (!mounted || confirmed != true) return;
 
       final appState = context.read<AppState>();
-      await ProfileStorage.instance.importBackup(backup);
+      await ProfileStorage.instance.importBackupForStartupRecovery(backup);
       await appState.loadData();
       if (mounted && appState.bootStatus == AppBootStatus.error) {
         setState(() {
@@ -296,7 +294,7 @@ class _AppGateState extends State<AppGate> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Yerel kayıtlar silinmedi. Yeniden deneyebilir veya daha önce aldığın JSON yedeğini seçerek kurtarmayı deneyebilirsin.',
+                    'Yerel kayıtlar silinmedi. Yeniden deneyebilir veya profilleri içeren tam JSON yedeğini seçerek kurtarmayı deneyebilirsin.',
                     textAlign: TextAlign.center,
                   ),
                   if (appState.loadErrorMessage != null) ...[
