@@ -63,6 +63,24 @@ class _MockExamScreenState extends State<MockExamScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Bu ekrandaki deneme kayıtları, Günlük Plan’daki deneme/analiz '
+                    'önerilerinden ayrıdır. Plan görevleri gerçek denemeyle otomatik '
+                    'eşleşmez; sonuçlarını burada kaydet.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                      height: 1.35,
+                    ),
+                  ),
+                ),
                 if (tytTrendCount >= 2 || aytTrendCount >= 2) ...[
                   Text(
                     'Net Trendi',

@@ -186,6 +186,9 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                   itemCount: currentWeekDays.length,
                   itemBuilder: (context, index) {
                     final log = state.dailyLogs[currentWeekDays[index]];
+                    final hasDenemePlanText = log.tytContent
+                        .toLowerCase()
+                        .contains('deneme');
                     final now = DateTime.now();
                     final isToday =
                         log.dateKey ==
@@ -420,6 +423,38 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          if (hasDenemePlanText)
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: colors.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 18,
+                                    color: colors.onTertiaryContainer,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Bu günlük plan satırı bir çalışma/analiz önerisidir. '
+                                      'Gerçek deneme günü ve netleri Deneme Takip ekranında '
+                                      'ayrı kaydedilir; kayıtlar otomatik eşleşmez.',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: colors.onTertiaryContainer,
+                                        height: 1.35,
+                                      ),
                                     ),
                                   ),
                                 ],

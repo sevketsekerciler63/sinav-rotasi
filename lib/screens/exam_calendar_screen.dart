@@ -48,9 +48,28 @@ class ExamCalendarScreen extends StatelessWidget {
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: state.mockExams.length,
+                  itemCount: state.mockExams.length + 1,
                   itemBuilder: (context, index) {
-                    final exam = state.mockExams[index];
+                    if (index == 0) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: colors.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Bu takvim hedef tarihine göre önerilen deneme günlerini gösterir. '
+                          'Günlük Plan’daki deneme/analiz görevleriyle otomatik eşleşmez; '
+                          'gerçekleşen deneme ve netlerini Deneme Takip ekranında kaydet.',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colors.onTertiaryContainer,
+                            height: 1.35,
+                          ),
+                        ),
+                      );
+                    }
+                    final exam = state.mockExams[index - 1];
                     final now = DateTime.now();
                     final today = DateTime(now.year, now.month, now.day);
                     final scheduledDate = DateTime(
@@ -107,7 +126,7 @@ class ExamCalendarScreen extends StatelessWidget {
                                         ),
                                 ),
                               ),
-                              if (index < state.mockExams.length - 1)
+                              if (index < state.mockExams.length)
                                 Container(
                                   width: 2,
                                   height: 60,
