@@ -2,7 +2,7 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: LUNA-01 uygulandı ve Sol incelemesi bekliyor; LUNA-02–04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Durum: LUNA-01 ve LUNA-02 uygulandı, Sol incelemesi bekliyor; LUNA-03–04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
 
 ## 1. Devralırken kısa bağlam
 
@@ -10,7 +10,7 @@ Durum: LUNA-01 uygulandı ve Sol incelemesi bekliyor; LUNA-02–04 henüz uygula
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
-- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
+- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
 - Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
@@ -50,12 +50,23 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-02 · Alan etiketleri ve erişilebilirlik
 
-- [ ] Durum: başlanmadı.
+- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `2cc8c7e`).
 - Kapsam: özellikle deneme net alanlarına ders+oturum içeren etiketler (ör. TYT Matematik neti); ikon düğmelerine açıklamalar; odak sırası ve dokunma alanları.
 - Alanlar: mock_exam_screen.dart ve ilgili ekran/widget sunumları.
 - Sınır: async updateMockExam sözleşmesi, Kaydediliyor koruması, taslak girişleri ve hata bildirimleri korunur. Net doğrulama kuralları ve hesaplar değiştirilmez.
 - Kabul: etiketler alanı tek başına tanımlar; klavye/ekran okuyucu yolu açıklanır; büyük yazıda temel eylemler okunur ve erişilebilir; kontrol edilmeyen cihaz koşulları açık yazılır.
 - Sol incelemesi: aynı alanın yinelenen semantiği, yanlış ders etiketi, odak kaybı, kayıtta tekrar basış ve ekran daralması.
+
+#### LUNA-02 teslimi · 16 Ekim 2026
+
+- Başlangıç commit'i: `8a97f6d`; teslim commit'i: `2cc8c7e`.
+- Değişen dosya: `lib/screens/mock_exam_screen.dart`.
+- Net kaydırıcılarının erişilebilir değer metni tam oturum ve ders adını içeriyor (ör. “TYT Matematik neti”); sayısal giriş alanı da aynı tam etiketi taşıyor. Kaydetme sürerken aynı denemenin slider ve alanı düzenlenemiyor; giriş taslağı ve kayıt hata bildirimi davranışı korunuyor.
+- Mevcut trend grafiği zaten ekran okuyucu için tarih/değer özeti taşıyordu; deneme tarihi seçiminde görünür metinli düğme bulunduğu için değiştirilmedi.
+- Kontrol: `dart format` değişiklik üretmedi; `git diff --check` temiz; `flutter analyze --no-pub` temiz.
+- Yapılmayan kontrol: ekran okuyucu, klavye, büyük yazı, dar ekran ve fiziksel cihaz denemesi yapılmadı.
+- Sol özellikle TextField semantiğinin tam etiketi gereksiz tekrar edip etmediğini; focus/klavye akışını; save sırasında taslağın ve retry durumunun korunmasını incelesin.
+- Sonraki bağımsız iş: LUNA-03.
 
 ### LUNA-03 · Ortak görsel bileşenler
 
@@ -177,7 +188,7 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 | İş | Uygulama durumu | Sol sonucu | Açık düzeltme/kanıt |
 |---|---|---|---|
 | LUNA-01 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `475721c`; cihaz/ekran okuyucu kabulü açık |
-| LUNA-02 | Başlanmadı | İncelenmedi | — |
+| LUNA-02 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `2cc8c7e`; cihaz/ekran okuyucu kabulü açık |
 | LUNA-03 | Başlanmadı | İncelenmedi | — |
 | LUNA-04 | Başlanmadı | İncelenmedi | — |
 | LUNA-05 | Altyapı bekliyor | İncelenmedi | SOL-04/05 |
