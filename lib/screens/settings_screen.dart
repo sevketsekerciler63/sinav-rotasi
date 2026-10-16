@@ -1,3 +1,4 @@
+import '../widgets/exam_year_field.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
@@ -36,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.school_rounded,
                 title: state.activeProfile.name,
                 subtitle:
-                    '${state.activeProfile.examSystem} • ${state.activeProfile.examType.replaceAll('_', ' + ')}\nPuan türü: ${ExamProfile.scoreTypeLabels[state.activeProfile.scoreType]} • Başlangıç: ${ExamProfile.startingLevelLabels[state.activeProfile.startingLevel]}\nKişisel plan hedefi: ${_formatDate(state.activeProfile.targetDate)}\nResmî sınav tarihi olarak değerlendirilmemelidir.${state.daysRemaining < 0 ? '\nBu tarih geçti. Yeni tarih seçince plan ve denemeler hizalanır.' : ''}',
+                    '${state.activeProfile.examSystem} • ${state.activeProfile.examType.replaceAll('_', ' + ')}\nPuan türü: ${ExamProfile.scoreTypeLabels[state.activeProfile.scoreType]} • Başlangıç: ${ExamProfile.startingLevelLabels[state.activeProfile.startingLevel]}\nKişisel plan hedefi: ${_formatDate(state.activeProfile.targetDate)}\nSınav yılı: ${state.activeProfile.examYear ?? 'Belirtilmedi'}\nİçerik: ${state.activeProfile.curriculumVersion}\n${state.activeProfile.contentNotice}\nResmî sınav tarihi olarak değerlendirilmemelidir.${state.daysRemaining < 0 ? '\nBu tarih geçti. Yeni tarih seçince plan ve denemeler hizalanır.' : ''}',
                 color: AppTheme.accentPurple,
                 onTap: () => _editProfile(context, state),
               ),
@@ -759,6 +760,7 @@ class SettingsScreen extends StatelessWidget {
     final currentPreferences = state.schedulePreferences;
     var availableDays = currentPreferences.availableWeekdays.toSet();
     var minutes = currentPreferences.dailyStudyMinutes.toDouble();
+    int? examYear;
     var scoreType = ExamProfile.unspecified;
     var startingLevel = ExamProfile.unspecified;
     final now = DateTime.now();
@@ -806,6 +808,11 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
+              ExamYearField(
+                value: examYear,
+                onChanged: (value) => setDialogState(() => examYear = value),
+              ),
+              const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: scoreType,
                 decoration: InputDecoration(
@@ -1008,6 +1015,7 @@ class SettingsScreen extends StatelessWidget {
       if (saved == true && targetDate != null) {
         await state.createYksProfile(
           name: nameController.text.trim(),
+          examYear: examYear,
           scoreType: scoreType,
           startingLevel: startingLevel,
           targetDate: targetDate!,
@@ -1034,6 +1042,7 @@ class SettingsScreen extends StatelessWidget {
     final profile = state.activeProfile;
     final nameController = TextEditingController(text: profile.name);
     var targetDate = profile.targetDate;
+    var examYear = profile.examYear;
     var scoreType = profile.scoreType;
     var startingLevel = profile.startingLevel;
     var showNameError = false;
@@ -1062,6 +1071,11 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
+              ExamYearField(
+                value: examYear,
+                onChanged: (value) => setDialogState(() => examYear = value),
+              ),
+              const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: scoreType,
                 decoration: const InputDecoration(labelText: 'Puan türü'),
@@ -1099,7 +1113,7 @@ class SettingsScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Bu sürüm TYT + AYT kataloğuyla sınırlıdır; YDT içeriği yok. Kişisel bilgiler planı henüz uyarlamaz.',
+                  '${profile.contentNotice} Sınav yılını değiştirmek geçmişini veya içerik sürümünü değiştirmez.',
                   style: Theme.of(
                     dialogContext,
                   ).textTheme.bodySmall?.copyWith(fontSize: 12),
@@ -1199,7 +1213,9 @@ class SettingsScreen extends StatelessWidget {
     try {
       if (saved == true) {
         await state.updateActiveProfile(
+          clearExamYear: examYear == null,
           name: nameController.text.trim(),
+          examYear: examYear,
           scoreType: scoreType,
           startingLevel: startingLevel,
           targetDate: targetDate,

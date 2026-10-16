@@ -168,3 +168,11 @@ Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son
 - Yeni kabulde ilk kez kaynak dersleri için yedek referans denetiminin eksik olduğu bulundu/düzeltildi; EA/SÖZ/YDT kaynak + manuel hata → export/import → yeniden yükle geçti.
 - Ek veri kaybı önlendi: eski hata kaydının ders/konu bağlantısı bulunamayınca kayıt silinmiyor. Not, tekrar geçmişi ve özgün kopuk kimlikler korunuyor; etkin olmayan bağ ayrılıyor ve ekranda açıklanıyor. Export/import kabulü geçti.
 - Güncel profil şeması 13. Tam hazır EA/SÖZ/YDT kazanım envanteri ve akademik editoryal doğrulama ayrı açık kapsamdır. Kaynak bağlarıyla tamamlanmış müfredat iddiası yapılmıyor.
+
+
+## 17 Ekim · Sınav yılı ve içerik sürümü (AUD-15)
+- Profilde isteğe bağlı sınav yılı, kişisel hedef tarihinden ayrı tutuluyor. Eski profillerin yılı bilinmiyor olarak kalır; hedeften tahmin edilmez.
+- Sabit içerik sürümü `yks-reference-2026-v1`, şema 14. Yıl değişimi ders/konu kimliklerini, ilerlemeyi ve içerik sürümünü değiştirmez. Bilinmeyen içerik sürümü sessizce açılmaz.
+- Kurulum ve profil formlarında yıl seçimi; ayarlarda içerik kapsamı var. Eski “YDT yok” metni düzeltildi: YDT kaynak/deneme takibi var, tam hazır konu rehberi yok.
+- Tam paket: 58 test geçti; `flutter analyze --no-pub` temiz. Yıl değişimi + eski metadata + yedek geri yükleme testi dahil.
+- Açık: 2027 resmi kapsamının ve bütün akademik içeriğin editoryal doğrulaması; EA/SÖZ/YDT tam hazır konu rehberi. Yıl seçimi güncellik garantisi değildir.

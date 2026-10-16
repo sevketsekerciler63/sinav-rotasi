@@ -1111,4 +1111,41 @@ void main() {
       expect(state.weakTopics.single.reviewRepetitions, 3);
     },
   );
+  test(
+    'exam year changes preserve progress content version and backup metadata',
+    () async {
+      final old = ExamProfile.defaultYks.toJson()
+        ..remove('examYear')
+        ..remove('curriculumVersion');
+      final migrated = ExamProfile.fromJson(old);
+      expect(migrated.examYear, isNull);
+      expect(
+        migrated.curriculumVersion,
+        ExamProfile.referenceCurriculumVersion,
+      );
+      final topic = state.subjects.first.topics.first;
+      expect(await state.toggleTopic(topic.id), isTrue);
+      await state.updateActiveProfile(examYear: 2027);
+      expect(state.activeProfile.examYear, 2027);
+      expect(state.subjects.first.topics.first.isCompleted, isTrue);
+      expect(state.activeProfile.curriculumVersion, migrated.curriculumVersion);
+      final backup = await storage.exportBackup();
+      await state.updateActiveProfile(examYear: 2028);
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.activeProfile.examYear, 2027);
+      expect(state.subjects.first.topics.first.isCompleted, isTrue);
+      await state.updateActiveProfile(clearExamYear: true);
+      expect(state.activeProfile.examYear, isNull);
+      expect(state.subjects.first.topics.first.isCompleted, isTrue);
+      expect(
+        () => ExamProfile.fromJson({...old, 'examYear': '2027'}),
+        throwsFormatException,
+      );
+      expect(
+        () => ExamProfile.fromJson({...old, 'curriculumVersion': 'unknown'}),
+        throwsFormatException,
+      );
+    },
+  );
 }

@@ -99,6 +99,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   DateTime get yksDate => activeProfile.targetDate;
 
   Future<void> updateActiveProfile({
+    int? examYear,
+    bool clearExamYear = false,
     String? name,
     String? scoreType,
     String? startingLevel,
@@ -111,6 +113,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final profileId = _activeProfile.id;
     final previousExams = {for (final exam in mockExams) exam.id: exam};
     final updatedProfile = _activeProfile.copyWith(
+      examYear: examYear,
+      clearExamYear: clearExamYear,
       name: name,
       scoreType: scoreType,
       startingLevel: startingLevel,
@@ -168,6 +172,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> createYksProfile({
+    int? examYear,
     required String name,
     required String scoreType,
     required String startingLevel,
@@ -195,6 +200,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
     final profile = ExamProfile(
       id: 'yks_${DateTime.now().microsecondsSinceEpoch}',
+      examYear: examYear,
       name: name.trim(),
       examSystem: 'YKS',
       examType: 'TYT_AYT',

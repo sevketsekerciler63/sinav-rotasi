@@ -7,6 +7,13 @@ class ExamProfile {
   final String startingLevel;
   final DateTime targetDate;
   final String templateId;
+  final int? examYear;
+  final String curriculumVersion;
+  static const referenceCurriculumVersion = 'yks-reference-2026-v1';
+  static const contentScope =
+      'Hazır konu rehberi: TYT + AYT SAY (2026 referansı). EA, SÖZ ve YDT için kişisel kaynak ve deneme takibi kullanılabilir; tam konu rehberi henüz yok.';
+  String get contentNotice =>
+      '$contentScope ${examYear == 2026 ? '' : 'Seçilen sınav yılı için içerik uygunluğu henüz doğrulanmadı.'}';
 
   const ExamProfile({
     required this.id,
@@ -17,6 +24,8 @@ class ExamProfile {
     required this.startingLevel,
     required this.targetDate,
     required this.templateId,
+    this.examYear,
+    this.curriculumVersion = referenceCurriculumVersion,
   });
 
   static const defaultYksId = 'yks-default';
@@ -62,15 +71,21 @@ class ExamProfile {
     'startingLevel': startingLevel,
     'targetDate': targetDate.toIso8601String(),
     'templateId': templateId,
+    'examYear': examYear,
+    'curriculumVersion': curriculumVersion,
   };
 
   ExamProfile copyWith({
+    int? examYear,
+    bool clearExamYear = false,
     String? name,
     String? scoreType,
     String? startingLevel,
     DateTime? targetDate,
   }) => ExamProfile(
     id: id,
+    examYear: clearExamYear ? null : examYear ?? this.examYear,
+    curriculumVersion: curriculumVersion,
     name: name ?? this.name,
     examSystem: examSystem,
     examType: examType,
@@ -81,6 +96,18 @@ class ExamProfile {
   );
 
   factory ExamProfile.fromJson(Map<String, dynamic> json) {
+    final examYear = json['examYear'];
+    final curriculumVersion =
+        json['curriculumVersion'] ?? referenceCurriculumVersion;
+    if (examYear != null &&
+        (examYear is! int || examYear < 2020 || examYear > 2100)) {
+      throw const FormatException('Sınav yılı geçersiz.');
+    }
+    if (curriculumVersion != referenceCurriculumVersion) {
+      throw const FormatException(
+        'İçerik sürümü bu uygulamada desteklenmiyor.',
+      );
+    }
     final id = json['id'];
     final name = json['name'];
     final examSystem = json['examSystem'];
@@ -127,6 +154,8 @@ class ExamProfile {
 
     return ExamProfile(
       id: id,
+      examYear: examYear as int?,
+      curriculumVersion: curriculumVersion as String,
       name: name,
       examSystem: examSystem,
       examType: examType,

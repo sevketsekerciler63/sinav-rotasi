@@ -1,3 +1,4 @@
+import '../widgets/exam_year_field.dart';
 import '../theme/app_motion.dart';
 import 'dart:async';
 
@@ -23,6 +24,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  static const _examYearKey = 'yks_onboarding_exam_year';
+  int? _examYear;
   static const _pageKey = 'yks_onboarding_page';
   static const _targetDateKey = 'yks_onboarding_target_date';
   static const _weekdaysKey = 'yks_onboarding_weekdays';
@@ -90,6 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       widget.appState.schedulePreferences.availableWeekdays,
     );
     _dailyStudyMinutes = widget.appState.schedulePreferences.dailyStudyMinutes;
+    _examYear = widget.appState.activeProfile.examYear;
     _scoreType = widget.appState.activeProfile.scoreType;
     _startingLevel = widget.appState.activeProfile.startingLevel;
     _restoreDraft();
@@ -99,6 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       if (!mounted) return;
+      final savedYear = prefs.getInt(_examYearKey);
       final savedPage = prefs.getInt(_pageKey);
       final savedTarget = DateTime.tryParse(
         prefs.getString(_targetDateKey) ?? '',
@@ -112,6 +117,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final savedScoreType = prefs.getString(_scoreTypeKey);
       final savedStartingLevel = prefs.getString(_startingLevelKey);
       setState(() {
+        if (savedYear != null && savedYear >= 2020 && savedYear <= 2100) {
+          _examYear = savedYear;
+        }
         if (savedPage != null) {
           _current = savedPage < 0
               ? 0
@@ -162,6 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _persistDraft() {
+    final examYear = _examYear;
     final page = _current;
     final targetDate = _targetDate.toIso8601String();
     final weekdays = _availableWeekdays.join(',');
@@ -172,6 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       try {
         final prefs = await SharedPreferences.getInstance();
         final results = <bool>[
+          await prefs.setInt(_examYearKey, examYear ?? 0),
           await prefs.setInt(_pageKey, page),
           await prefs.setString(_targetDateKey, targetDate),
           await prefs.setString(_weekdaysKey, weekdays),
@@ -206,6 +216,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.remove(_targetDateKey);
     await prefs.remove(_weekdaysKey);
     await prefs.remove(_minutesKey);
+    await prefs.remove(_examYearKey);
     await prefs.remove(_scoreTypeKey);
     await prefs.remove(_startingLevelKey);
   }
@@ -258,6 +269,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       await widget.appState.updateActiveProfile(
         targetDate: target,
+        examYear: _examYear,
+        clearExamYear: _examYear == null,
         scoreType: _scoreType,
         startingLevel: _startingLevel,
         schedulePreferences: StudySchedulePreferences(
@@ -514,7 +527,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Bu sürüm TYT + AYT kataloğunu destekler; YDT içeriği henüz yok. Puan türü ve seviye profile kaydedilir, planı değiştirmez.',
+                          'Hazır konu rehberi TYT + AYT SAY için 2026 referansıdır. EA, SÖZ ve YDT kaynak ve denemelerini de takip edebilirsin. Yeni yılın tam konu kapsamı henüz doğrulanmadı.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
@@ -523,6 +536,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               const SizedBox(height: 14),
+              ExamYearField(
+                value: _examYear,
+                onChanged: (value) {
+                  setState(() => _examYear = value);
+                  _queueDraftSave();
+                },
+              ),
+              const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: _scoreType,
                 decoration: const InputDecoration(labelText: 'Puan türü'),
