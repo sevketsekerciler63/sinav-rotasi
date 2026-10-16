@@ -2,7 +2,7 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: iş dağılımı hazır; aşağıdaki yeni işler henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Durum: LUNA-01 uygulandı ve Sol incelemesi bekliyor; LUNA-02–04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
 
 ## 1. Devralırken kısa bağlam
 
@@ -10,7 +10,7 @@ Durum: iş dağılımı hazır; aşağıdaki yeni işler henüz uygulanmadı. Bu
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
-- Güncel başlangıç commit'i: 9878621. Depoda bunun dışındaki kullanıcı değişikliklerini koru; yalnız commit'e güvenip çalışma ağacını sıfırlama.
+- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
 - Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
@@ -30,12 +30,23 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-01 · Türkçe metinler ve ekran durumları
 
-- [ ] Durum: başlanmadı.
+- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `475721c`).
 - Kapsam: ekran/widget metinlerindeki Zamanlayici, Ilerleme, Yapilacak, gun gibi kalıntıları düzelt; noktalama, düğme fiilleri ve başlık dilini tutarlı yap.
 - Alanlar: lib/screens, lib/widgets. Verilerin kimlikleri, JSON anahtarları, eski takma adlar ve model enum değerleri kullanıcıya görünen metin diye değiştirilmez.
 - Sınır: “kaydedildi”, “bulutta”, “kişiselleştirildi” gibi ifadeler yalnız gerçek davranış karşılıyorsa kullanılır. Netler resmî puan/sıralama gibi sunulmaz.
 - Kabul: Türkçe ekran metinleri tutarlı; mevcut kayıt/hata akışlarının anlamı korunmuş; hangi metinlerin düzeltildiği teslimde listeli.
 - Sol incelemesi: veri anahtarlarına dokunulmuş mu, başarısız işlem yanlış başarı gösteriyor mu, ürün kapsamı yanlış anlatılıyor mu?
+
+#### LUNA-01 teslimi · 16 Ekim 2026
+
+- Başlangıç commit'i: `8b7c4ff`; teslim commit'i: `475721c`.
+- Değişen dosyalar: `lib/screens/weak_topics_screen.dart`, `pomodoro_screen.dart`, `daily_plan_screen.dart`, `subjects_screen.dart`, `flashcard_screen.dart`, `mock_exam_screen.dart`.
+- Zayıf konu boş/list/form metinleri, Pomodoro başlığı, günlük plan deneme etiketi, konu gün bilgisi, bilgi kartlarındaki Türkçe karakterler ve deneme kayıt düğmesinin cümle biçimi düzeltildi.
+- Kayıt kimlikleri, JSON, model enumları ve işlem akışları değiştirilmedi.
+- Kontrol: `dart format` (6 dosyadan 1'ini biçimlendirdi), `git diff --check` temiz, `flutter analyze --no-pub` temiz.
+- Yapılmayan kontrol: otomatik test, ekran okuyucu, cihaz ve büyük yazı görünümü çalıştırılmadı.
+- Sol özellikle yazı düzeltmelerinin anlamı değiştirmediğini ve kullanıcıya görünen bütün eski transliterasyonların temizlendiğini gözden geçirsin. Bilgi kartı içeriğinin bilimsel doğruluğu AUD-09/SOL-05 kapsamındadır; bu teslim içerik denetimi sayılmaz.
+- Sonraki bağımsız iş: LUNA-02.
 
 ### LUNA-02 · Alan etiketleri ve erişilebilirlik
 
@@ -165,7 +176,7 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 
 | İş | Uygulama durumu | Sol sonucu | Açık düzeltme/kanıt |
 |---|---|---|---|
-| LUNA-01 | Başlanmadı | İncelenmedi | — |
+| LUNA-01 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `475721c`; cihaz/ekran okuyucu kabulü açık |
 | LUNA-02 | Başlanmadı | İncelenmedi | — |
 | LUNA-03 | Başlanmadı | İncelenmedi | — |
 | LUNA-04 | Başlanmadı | İncelenmedi | — |
