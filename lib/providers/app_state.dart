@@ -1946,32 +1946,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return dates.length;
   }
 
-  Set<String> get completedStudyDateKeys {
-    final keys = <String>{};
-    final template = getDailySchedule();
-    for (final entry in _dailyPlanEntries.entries) {
-      if (entry.value is! Map || (entry.value as Map)['isCompleted'] != true) {
-        continue;
-      }
-      final progress = Map<String, dynamic>.from(entry.value as Map);
-      DateTime? completedAt = progress['completedAt'] is String
-          ? DateTime.tryParse(progress['completedAt'] as String)
-          : null;
-      if (completedAt == null && entry.key.startsWith('review_')) {
-        completedAt = DateTime.tryParse(entry.key.substring('review_'.length));
-      }
-      if (completedAt == null) {
-        final match = RegExp(r'^day_(\d{3})$').firstMatch(entry.key);
-        final index = int.tryParse(match?.group(1) ?? '');
-        if (index != null && index > 0 && index <= template.length) {
-          completedAt = template[index - 1].date;
-        }
-      }
-      if (completedAt == null) continue;
-      keys.add(_dailyDateKey(completedAt));
-    }
-    return keys;
-  }
+  Set<String> get completedStudyDateKeys =>
+      StudyHistoryMetrics.completedStudyDateKeys(
+        _dailyPlanEntries,
+        getDailySchedule(),
+      );
 
   Set<DateTime> get completedStudyDates => completedStudyDateKeys
       .map(DateTime.parse)
@@ -2047,24 +2026,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
 
   int get streak {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final completed = completedStudyDateKeys;
-    var cursor = today;
-    if (schedulePreferences.availableWeekdays.contains(today.weekday) &&
-        !completed.contains(_dailyDateKey(today))) {
-      cursor = DateTime(today.year, today.month, today.day - 1);
-    }
-    var count = 0;
-    final oldest = DateTime(today.year, today.month, today.day - 365);
-    while (!cursor.isBefore(oldest)) {
-      if (schedulePreferences.availableWeekdays.contains(cursor.weekday)) {
-        if (!completed.contains(_dailyDateKey(cursor))) break;
-        count++;
-      }
-      cursor = DateTime(cursor.year, cursor.month, cursor.day - 1);
-    }
-    return count;
+    return StudyHistoryMetrics.streak(
+      completedStudyDateKeys,
+      schedulePreferences.availableWeekdays,
+      DateTime.now(),
+    );
   }
 
   DailyLog? get todayLog {
