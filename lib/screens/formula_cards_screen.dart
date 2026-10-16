@@ -136,37 +136,94 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/9/unite3/files/basic-html/page18.html',
       ),
-      FormulaItem('Kinetik Enerji', 'Ek = 1/2 mv\u00B2', 'm: kutle, v: hiz'),
+      FormulaItem(
+        'Kinetik Enerji',
+        'Ek = 1/2 · m · v²',
+        'Öteleme hareketi; m: kütle, v: hız büyüklüğü.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/9/fizik.pdf',
+      ),
       FormulaItem(
         'Potansiyel Enerji',
         'Ep = mgh',
-        'm: kutle, g: yercekimi, h: yukseklik',
+        'Yakın yüzeyde g sabit; h seçilen referans düzeyine göredir.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/9/fizik.pdf',
       ),
       FormulaItem(
-        'Is-Enerji',
-        'W = F \u00D7 d \u00D7 cos\u03B8',
-        'F: kuvvet, d: yer degistirme',
-      ),
-      FormulaItem('Hiz Formulu', 'v = v0 + at', 'Duzgun ivmeli hareket'),
-      FormulaItem(
-        'Yol Formulu',
-        'x = v0t + 1/2at\u00B2',
-        'Duzgun ivmeli hareket',
+        'İş',
+        'W = F · Δx · cosθ',
+        'Sabit kuvvet; θ, kuvvet ile yer değiştirme arasındaki açı.',
+        sourceLabel: 'MEB OGM Materyal · Kuvvet ve Hareket',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/pdf/bi5zk3rxz4f.pdf',
       ),
       FormulaItem(
-        'Ohm Yasasi',
-        'V = I \u00D7 R',
-        'V: gerilim, I: akim, R: direnc',
+        'Hız Formülü',
+        'v = v0 + at',
+        'Doğrusal sabit ivmeli hareket; v0: ilk hız, t: geçen süre.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/11/unite1/bolum1/files/basic-html/page54.html',
       ),
-      FormulaItem('Guc', 'P = W / t = F \u00D7 v', 'P: guc, W: is, t: zaman'),
-      FormulaItem('Coulomb Yasasi', 'F = k(q1q2)/r\u00B2', 'Elektrik kuvveti'),
       FormulaItem(
-        'Dalga Hizi',
-        'v = f \u00D7 \u03BB',
-        'f: frekans, \u03BB: dalga boyu',
+        'Yer Değiştirme Formülü',
+        'Δx = v0t + 1/2 · a · t²',
+        't = 0 anından başlayan doğrusal sabit ivmeli hareket.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/11/unite1/bolum1/files/basic-html/page55.html',
       ),
-      FormulaItem('Elastik PE', 'Ep = 1/2 kx\u00B2', 'k: yay sabiti, x: uzama'),
-      FormulaItem('Moment', 'M = F \u00D7 d', 'Kuvvet kolunun momenti'),
+      FormulaItem(
+        'Ohm Yasası',
+        'V = I · R',
+        'Ohmik iletken; V: gerilim, I: akım, R: direnç.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/10/unite1/files/basic-html/page52.html',
+      ),
+      FormulaItem(
+        'Güç',
+        'P_ort = W / Δt = ΔE / Δt',
+        'Ortalama güç; yapılan iş veya aktarılan enerji / geçen süre.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f5/9/fizik/fizik.pdf',
+      ),
+      FormulaItem(
+        'Coulomb Yasası',
+        'F = k · |q1 · q2| / r²',
+        'Noktasal yükler; r aralarındaki uzaklık, k ortamın Coulomb sabitidir.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/9/fizik.pdf',
+      ),
+      FormulaItem(
+        'Dalga Hızı',
+        'v = f · λ',
+        'v: dalga hızı, f: frekans, λ: dalga boyu; hız ortama bağlıdır.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/10/unite3/files/basic-html/page14.html',
+      ),
+      FormulaItem(
+        'Esneklik Potansiyel Enerjisi',
+        'Ep = 1/2 · k · x²',
+        'k: yay sabiti; x dengeden uzama/sıkışmadır. Yay esneklik sınırında olmalı.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/9/fizik.pdf',
+      ),
+      FormulaItem(
+        'Tork (Kuvvet Momenti)',
+        'τ = F · d⊥',
+        'd⊥: dönme eksenine olan dik uzaklık (moment kolu).',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/12/unite1/files/basic-html/page43.html',
+      ),
     ],
     'Kimya': [
       FormulaItem(
