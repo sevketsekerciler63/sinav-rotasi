@@ -410,52 +410,66 @@ class StatsScreen extends StatelessWidget {
           ),
         )
         .toList();
+    final accessibleSummary = buckets
+        .map(
+          (bucket) =>
+              '${bucket.weekIndex + 1}. hafta: ${bucket.completedDays} tamamlanan gün',
+        )
+        .join('; ');
 
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: BarChart(
-        BarChartData(
-          gridData: FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 20,
-                interval: 2,
-                getTitlesWidget: (v, m) => Text(
-                  v.toInt().toString(),
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    fontSize: 10,
+    return Semantics(
+      label: 'Haftalık tamamlama grafiği. $accessibleSummary.',
+      child: ExcludeSemantics(
+        child: Container(
+          height: 160,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: BarChart(
+            BarChartData(
+              gridData: FlGridData(show: false),
+              borderData: FlBorderData(show: false),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 20,
+                    interval: 2,
+                    getTitlesWidget: (v, m) => Text(
+                      v.toInt().toString(),
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (v, m) => Text(
-                  'H${v.toInt() + 1}',
-                  style: TextStyle(color: colors.onSurfaceVariant, fontSize: 9),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (v, m) => Text(
+                      'H${v.toInt() + 1}',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 9,
+                      ),
+                    ),
+                  ),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
                 ),
               ),
-            ),
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
+              barGroups: barGroups,
+              maxY: 7,
             ),
           ),
-          barGroups: barGroups,
-          maxY: 7,
         ),
       ),
     );
