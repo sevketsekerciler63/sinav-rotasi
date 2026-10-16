@@ -758,6 +758,7 @@ class SettingsScreen extends StatelessWidget {
                       : _formatDate(targetDate!),
                 ),
                 trailing: IconButton(
+                  tooltip: 'Kişisel hedef tarihini seç',
                   icon: const Icon(Icons.calendar_month),
                   onPressed: () async {
                     final initialDate =
@@ -954,6 +955,7 @@ class SettingsScreen extends StatelessWidget {
                 title: const Text('Kişisel hedef tarihi'),
                 subtitle: Text(_formatDate(targetDate)),
                 trailing: IconButton(
+                  tooltip: 'Kişisel hedef tarihini seç',
                   icon: const Icon(Icons.calendar_month),
                   onPressed: () async {
                     final now = DateTime.now();
