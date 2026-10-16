@@ -20,6 +20,7 @@ import '../data/exam_calendar_data.dart';
 import '../data/achievements_data.dart';
 import '../services/profile_storage.dart';
 import '../services/daily_reminder_service.dart';
+import '../services/study_history_metrics.dart';
 
 enum AppBootStatus { loading, ready, error }
 
@@ -1978,21 +1979,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       .toSet();
 
   int solvedQuestionsOn(DateTime date) {
-    final dateKey = _dailyDateKey(date);
-    return questionEvents.fold<int>(0, (sum, event) {
-      final occurredAt = event.occurredAt;
-      if (event.isLegacyUnattributed ||
-          occurredAt == null ||
-          _dailyDateKey(occurredAt) != dateKey) {
-        return sum;
-      }
-      return sum + event.questionCount;
-    });
+    return StudyHistoryMetrics.solvedQuestionsOn(questionEvents, date);
   }
 
-  int get legacyUnattributedQuestionCount => questionEvents
-      .where((event) => event.isLegacyUnattributed)
-      .fold(0, (sum, event) => sum + event.questionCount);
+  int get legacyUnattributedQuestionCount =>
+      StudyHistoryMetrics.legacyUnattributedQuestionCount(questionEvents);
 
   List<LegacyDailyActivity> get legacyDailyActivities {
     final templateDateKeys = getDailySchedule()
@@ -2034,27 +2025,26 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   int completedStudySessionsOn(DateTime date) {
-    final dateKey = _dailyDateKey(date);
-    return studySessions
-        .where(
-          (session) =>
-              session.status == StudySessionStatus.completed &&
-              _dailyDateKey(session.startedAt) == dateKey,
-        )
-        .length;
+    return StudyHistoryMetrics.completedSessionsOn(studySessions, date);
   }
 
   int studyMinutesOn(DateTime date) {
-    final dateKey = _dailyDateKey(date);
-    final seconds = studySessions
-        .where(
-          (session) =>
-              session.status == StudySessionStatus.completed &&
-              _dailyDateKey(session.startedAt) == dateKey,
-        )
-        .fold<int>(0, (sum, session) => sum + session.activeSeconds);
-    return seconds ~/ 60;
+    return StudyHistoryMetrics.activeSecondsOn(studySessions, date) ~/ 60;
   }
+
+  int completedStudySessionsBetween(DateTime start, DateTime end) =>
+      StudyHistoryMetrics.completedSessionsBetween(
+        studySessions,
+        start: start,
+        end: end,
+      );
+
+  int studySecondsBetween(DateTime start, DateTime end) =>
+      StudyHistoryMetrics.activeSecondsBetween(
+        studySessions,
+        start: start,
+        end: end,
+      );
 
   int get streak {
     final now = DateTime.now();

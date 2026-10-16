@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/daily_log.dart';
 import '../models/mock_exam.dart';
 import '../models/net_score.dart';
-import '../models/study_session.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
 
@@ -47,27 +46,6 @@ class WeeklyReportScreen extends StatelessWidget {
         );
         final daysCompleted = completedDaysThisWeek.length;
         final totalDaysThisWeek = scheduledDateKeys.length;
-        var questionsThisWeek = 0;
-        for (
-          var date = normalizedWeekStart;
-          !date.isAfter(today);
-          date = DateTime(date.year, date.month, date.day + 1)
-        ) {
-          questionsThisWeek += state.solvedQuestionsOn(date);
-        }
-        final completedSessionsThisWeek = state.studySessions.where((session) {
-          final date = session.sessionDate;
-          return session.status == StudySessionStatus.completed &&
-              !date.isBefore(normalizedWeekStart) &&
-              !date.isAfter(today);
-        });
-        final focusSessionCount = completedSessionsThisWeek.length;
-        final focusMinutes =
-            completedSessionsThisWeek.fold<int>(
-              0,
-              (sum, session) => sum + session.activeSeconds,
-            ) ~/
-            60;
         final legacyActivities = state.legacyDailyActivities;
         final dailyBreakdown =
             <
@@ -114,6 +92,16 @@ class WeeklyReportScreen extends StatelessWidget {
             ));
           }
         }
+        final questionsThisWeek = dailyBreakdown.fold<int>(
+          0,
+          (total, day) => total + day.questions,
+        );
+        final focusSessionCount = state.completedStudySessionsBetween(
+          normalizedWeekStart,
+          today,
+        );
+        final focusMinutes =
+            state.studySecondsBetween(normalizedWeekStart, today) ~/ 60;
 
         // Topics completed this week (approximate)
         final topicsCompleted = state.completedTopics;
