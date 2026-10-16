@@ -103,21 +103,17 @@ class WeeklyReportScreen extends StatelessWidget {
         final focusMinutes =
             state.studySecondsBetween(normalizedWeekStart, today) ~/ 60;
 
-        // Topics completed this week (approximate)
+        // Total curriculum progress; Topic does not record a completion date.
         final topicsCompleted = state.completedTopics;
 
         // This week's exams
+        final weekEndExclusive = normalizedWeekStart.add(
+          const Duration(days: 7),
+        );
         final examsThisWeek = state.mockExams.where((e) {
           final d = e.displayDate;
-          final weekEnd = DateTime(
-            weekStart.year,
-            weekStart.month,
-            weekStart.day,
-          ).add(const Duration(days: 7));
-          return !d.isBefore(
-                DateTime(weekStart.year, weekStart.month, weekStart.day),
-              ) &&
-              !d.isAfter(weekEnd);
+          return !d.isBefore(normalizedWeekStart) &&
+              d.isBefore(weekEndExclusive);
         }).toList();
 
         return Scaffold(
