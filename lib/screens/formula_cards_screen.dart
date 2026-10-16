@@ -17,49 +17,90 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
       FormulaItem(
         'Pisagor Teoremi',
         'a\u00B2 + b\u00B2 = c\u00B2',
-        'Dik ucgenin iki dik kenari ve hipotenüs iliskisi',
+        'Dik üçgende a ve b dik kenarlar, c hipotenüstür.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite4/files/basic-html/page27.html',
       ),
       FormulaItem(
-        'Ikinci Derece Denklem',
-        'x = (-b \u00B1 \u221A(b\u00B2-4ac)) / 2a',
-        'ax\u00B2 + bx + c = 0 denkleminin kokleri',
+        'İkinci Dereceden Denklem',
+        'x = (−b ± √Δ) / (2a),  Δ = b² − 4ac',
+        'a ≠ 0. Δ = b² − 4ac; gerçek kökler için Δ ≥ 0.',
+        sourceLabel: 'MEB OGM Materyal · İkinci Dereceden Denklemler',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/elazig-telafi/matematik/files/basic-html/page77.html',
       ),
       FormulaItem(
-        'Aritmetik Dizi Toplami',
+        'Aritmetik Dizi Toplamı',
         'Sn = n(a1 + an) / 2',
-        'n: terim sayisi, a1: ilk terim, an: son terim',
+        'n: terim sayısı; a1: ilk, an: son terim.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/12/unite2/files/basic-html/page25.html',
       ),
       FormulaItem(
-        'Geometrik Dizi Toplami',
+        'Geometrik Dizi Toplamı',
         'Sn = a1(1 - r^n) / (1 - r)',
-        'r: ortak oran, r \u2260 1',
+        'r: ortak oran, r ≠ 1. r = 1 ise Sn = n · a1.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/12/matematik/files/basic-html/page144.html',
       ),
       FormulaItem(
-        'Permutasyon',
+        'Permütasyon',
         'P(n,r) = n! / (n-r)!',
-        'n eleman icinden r tanesinin siralamasi',
+        'n, r ∈ ℕ ve r ≤ n; sıralama önemlidir.',
+        sourceLabel: 'MEB OGM Materyal · Defterim Matematik 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/matematik/files/basic-html/page18.html',
       ),
       FormulaItem(
         'Kombinasyon',
         'C(n,r) = n! / (r!(n-r)!)',
-        'n eleman icinden r tanesinin secimi',
+        'n, r ∈ ℕ ve r ≤ n; sıralama önemli değildir.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/10/unite1/files/basic-html/page20.html',
       ),
       FormulaItem(
-        'Binom Acilimi',
+        'Binom Açılımı',
         '(a+b)^n = \u03A3 C(n,k) a^(n-k) b^k',
-        'k=0 dan n ye kadar',
+        'n pozitif tam sayı; k = 0, 1, …, n.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 10 Kavram Öğretimi',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/10/matematik/tek/files/basic-html/page17.html',
       ),
-      FormulaItem('Daire Alani', 'A = \u03C0r\u00B2', 'r: yaricap'),
-      FormulaItem('Kure Hacmi', 'V = 4/3 \u03C0r\u00B3', 'r: yaricap'),
+      FormulaItem(
+        'Daire Alanı',
+        'A = \u03C0r\u00B2',
+        'r: yarıçap.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/11/unite5/files/basic-html/page39.html',
+      ),
+      FormulaItem(
+        'Küre Hacmi',
+        'V = 4/3 \u03C0r\u00B3',
+        'r: yarıçap.',
+        sourceLabel: 'MEB OGM Materyal · Temel Düzey Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematiktemelduzey/12/unite1/files/basic-html/page138.html',
+      ),
       FormulaItem(
         'Silindir Hacmi',
         'V = \u03C0r\u00B2h',
-        'r: taban yaricapi, h: yukseklik',
+        'Dik dairesel silindir; r: taban yarıçapı, h: yükseklik.',
+        sourceLabel: 'MEB OGM Materyal · Temel Düzey Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematiktemelduzey/12/unite1/files/basic-html/page131.html',
       ),
       FormulaItem(
         'Koni Hacmi',
         'V = 1/3 \u03C0r\u00B2h',
-        'r: taban yaricapi, h: yukseklik',
+        'Dik dairesel koni; r: taban yarıçapı, h: yükseklik.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 11 Çalışma Defteri',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f7/11/matematik/matematik.pdf',
       ),
       FormulaItem(
         'Logaritma Kuralı',
@@ -69,11 +110,21 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/12/unite1/files/basic-html/page22.html',
       ),
-      FormulaItem('Turev Kural', 'd/dx [x^n] = nx^(n-1)', 'Kuvvet kurali'),
       FormulaItem(
-        'Integral Kural',
+        'Türev Kuralı',
+        'd/dx [x^n] = n · x^(n−1)',
+        'n pozitif tam sayı.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/12/unite5/files/basic-html/page46.html',
+      ),
+      FormulaItem(
+        'İntegral Kuralı',
         '\u222Bx^n dx = x^(n+1)/(n+1) + C',
-        'n \u2260 -1',
+        'n ∈ ℚ, n ≠ −1; C integral sabitidir.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/12/unite6/files/basic-html/page6.html',
       ),
     ],
     'Fizik': [
