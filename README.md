@@ -28,7 +28,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 
 ## Bilinen durum
 
-- Veri `SharedPreferences` içinde saklanır. Profil saklama şeması sürüm 5'tir; sürüm 1–4 yedekler geriye uyumlu okunur. Eski kayıtların ilk gerçek cihaz açılışında taşındığı henüz doğrulanmadı.
+- Veri `SharedPreferences` içinde saklanır. Profil saklama şeması sürüm 6'dır; sürüm 1–5 yedekler geriye uyumlu okunur. Eski kayıtların ilk gerçek cihaz açılışında taşındığı henüz doğrulanmadı.
 - 95 temel plan görevi `day_001`–`day_095` kimlikleriyle saklanır. Uygun çalışma günleri değişince tarihler yeniden düzenlenir; görev ilerlemesi kimliğini korur. Daha fazla uygun gün varsa ek günlere tekrar/deneme analizi gelir; daha az gün varsa temel görevler bazı günlerde birlikte gösterilir.
 - Tamamlanmamış görev, uygulama yeni günde açıldığında veya öne geldiğinde sıradaki uygun çalışma gününe taşınır; tamamlanan görevler yeniden planlanmaz.
 - Günlük dakika tercihi hedef olarak gösterilir; mevcut görevlerin gerçek süre tahmini bu tercihe göre henüz yeniden hesaplanmıyor. Temel görevleri bir güne sığdırmak için birleştirme gerekebilir.
@@ -37,6 +37,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Puan türü ve öz değerlendirme profil bilgisidir; günlük görevler ve süreler bu seçime göre henüz kişiselleştirilmez. Müfredat/puan türü kapsam eşlemesi ayrıca doğrulanmalıdır.
 - Yedek panoya kopyalanabilir veya JSON dosyası olarak kaydedilebilir; içe aktarmada dosya seçme, panodan yapıştırma ve metin alanı desteklenir. Önizleme ve etki onayı korunur; yükleme sonrası kısa süreli geri alma sunulur.
 - Eski toplam soru sayısı korunur fakat tarih bilgisi olmadığı için günlük/haftalık soru raporuna katılmaz; tarih anahtarı korunmuş eski plan kayıtları raporda ayrı gösterilir.
+- Okunamayan üst düzey günlük plan kayıtları ayrı karantinada ham haliyle korunur, geçerli boş plan yüklenir ve ham kayıt JSON yedeğine dahil edilir. Karantina kaydı Ayarlar'da gösterilir.
 - Profil geçişi, çok anahtarlı yazma ve Pomodoro devamı için kaynak korumaları eklendi. Net girişleri negatif/çeyrek değerleri koruyup soru sınırlarını doğrular; kaydedilmemiş Pomodoro sonucu kararlı kimlik ve bitiş bilgisiyle yeniden denenir. Analyzer ve web release derlemesi temiz. Davranış/regresyon testleri, işlem kesintisi enjeksiyonu, yedek round-trip ve gerçek cihazdaki zorla kapatıp açma doğrulaması bekliyor.
 - Günlük plan kartındaki soru sayısı yalnız seçilen günün tarihli soru olaylarından hesaplanır; tarihi belirsiz eski toplamlar haftalık raporda ayrıca belirtilir. Haftalık ayrıntı, mevcut şablondan çıkmış eski tamamlanma tarihlerini de gösterebilir.
 - Kart ve zayıf konu tekrarları cihaz içinde tarihlendirilir; günlük hatırlatıcı bunlardan ayrı, isteğe bağlı bir cihaz bildirimidir. Profil/hedef tarihi değişince planlı bildirim güncellenir. Eski tamamlanmış günlük tekrarların konu bağlantısı bulunmayabilir, yeni bağlı görevler bu tarihe göre planlanır.

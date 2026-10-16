@@ -25,8 +25,14 @@ class DailyPlanMigration {
       throw const FormatException('Günlük plan kayıtları geçersiz.');
     }
 
-    if (decoded['schemaVersion'] == 2 && decoded['entries'] is Map) {
+    if (decoded.containsKey('schemaVersion')) {
+      if (decoded['schemaVersion'] != 2 || decoded['entries'] is! Map) {
+        throw const FormatException('Günlük plan şeması desteklenmiyor.');
+      }
       final history = decoded['history'];
+      if (history != null && history is! Map) {
+        throw const FormatException('Günlük plan geçmişi geçersiz.');
+      }
       return DailyPlanProgressSnapshot(
         entries: Map<String, dynamic>.from(decoded['entries'] as Map),
         history: history is Map ? Map<String, dynamic>.from(history) : {},

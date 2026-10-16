@@ -109,7 +109,10 @@ class StudyHistoryMetrics {
         continue;
       }
       final progress = Map<String, dynamic>.from(entry.value as Map);
-      final questions = (progress['solvedQuestions'] as num?)?.toInt() ?? 0;
+      final rawQuestions = progress['solvedQuestions'];
+      final questions = rawQuestions is num && rawQuestions.isFinite
+          ? rawQuestions.toInt()
+          : 0;
       final isCompleted = progress['isCompleted'] == true;
       final notes = progress['weakTopicNotes'] is String
           ? progress['weakTopicNotes'] as String

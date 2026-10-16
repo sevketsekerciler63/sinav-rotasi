@@ -40,6 +40,16 @@ class SettingsScreen extends StatelessWidget {
                 color: AppTheme.accentPurple,
                 onTap: () => _editProfile(context, state),
               ),
+              if (state.quarantinedDailyPlanRecordCount > 0)
+                _settingsCard(
+                  context,
+                  icon: Icons.warning_amber_rounded,
+                  title: 'Günlük plan kaydı kurtarılmayı bekliyor',
+                  subtitle:
+                      '${state.quarantinedDailyPlanRecordCount} bozuk kayıt ham haliyle saklanıyor ve JSON yedeğine ekleniyor. Plan geçerli kayıtlarla açıldı.',
+                  color: Theme.of(context).colorScheme.error,
+                  onTap: () => _showDailyPlanRecoveryInfo(context),
+                ),
               Row(
                 children: [
                   Expanded(
@@ -252,6 +262,24 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _showDailyPlanRecoveryInfo(
+    BuildContext context,
+  ) => showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Günlük plan kaydı korunuyor'),
+      content: const Text(
+        'Uygulama plan şemasını okuyamadı. Geçersiz kayıt ayrı tutuldu; günlük plan geçerli verilerle açıldı. Ham içeriği taşımak için Veri Yönetimi bölümünden JSON yedeği dışa aktar.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(),
+          child: const Text('Anladım'),
+        ),
+      ],
+    ),
+  );
 
   Widget _themeToggleCard(BuildContext context) {
     return Consumer<ThemeState>(

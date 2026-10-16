@@ -45,11 +45,12 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 5;
+  static const int schemaVersion = 6;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const List<String> dataKeys = [
     'topics_data',
     'daily_logs',
+    'daily_logs_quarantine',
     'question_history',
     'study_sessions',
     'mock_exams',
@@ -788,7 +789,10 @@ class ProfileStorage {
         }
       case 'daily_logs':
         final logs = _record(value, key);
-        if (logs['schemaVersion'] == 2) {
+        if (logs.containsKey('schemaVersion')) {
+          if (logs['schemaVersion'] != 2) {
+            _invalid('$key.schemaVersion', 'desteklenen sürüm');
+          }
           final entries = _record(logs['entries'], '$key.entries');
           for (final entry in entries.entries) {
             _validateDailyProgress(entry.value, '$key.entries.${entry.key}');
@@ -912,6 +916,15 @@ class ProfileStorage {
               }
             }
           }
+        }
+      case 'daily_logs_quarantine':
+        final quarantine = _record(value, key);
+        if (quarantine['schemaVersion'] != 1) {
+          _invalid('$key.schemaVersion', 'desteklenen sürüm');
+        }
+        final payloads = quarantine['payloads'];
+        if (payloads is! List || payloads.any((item) => item is! String)) {
+          _invalid('$key.payloads', 'metinlerden oluşan liste');
         }
       case 'weak_topics':
         final ids = <String>{};
@@ -1270,13 +1283,11 @@ class ProfileStorage {
   }
 
   void _validateDailyProgress(dynamic value, String path) {
-    final progress = _record(value, path);
-    _optionalBool(progress, 'isCompleted', path);
-    _optionalInt(progress, 'solvedQuestions', path, min: 0);
-    _optionalString(progress, 'weakTopicNotes', path);
-    _optionalNullableString(progress, 'reviewTopicId', path);
-    _optionalDate(progress, 'completedAt', path);
-    _optionalDate(progress, 'activityAt', path);
+    // DailyLog.fromJson has defensive fallbacks for malformed optional
+    // progress fields. Keep those original values intact so a backup can make
+    // a lossless round-trip instead of rejecting recoverable legacy data.
+    if (value is! Map) return;
+    _record(value, path);
   }
 
   void _validateRecordList(

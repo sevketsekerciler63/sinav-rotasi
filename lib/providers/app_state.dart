@@ -42,6 +42,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   ExamProfile _activeProfile = ExamProfile.defaultYks;
   Map<String, dynamic> _dailyPlanEntries = {};
   Map<String, dynamic> _dailyLogHistory = {};
+  final List<String> _quarantinedDailyPlanPayloads = [];
+  bool _dailyPlanQuarantineNeedsRewrite = false;
   StudySchedulePreferences _schedulePreferences =
       StudySchedulePreferences.defaults;
   int _dataLoadRequest = 0;
@@ -62,6 +64,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<ExamProfile> get profiles => _profileStorage.profiles;
   List<Object?> get quarantinedGoalRecords =>
       List.unmodifiable(_quarantinedGoalRecords);
+  int get quarantinedDailyPlanRecordCount =>
+      _quarantinedDailyPlanPayloads.length;
   StudySchedulePreferences get schedulePreferences => _schedulePreferences;
   List<WeakTopic> get prioritizedWeakTopics =>
       DailyPlanMetrics.prioritizedWeakTopicsFor(weakTopics, DateTime.now());
@@ -316,6 +320,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     mockExams = getExamCalendar(targetDate: _activeProfile.targetDate);
     _dailyPlanEntries = {};
     _dailyLogHistory = {};
+    _quarantinedDailyPlanPayloads.clear();
+    _dailyPlanQuarantineNeedsRewrite = false;
     weakTopics = [];
     goals = [];
     _quarantinedGoalRecords.clear();
@@ -362,13 +368,30 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
 
     // Load daily logs
+    final dailyPlanQuarantineJson = await _profileStorage.readStringForProfile(
+      profileId,
+      'daily_logs_quarantine',
+    );
+    if (!isCurrentRequest()) return;
+    _restoreDailyPlanQuarantine(dailyPlanQuarantineJson);
+
     final logsJson = await _profileStorage.readStringForProfile(
       profileId,
       'daily_logs',
     );
     if (!isCurrentRequest()) return;
+    var dailyLogsNeedQuarantine = false;
     if (logsJson != null) {
-      _restoreDailyPlanProgress(logsJson);
+      try {
+        _restoreDailyPlanProgress(logsJson);
+      } catch (_) {
+        _dailyPlanEntries = {};
+        _dailyLogHistory = {};
+        if (!_quarantinedDailyPlanPayloads.contains(logsJson)) {
+          _quarantinedDailyPlanPayloads.add(logsJson);
+        }
+        dailyLogsNeedQuarantine = true;
+      }
     }
     final questionHistoryJson = await _profileStorage.readStringForProfile(
       profileId,
@@ -535,7 +558,46 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _syncDailyReminder();
       notifyListeners();
     }
+    if (isCurrentRequest() &&
+        (dailyLogsNeedQuarantine || _dailyPlanQuarantineNeedsRewrite)) {
+      final recoveryData = <String, String>{
+        'daily_logs_quarantine': _dailyPlanQuarantineJson(),
+        if (dailyLogsNeedQuarantine)
+          'daily_logs': jsonEncode({
+            'schemaVersion': 2,
+            'entries': <String, dynamic>{},
+            'history': <String, dynamic>{},
+          }),
+      };
+      await _writeProfileData(profileId, recoveryData);
+      _dailyPlanQuarantineNeedsRewrite = false;
+    }
   }
+
+  void _restoreDailyPlanQuarantine(String? quarantineJson) {
+    if (quarantineJson == null) return;
+    try {
+      final decoded = jsonDecode(quarantineJson);
+      if (decoded is Map &&
+          decoded['schemaVersion'] == 1 &&
+          decoded['payloads'] is List &&
+          (decoded['payloads'] as List).every((payload) => payload is String)) {
+        _quarantinedDailyPlanPayloads.addAll(
+          (decoded['payloads'] as List).cast<String>(),
+        );
+        return;
+      }
+    } catch (_) {
+      // Preserve an unrecognized recovery record below as opaque text.
+    }
+    _quarantinedDailyPlanPayloads.add(quarantineJson);
+    _dailyPlanQuarantineNeedsRewrite = true;
+  }
+
+  String _dailyPlanQuarantineJson() => jsonEncode({
+    'schemaVersion': 1,
+    'payloads': _quarantinedDailyPlanPayloads,
+  });
 
   void _syncDailyReminder() {
     unawaited(
@@ -575,6 +637,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         'entries': _dailyPlanEntries,
         'history': _dailyLogHistory,
       }),
+      'daily_logs_quarantine': _dailyPlanQuarantineJson(),
       'question_history': jsonEncode(_questionHistoryJson()),
     });
   }
