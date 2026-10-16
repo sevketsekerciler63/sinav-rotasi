@@ -965,7 +965,8 @@ List<Subject> getAllSubjects() {
           name: 'Kurtuluş Savaşı — ÇOK KRİTİK!',
           description:
               'Mustafa Kemal 19 Mayıs 1919’da Samsun’a çıktı; Erzurum ve Sivas kongreleri millî irade ve bağımsızlık hedefini örgütledi. TBMM 23 Nisan 1920’de açıldı. Sakarya Zaferi (1921) ve Büyük Taarruz (1922) sonrasında Mudanya Ateşkesi yapıldı; Lozan Barış Antlaşması 24 Temmuz 1923’te imzalandı.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Millî Mücadele',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Millî Mücadele',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page230.html',
           questionCount: 2,
@@ -978,7 +979,8 @@ List<Subject> getAllSubjects() {
           name: 'Atatürk Dönemi İnkılapları',
           description:
               'Saltanat 1 Kasım 1922’de kaldırıldı; Cumhuriyet 29 Ekim 1923’te ilan edildi; halifelik 3 Mart 1924’te kaldırıldı. Yeni Türk harfleri 1928’de kabul edildi. Kadınlara seçme ve seçilme hakkı belediye seçimlerinde 1930’da, muhtarlık seçimlerinde 1933’te, milletvekili seçimlerinde 1934’te tanındı.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Atatürkçülük',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Atatürkçülük',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page238.html',
           questionCount: 1,
@@ -1004,7 +1006,8 @@ List<Subject> getAllSubjects() {
           name: 'Türkiye\'de İklim',
           description:
               'Türkiye’de iklim; enlem, yükselti, denizellik-karasallık, dağların uzanışı ve bakı gibi etkenlerle çeşitlenir. Akdeniz ikliminde yazlar genellikle sıcak-kurak, kışlar ılık-yağışlıdır. Karadeniz kıyılarında yağış yıl geneline yayılır; iç ve doğu kesimlerde karasallık ve yükselti kış koşullarını sertleştirir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Coğrafya, Türkiye İklimi',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Coğrafya, Türkiye İklimi',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page101.html',
           questionCount: 1,
@@ -1017,7 +1020,8 @@ List<Subject> getAllSubjects() {
           name: 'Türkiye\'de Tarım ve Ekonomi',
           description:
               'Tarım ürünlerinin dağılışını iklim, su, toprak, yer şekilleri ve üretim teknolojisi birlikte belirler. Tahıllar İç Anadolu’da yaygındır; çay Doğu Karadeniz’de, fındık Karadeniz kıyılarında, zeytin Ege ve Akdeniz kuşağında, pamuk ise sulamanın elverdiği Ege, Çukurova ve Güneydoğu alanlarında yetiştirilir. Ürün-bölge eşleştirmelerini değişmez sınırlar gibi düşünme.',
-          sourceLabel: 'MEB OGM Materyal · Coğrafya 11, Türkiye’de Tarım Ürünleri',
+          sourceLabel:
+              'MEB OGM Materyal · Coğrafya 11, Türkiye’de Tarım Ürünleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/cografya/files/basic-html/page69.html',
           questionCount: 1,
@@ -1127,13 +1131,17 @@ List<Subject> getAllSubjects() {
       type: 'AYT',
       totalQuestions: 40,
       tip:
-          'Fonksiyon, parabol, polinom, logaritma ve dizileri örnek soru çözerek pekiştir; deneme yanlışlarına göre tekrar sırasını belirle.',
+          'Yeni konuyu tanım koşullarıyla öğren, bağıntıları farklı soru türlerinde uygula ve deneme yanlışlarına göre tekrar sırasını belirle.',
       topics: [
         Topic(
           id: 'ayt_mat_1',
           name: 'Fonksiyonlar — AYT Seviyesi',
           description:
-              'Doğrusal: f(x)=ax+b. Parabolik: f(x)=ax²+bx+c. Bileşke: (fog)(x)=f(g(x)). Ters fonksiyon: f⁻¹.',
+              'Fonksiyon, tanım kümesindeki her girdiye tek bir değer eşler. Bileşke (f∘g)(x)=f(g(x)) şeklindedir. Ters fonksiyonun varlığı için fonksiyon birebir ve örten olmalı; uygun bir alt kümeye kısıtlanarak da terslenebilir. İkinci dereceden fonksiyonda a≠0.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Fonksiyonlar',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page93.html',
           questionCount: 4,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1143,7 +1151,10 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_2',
           name: '2. Derece Denklem ve Parabol',
           description:
-              'ax²+bx+c=0. Delta=b²-4ac. Tepe noktası: (-b/2a, f(-b/2a)). Köklerin çarpımı: c/a. Köklerin toplamı: -b/a.',
+              'ax²+bx+c=0 ve a≠0. Δ=b²−4ac; Δ>0 iki, Δ=0 çakışık iki, Δ<0 gerçek kök olmadığını gösterir. Kökler toplamı −b/a, çarpımı c/a’dır. y=ax²+bx+c parabolünün tepe noktasının apsisi −b/(2a), ordinatı f(−b/(2a)) olur.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Parabol',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page115.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1153,7 +1164,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_3',
           name: 'Polinomlar',
           description:
-              'Polinom: aₙxⁿ+...+a₁x+a₀. Bézout teoremi: P(a)=0 ise (x-a) çarpanıdır. Bölme ve kalan.',
+              'Bir değişkenli polinom, değişkenin negatif olmayan tam sayı kuvvetlerinin sonlu toplamıdır. P(x), x−a ile bölündüğünde kalan P(a)’dır; dolayısıyla P(a)=0 ise x−a polinomun çarpanıdır. Polinom bölmesinde kalan derecesi bölenin derecesinden küçüktür.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük Matematik 10, Polinomlar',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/matematik/files/basic-html/page107.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1163,7 +1178,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_4',
           name: 'Logaritma — Sıfırdan',
           description:
-              'log_a(x)=y ↔ aʸ=x. Kurallar: log(AB)=logA+logB. log(A/B)=logA-logB. log(Aⁿ)=n×logA.',
+              'logₐ(x)=y ancak a>0, a≠1 ve x>0 iken tanımlıdır; aʸ=x eşdeğerliği geçerlidir. Çarpım ve bölüm kuralları pozitif argümanlar için uygulanır: logₐ(xy)=logₐx+logₐy, logₐ(x/y)=logₐx−logₐy. Üstel fonksiyon logaritmanın tersidir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Logaritma',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page291.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1173,7 +1192,10 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_5',
           name: 'Diziler',
           description:
-              'Aritmetik: aₙ=a₁+(n-1)d. Toplam: Sₙ=n/2×(a₁+aₙ). Geometrik: aₙ=a₁×rⁿ⁻¹.',
+              'Aritmetik dizide aₙ=a₁+(n−1)d ve Sₙ=n(a₁+aₙ)/2’dir. Geometrik dizide aₙ=a₁rⁿ⁻¹; r≠1 için ilk n terim toplamı Sₙ=a₁(1−rⁿ)/(1−r), r=1 ise Sₙ=na₁ olur.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Diziler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page313.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1183,7 +1205,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_6',
           name: 'Trigonometri',
           description:
-              'sin/cos/tan. sin²α+cos²α=1. Birim çember. Trigonometrik denklemler.',
+              'Birim çember açıların sinüs ve kosinüsünü tanımlar; sin²x+cos²x=1’dir. tan x=sin x/cos x yalnız cos x≠0 iken tanımlıdır. Yönlü açı, toplam-fark ve iki kat açı bağıntıları ile trigonometrik denklemlerde çözüm aralık ve periyot koşullarına göre belirlenir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Trigonometri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page30.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1193,7 +1219,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_7',
           name: 'Analitik Geometri',
           description:
-              'Uzaklık: d=√((x₂-x₁)²+(y₂-y₁)²). Doğru denklemi: y-y₁=m(x-x₁). Çemberin denklemi.',
+              'İki nokta arası uzaklık d=√((x₂−x₁)²+(y₂−y₁)²). Eğimli doğru y−y₁=m(x−x₁) biçiminde yazılır; düşey doğruların eğimi tanımsızdır. Merkezi (h,k), yarıçapı r>0 olan çemberin denklemi (x−h)²+(y−k)²=r²’dir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Analitik Geometri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page67.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1201,9 +1231,12 @@ List<Subject> getAllSubjects() {
         ),
         Topic(
           id: 'ayt_mat_8',
-          name: 'Türev (Kolay Kısımlar)',
+          name: 'Türev ve Uygulamaları',
           description:
-              '(xⁿ)\'=nxⁿ⁻¹. Çarpım: (fg)\'=f\'g+fg\'. Teğet doğrusu. Artan/azalan aralıklar.',
+              'Pozitif tam sayı n için (xⁿ)′=nxⁿ⁻¹; türevlenebilir f ve g için (fg)′=f′g+fg′. Teğet eğimi f′(a)’dır. Türevin işareti artma-azalma aralıklarını ve yerel ekstremumları incelemeye yardım eder; sonuçlar tanım aralığı ve türev koşullarıyla birlikte değerlendirilir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Türev',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page429.html',
           questionCount: 2,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
@@ -1211,9 +1244,13 @@ List<Subject> getAllSubjects() {
         ),
         Topic(
           id: 'ayt_mat_9',
-          name: 'İntegral (Sadece Temel)',
+          name: 'İntegral ve Uygulamaları',
           description:
-              '∫xⁿdx=xⁿ⁺¹/(n+1)+C. Belirli integral: ∫[a,b] f(x)dx. Alan hesabı.',
+              'n≠−1 için ∫xⁿdx=xⁿ⁺¹/(n+1)+C; belirsiz integral ailesinde sabit C bulunur. Belirli integral net işaretli alanı verir; geometrik alan için eksenin altında kalan parçalar pozitif alınarak aralık gerekirse bölünür.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, İntegral',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page449.html',
           questionCount: 1,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
@@ -1223,7 +1260,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_mat_10',
           name: 'Limit (Temel)',
           description:
-              'lim x→a f(x). Polinom limiti: direkt yerine koy. 0/0 belirsizliği: sadeleştir.',
+              'Bir noktadaki limit için sağ ve sol yaklaşım aynı değere gitmelidir. Polinomlar sürekli olduğundan limitte yerine koyma yapılabilir. 0/0 bir belirsizliktir, limitin varlığını veya değerini tek başına göstermez; çarpanlara ayırma, eşlenikle çarpma ve uygun limit bağıntıları kullanılabilir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, Limit ve Süreklilik',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page395.html',
           questionCount: 1,
           difficulty: '🔴 Zor',
           priority: '🔵 DÜŞÜK',

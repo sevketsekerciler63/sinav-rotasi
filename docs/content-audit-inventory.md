@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 76 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7, TYT Biyoloji 6/6 ve TYT Sosyal 14/14 kaynaklı; AYT Matematik/Fizik/Kimya/Biyoloji toplam 31 kayıtta kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 86 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7, TYT Biyoloji 6/6, TYT Sosyal 14/14 ve AYT Matematik 10/10 kaynaklı; AYT Fizik/Kimya/Biyoloji toplam 21 kayıtta kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Şu an 76 kayıt kaynaklı; bu, kaynakların tüm içerik iddialarını veya güncel YKS kapsamını doğruladığı anlamına gelmez. TYT'de 76/76 kayıt kaynaklı; AYT'de 31 kaydın kaynak bağı eksik.
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Şu an 86 kayıt kaynaklı; bu, kaynakların tüm içerik iddialarını veya güncel YKS kapsamını doğruladığı anlamına gelmez. TYT'de 76/76 ve AYT Matematik'te 10/10 kayıt kaynaklı; AYT Fizik/Kimya/Biyoloji'de 21 kaydın kaynak bağı eksik.
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -215,3 +215,26 @@ TYT Sosyal kataloğundaki 14/14 kayıt MEB OGM veya kurumsal kaynaklarla eşleş
 - `tyt_sos_1` kuruluş tarihi olarak 1299'u mutlaklaştırmaz; bu tarih geleneksel tarihlemedir ve kuruluş süreci farklı görüşlerle incelenir.
 - `tyt_sos_4` kadınların siyasal haklarını aşamalı tarihlerle verir: belediye seçimleri 1930, köy muhtarlığı 1933, milletvekili seçme-seçilme 1934.
 - Bu 14 başlığın tahmini soru ağırlıkları resmî dağılım değildir. TYT Sosyal alt başlıklarında kodlanan soru sayıları 20 soruluk ders toplamına eşleştirildi; uzman/kohort onayı bekliyor.
+
+## AYT Matematik konu kaynak turu — 2026-10-16
+
+Mevcut AYT Matematik kataloğundaki 10/10 kayda MEB OGM kaynak bağlantısı eklendi. Tanım koşulları, kök/tepe noktası bilgisi, polinom kalan teoremi, dizi toplamı, trigonometri tanım aralığı, eğimli doğru, türev ve integral koşulları ile `0/0` limit belirsizliği netleştirildi. Bu tur mevcut kartları kaynaklandırır; aşağıdaki kapsam eşlemesi açığı kapanmış sayılmaz.
+
+| Topic ID | Konu | MEB OGM kaynak |
+| --- | --- | --- |
+| `ayt_mat_1` | Fonksiyonlar | [Dört Dörtlük AYT Matematik, Fonksiyonlar ile İlgili Uygulamalar, s. 93](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page93.html) |
+| `ayt_mat_2` | İkinci derece denklem ve parabol | [Dört Dörtlük AYT Matematik, İkinci Dereceden Fonksiyonlar ve Grafikleri, s. 115](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page115.html) · [Matematik 11, parabol tanımı ve `a≠0`](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/11/unite3/files/basic-html/page13.html) |
+| `ayt_mat_3` | Polinomlar | [Dört Dörtlük Matematik 10, polinomlar, s. 107](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/matematik/files/basic-html/page107.html) · [Fen Lisesi Matematik 10, polinom bölmesi](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/10/unite3/files/basic-html/page15.html) |
+| `ayt_mat_4` | Logaritma | [Dört Dörtlük AYT Matematik, Logaritma, s. 291–292](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page291.html) |
+| `ayt_mat_5` | Diziler | [Dört Dörtlük AYT Matematik, Gerçek Sayı Dizileri, s. 313](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page313.html) |
+| `ayt_mat_6` | Trigonometri | [Dört Dörtlük AYT Matematik, Trigonometrik Fonksiyonlar, s. 30](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page30.html) · [Toplam-fark ve iki kat açı, s. 331](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page331.html) · [Trigonometrik denklemler, s. 353](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page353.html) |
+| `ayt_mat_7` | Analitik geometri | [Dört Dörtlük AYT Matematik, doğrunun analitik incelenmesi, s. 67](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page67.html) · [Çemberin analitik incelenmesi, s. 499](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page499.html) |
+| `ayt_mat_8` | Türev ve uygulamaları | [Dört Dörtlük AYT Matematik, türevin uygulamaları, s. 429](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page429.html) · [Türev, s. 407](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page407.html) |
+| `ayt_mat_9` | İntegral ve uygulamaları | [Dört Dörtlük AYT Matematik, belirsiz integral, s. 449](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page449.html) · [Belirli integral ve uygulamaları, s. 471](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page471.html) |
+| `ayt_mat_10` | Limit ve süreklilik | [Dört Dörtlük AYT Matematik, Limit ve Süreklilik, s. 395](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page395.html) |
+
+### Sonraki kapsam işi — kaynağı mevcut, eşlemesi tamamlanmadı
+
+- [Dört Dörtlük AYT Matematik içindekiler, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page6.html) ve konu tablosu s. 8, uygulamadaki 10 geniş karttan ayrı olarak ikinci derece denklem sistemleri/eşitsizlikler, çember-daire, katı cisimler ve olasılık gibi başlıkları listeliyor. Fonksiyon dönüşümleri, üstel fonksiyon, trigonometrik bağıntılar/denklemler ve integral alt başlıkları da ayrık verilmiş.
+- Bu nedenle `AYT Matematik` kartları kaynağa bağlanmış olsa da YKS kapsamının tamamını temsil ettikleri henüz gösterilmedi. Kodda mevcut `questionCount` toplamı 25 iken branş `totalQuestions` değeri 40; aradaki 15 soru için kapsam ve çalışma ağırlığı açıklanmalı.
+- Sonraki editoryal karar: hedef YKS kohortunun resmi programı ve seçilen yılın ÖSYM kitapçığı üzerinden kartları bölmek/birleştirmek, kaynak dışı kapsamı eklemek ve ağırlıkları açıkça “tahmini çalışma dağılımı” diye etiketlemek. Şimdilik bu fark uygulamada gizlenmemeli ve 10 kaynaklı kart 10/10 kapsam onayı gibi değerlendirilmemeli.
