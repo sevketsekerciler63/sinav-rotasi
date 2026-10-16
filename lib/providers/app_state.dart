@@ -643,24 +643,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _migrateLegacyQuestionCounts(String profileId) {
-    questionEvents = [];
-    for (final entry in _dailyPlanEntries.entries) {
-      if (entry.value is! Map) continue;
-      final progress = Map<String, dynamic>.from(entry.value as Map);
-      final count = (progress['solvedQuestions'] as num?)?.toInt() ?? 0;
-      if (count <= 0) continue;
-      questionEvents.add(
-        QuestionEvent(
-          id: 'legacy_${entry.key}',
-          profileId: profileId,
-          progressId: entry.key,
-          topicId: null,
-          occurredAt: null,
-          questionCount: count,
-          isLegacyUnattributed: true,
-        ),
-      );
-    }
+    questionEvents = DailyPlanMigration.migrateLegacyQuestionEvents(
+      entries: _dailyPlanEntries,
+      profileId: profileId,
+    );
   }
 
   void _restoreQuestionHistory(String historyJson, String profileId) {
@@ -1389,26 +1375,26 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String? weakTopicNotes,
   }) {
     if (_isProfileTransitioning) return;
-    for (var log in dailyLogs) {
-      if (log.dateKey == dateKey && !log.isRestDay) {
-        if (solvedQuestions != null) {
-          final profileId = _activeProfile.id;
-          DailyPlanMetrics.setSolvedQuestionsForLog(
-            log: log,
-            questionEvents: questionEvents,
-            profileId: profileId,
-            targetCount: solvedQuestions,
-            nextEventId: () =>
-                '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
-          );
-        }
-        if (weakTopicNotes != null) log.weakTopicNotes = weakTopicNotes;
-        log.activityAt = DateTime.now();
-        _saveDailyLogs(log);
-        notifyListeners();
-        return;
-      }
+    final log = DailyPlanMetrics.updateLogFieldsForDate(
+      logs: dailyLogs,
+      dateKey: dateKey,
+      changedAt: DateTime.now(),
+      weakTopicNotes: weakTopicNotes,
+    );
+    if (log == null) return;
+    if (solvedQuestions != null) {
+      final profileId = _activeProfile.id;
+      DailyPlanMetrics.setSolvedQuestionsForLog(
+        log: log,
+        questionEvents: questionEvents,
+        profileId: profileId,
+        targetCount: solvedQuestions,
+        nextEventId: () =>
+            '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
+      );
     }
+    _saveDailyLogs(log);
+    notifyListeners();
   }
 
   // ─── Mock Exam Actions ─────────────────────────

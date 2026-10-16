@@ -185,6 +185,21 @@ class DailyPlanMetrics {
     return null;
   }
 
+  static DailyLog? updateLogFieldsForDate({
+    required Iterable<DailyLog> logs,
+    required String dateKey,
+    required DateTime changedAt,
+    String? weakTopicNotes,
+  }) {
+    for (final log in logs) {
+      if (log.dateKey != dateKey || log.isRestDay) continue;
+      if (weakTopicNotes != null) log.weakTopicNotes = weakTopicNotes;
+      log.activityAt = changedAt;
+      return log;
+    }
+    return null;
+  }
+
   static int totalStudyDays({
     required Iterable<String> completedDateKeys,
     required Iterable<DailyLog> logs,

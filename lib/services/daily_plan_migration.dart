@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../models/daily_log.dart';
+import '../models/question_event.dart';
 
 class DailyPlanProgressSnapshot {
   final Map<String, dynamic> entries;
@@ -15,6 +16,34 @@ class DailyPlanProgressSnapshot {
 /// Restores current and date-keyed legacy daily plan records.
 class DailyPlanMigration {
   const DailyPlanMigration._();
+
+  static List<QuestionEvent> migrateLegacyQuestionEvents({
+    required Map<String, dynamic> entries,
+    required String profileId,
+  }) {
+    final events = <QuestionEvent>[];
+    for (final entry in entries.entries) {
+      if (entry.value is! Map) continue;
+      final progress = Map<String, dynamic>.from(entry.value as Map);
+      final rawCount = progress['solvedQuestions'];
+      final count = rawCount is num && rawCount.isFinite && rawCount > 0
+          ? rawCount.toInt()
+          : 0;
+      if (count <= 0) continue;
+      events.add(
+        QuestionEvent(
+          id: 'legacy_${entry.key}',
+          profileId: profileId,
+          progressId: entry.key,
+          topicId: null,
+          occurredAt: null,
+          questionCount: count,
+          isLegacyUnattributed: true,
+        ),
+      );
+    }
+    return events;
+  }
 
   static DailyPlanProgressSnapshot restore(
     String logsJson, {
