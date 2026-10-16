@@ -59,9 +59,10 @@ class ExamCalendarScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          'Bu takvim hedef tarihine göre önerilen deneme günlerini gösterir. '
-                          'Günlük Plan’daki deneme/analiz görevleriyle otomatik eşleşmez; '
-                          'gerçekleşen deneme ve netlerini Deneme Takip ekranında kaydet.',
+                          'Bu takvim kişisel hedef tarihine göre önerilen deneme günlerini gösterir; '
+                          'ÖSYM’nin resmî sınav tarihi değildir. Günlük Plan’daki deneme/analiz '
+                          'görevleriyle otomatik eşleşmez; gerçekleşen deneme ve netlerini '
+                          'Deneme Takip ekranında kaydet.',
                           style: textTheme.bodySmall?.copyWith(
                             color: colors.onTertiaryContainer,
                             height: 1.35,
