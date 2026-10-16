@@ -63,38 +63,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       List.unmodifiable(_quarantinedGoalRecords);
   StudySchedulePreferences get schedulePreferences => _schedulePreferences;
   List<WeakTopic> get prioritizedWeakTopics =>
-      _prioritizedWeakTopicsFor(DateTime.now());
-
-  List<WeakTopic> _prioritizedWeakTopicsFor(DateTime date) {
-    final targetDay = DateTime(date.year, date.month, date.day);
-    final topics = weakTopics.where((topic) {
-      final addedOn = _weakTopicDate(topic.date);
-      if (addedOn != null &&
-          DateTime(
-            addedOn.year,
-            addedOn.month,
-            addedOn.day,
-          ).isAfter(targetDay)) {
-        return false;
-      }
-      return !topic.isStudied || topic.needsRepeat || topic.isReviewDueOn(date);
-    }).toList();
-    topics.sort((a, b) {
-      final repeatOrder = (b.needsRepeat ? 1 : 0).compareTo(
-        a.needsRepeat ? 1 : 0,
-      );
-      if (repeatOrder != 0) return repeatOrder;
-      final aDue = a.isReviewDueOn(date);
-      final bDue = b.isReviewDueOn(date);
-      if (aDue != bDue) return bDue ? 1 : -1;
-      final errorOrder = b.errorCount.compareTo(a.errorCount);
-      if (errorOrder != 0) return errorOrder;
-      return (_weakTopicDate(b.date) ?? DateTime(0)).compareTo(
-        _weakTopicDate(a.date) ?? DateTime(0),
-      );
-    });
-    return topics;
-  }
+      DailyPlanMetrics.prioritizedWeakTopicsFor(weakTopics, DateTime.now());
 
   // Celebration callback
   VoidCallback? onCelebrate;
@@ -834,78 +803,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _applyWeakTopicReviews() {
-    final reviewDays = dailyLogs
-        .where(
-          (log) =>
-              log.progressIds.length == 1 &&
-              log.progressIds.single.startsWith('review_'),
-        )
-        .toList();
-    for (var index = 0; index < reviewDays.length; index++) {
-      final log = reviewDays[index];
-      final priorityTopics = _prioritizedWeakTopicsFor(log.date);
-      WeakTopic? topic;
-      final assignedTopicId = log.reviewTopicId;
-      if (assignedTopicId != null) {
-        for (final candidate in weakTopics) {
-          if (candidate.id == assignedTopicId) {
-            topic = candidate;
-            break;
-          }
-        }
-      }
-      if (topic != null &&
-          !log.isCompleted &&
-          !priorityTopics.any((candidate) => candidate.id == topic!.id)) {
-        topic = null;
-      }
-      topic ??= log.isCompleted || priorityTopics.isEmpty
-          ? null
-          : priorityTopics[index % priorityTopics.length];
-      final selectedTopic = topic;
-      if (selectedTopic == null) {
-        log.reviewTopicId = null;
-        log.tytContent =
-            'Önceki konulardan kısa tekrar yap; takıldığın başlıkları not et.';
-        log.aytContent =
-            'Dersler veya Zayıf Konular bölümünden bir eksik seçip çalış.';
-        log.motivationNote =
-            'Sınava kadar kalan dönemi tekrar ve eksik kapatmaya ayır.';
-        continue;
-      }
-      log.reviewTopicId = selectedTopic.id;
-      final subject = subjects.where(
-        (item) =>
-            item.storageId == selectedTopic.subjectId ||
-            item.name == selectedTopic.subject,
-      );
-      final isAyt = subject.isNotEmpty
-          ? subject.first.type == 'AYT'
-          : selectedTopic.subject.toUpperCase().startsWith('AYT');
-      final content =
-          'Öncelikli tekrar: ${selectedTopic.topic} · ${selectedTopic.errorType}. ${selectedTopic.action}';
-      if (isAyt) {
-        log.tytContent = 'Kısa paragraf veya temel matematik tekrarı yap.';
-        log.aytContent = '${selectedTopic.subject}: $content';
-      } else {
-        log.tytContent = '${selectedTopic.subject}: $content';
-        log.aytContent = 'Son işlediğin konudan kısa tekrar yap.';
-      }
-      log.motivationNote =
-          'Deneme ve hata kayıtlarına göre ${selectedTopic.subject} önceliklendirildi.';
-    }
-  }
-
-  DateTime? _weakTopicDate(String value) {
-    final isoDate = DateTime.tryParse(value);
-    if (isoDate != null) return isoDate;
-    final parts = value.split('.');
-    if (parts.length != 3) return null;
-    final day = int.tryParse(parts[0]);
-    final month = int.tryParse(parts[1]);
-    final year = int.tryParse(parts[2]);
-    if (day == null || month == null || year == null) return null;
-    return DateTime(year, month, day);
+    DailyPlanMetrics.applyWeakTopicReviews(
+      logs: dailyLogs,
+      weakTopics: weakTopics,
+      subjects: subjects,
+    );
   }
 
   void _restoreCustomCurriculum(String curriculumJson) {
