@@ -51,18 +51,15 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       _buildHeader(context, state),
                       const SizedBox(height: 16),
-
-                      // Motivation wall
-                      _buildMotivationCard(context, quote),
-                      const SizedBox(height: 16),
-
-                      _buildCountdownCard(state),
-                      const SizedBox(height: 16),
                       if (state.daysRemaining < 0) ...[
                         _buildExpiredTargetBanner(context),
                         const SizedBox(height: 16),
                       ],
-                      _buildStatsRow(context, state),
+
+                      if (today != null)
+                        _buildTodayCard(context, state, today)
+                      else
+                        _buildNoTodayPlanCard(context),
                       const SizedBox(height: 16),
 
                       // Achievement notification
@@ -71,10 +68,15 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                       ],
 
-                      if (today != null) ...[
-                        _buildTodayCard(context, state, today),
+                      if (state.daysRemaining >= 0) ...[
+                        _buildCountdownCard(state),
                         const SizedBox(height: 16),
                       ],
+                      _buildStatsRow(context, state),
+                      const SizedBox(height: 16),
+
+                      _buildMotivationCard(context, quote),
+                      const SizedBox(height: 16),
 
                       // Active goals
                       if (state.goals
@@ -304,7 +306,7 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               state.daysRemaining < 0
-                  ? 'Hedef tarihi ${-state.daysRemaining} gün önce geçti · ${state.streak} günlük seri 🔥'
+                  ? '${state.streak} günlük seri 🔥'
                   : '${state.daysRemaining} gün kaldı · ${state.streak} günlük seri 🔥',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
@@ -556,32 +558,100 @@ class DashboardScreen extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: colors.errorContainer,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: colors.error.withValues(alpha: 0.35)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.event_busy_rounded, color: colors.onErrorContainer),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Hedef tarihi geçti. Planı yeni tarihe göre düzenlemek için sınav profilini güncelle.',
-              style: textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontSize: 12,
-                height: 1.35,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.event_busy_rounded, color: colors.onErrorContainer),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Hedef tarihin geçti. Yeni dönem için hedefini güncelleyebilirsin.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.onErrorContainer,
+                    height: 1.35,
+                  ),
+                ),
               ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+              icon: const Icon(Icons.edit_calendar_outlined, size: 18),
+              label: const Text('Hedef tarihini düzenle'),
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoTodayPlanCard(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.event_note_outlined, color: colors.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bugün için plan görünmüyor',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Günlük planını açıp sıradaki çalışma adımını gözden geçir.',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DailyPlanScreen()),
+              ),
+              icon: const Icon(Icons.route_outlined),
+              label: const Text('Günlük planı aç'),
             ),
-            child: const Text('Düzenle'),
           ),
         ],
       ),
@@ -715,7 +785,7 @@ class DashboardScreen extends StatelessWidget {
     final focusTitle = focusTask == null
         ? today.isCompleted
               ? 'Bugünkü plan tamamlandı'
-              : 'Bugünün planı'
+              : 'Günlük planını gözden geçir'
         : _focusTaskTitle(focusTask);
     final focusReason = focusTask == null
         ? today.isCompleted
@@ -811,6 +881,135 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
           Text(
+            today.isRestDay
+                ? 'Bugün dinlenme günü'
+                : focusTask == null
+                ? today.isCompleted
+                      ? 'Bugünkü plan tamamlandı'
+                      : 'Sıradaki görev bulunamadı'
+                : 'Şimdi odaklan',
+            style: textTheme.labelMedium?.copyWith(
+              color: colors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (!today.isRestDay) ...[
+            const SizedBox(height: 4),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    focusTitle,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colors.onTertiaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    focusReason,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onTertiaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: today.isRestDay
+                      ? null
+                      : focusTask == null && !today.isCompleted
+                      ? () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const DailyPlanScreen(),
+                          ),
+                        )
+                      : () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PomodoroScreen(
+                              autoStart: true,
+                              taskTitle: focusTask == null
+                                  ? 'Serbest odak çalışması'
+                                  : focusTitle,
+                              taskId: focusTaskId,
+                            ),
+                          ),
+                        ),
+                  icon: Icon(
+                    today.isRestDay
+                        ? Icons.self_improvement_outlined
+                        : focusTask == null && !today.isCompleted
+                        ? Icons.route_outlined
+                        : Icons.play_arrow_rounded,
+                    size: 21,
+                  ),
+                  label: Text(
+                    today.isRestDay
+                        ? 'Dinlenme günü'
+                        : focusTask == null && !today.isCompleted
+                        ? 'Günlük planı aç'
+                        : focusTask == null
+                        ? 'Serbest odak başlat'
+                        : 'Göreve başla',
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    minimumSize: const Size(0, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 9),
+              Tooltip(
+                message: today.isRestDay
+                    ? 'Bugün dinlenme günü'
+                    : today.isCompleted
+                    ? 'Tamamlandı işaretini kaldır'
+                    : 'Günü tamamla',
+                child: IconButton.filledTonal(
+                  onPressed: today.isRestDay
+                      ? null
+                      : () => state.toggleDayCompleted(today.dateKey),
+                  icon: Icon(
+                    today.isCompleted
+                        ? Icons.check_circle_rounded
+                        : Icons.check_rounded,
+                  ),
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size(50, 50),
+                    foregroundColor: today.isCompleted
+                        ? colors.secondary
+                        : colors.onSurface,
+                    backgroundColor: today.isCompleted
+                        ? colors.secondary.withValues(alpha: 0.14)
+                        : colors.surfaceContainerHighest,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
             '📐 TYT',
             style: TextStyle(
               color: colors.primary,
@@ -870,113 +1069,6 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          if (!today.isRestDay) ...[
-            const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colors.tertiaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    focusTask == null ? 'Odak önerisi' : 'Şimdi odaklan',
-                    style: textTheme.labelMedium?.copyWith(
-                      color: colors.onTertiaryContainer,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    focusTitle,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colors.onTertiaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    focusReason,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.onTertiaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: today.isRestDay
-                      ? null
-                      : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PomodoroScreen(
-                              autoStart: true,
-                              taskTitle: today.isCompleted && focusTask == null
-                                  ? 'Serbest odak çalışması'
-                                  : focusTitle,
-                              taskId: focusTaskId,
-                            ),
-                          ),
-                        ),
-                  icon: const Icon(Icons.play_arrow_rounded, size: 21),
-                  label: Text(
-                    today.isRestDay
-                        ? 'Dinlenme günü'
-                        : today.isCompleted
-                        ? 'Tekrar odaklan'
-                        : 'Göreve başla',
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    minimumSize: const Size(0, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 9),
-              Tooltip(
-                message: today.isRestDay
-                    ? 'Bugün dinlenme günü'
-                    : today.isCompleted
-                    ? 'Tamamlandı işaretini kaldır'
-                    : 'Günü tamamla',
-                child: IconButton.filledTonal(
-                  onPressed: today.isRestDay
-                      ? null
-                      : () => state.toggleDayCompleted(today.dateKey),
-                  icon: Icon(
-                    today.isCompleted
-                        ? Icons.check_circle_rounded
-                        : Icons.check_rounded,
-                  ),
-                  style: IconButton.styleFrom(
-                    minimumSize: const Size(50, 50),
-                    foregroundColor: today.isCompleted
-                        ? colors.secondary
-                        : colors.onSurface,
-                    backgroundColor: today.isCompleted
-                        ? colors.secondary.withValues(alpha: 0.14)
-                        : colors.surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
