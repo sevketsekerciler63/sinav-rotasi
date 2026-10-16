@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 62 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7 ve TYT Biyoloji 6/6 kaynaklı; diğer 45 kayıtta kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 76 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7, TYT Biyoloji 6/6 ve TYT Sosyal 14/14 kaynaklı; AYT Matematik/Fizik/Kimya/Biyoloji toplam 31 kayıtta kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 57 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; dört TYT alanında 56/56 kayıt kaynaklı, diğer 51 kaydın 50'sinde kaynak bağı eksik (Biyoloji Hücre kaydının eski kaynağı mevcut).
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Şu an 76 kayıt kaynaklı; bu, kaynakların tüm içerik iddialarını veya güncel YKS kapsamını doğruladığı anlamına gelmez. TYT'de 76/76 kayıt kaynaklı; AYT'de 31 kaydın kaynak bağı eksik.
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -187,3 +187,31 @@ TYT Biyoloji kataloğundaki 6/6 kaydın kaynak bağı mevcut. Bu turda beş yeni
 - Besin basamakları için enerji aktarımının azaldığı korundu; “%10 kuralı” sabit ve evrensel oran gibi sunulmadı.
 - Kalıtım açıklamasında gen tanımı işlevsel ürünle ilişkilendirildi; 46 kromozom bilgisi diploit insan vücut hücresiyle sınırlandı ve gametlerdeki 23 kromozom ayrıca belirtildi.
 - **Kapsam doğrulaması bekliyor:** OGM Dört Dörtlük TYT Biyoloji'nin konu dizininde sınıflandırma, hücre, kalıtım ve ekosistem başlıkları yer alırken Fotosentez ve Solunum aynı dizinde görünmüyor. Bu, tek başına YKS dışı olduğuna kanıt değildir. Hedef YKS yılı için resmi/kohort kapsamı teyit edilene kadar `tyt_bio_4` kataloğunda korunacak, fakat uygulama kapsamı uzman incelemesinde açık kalacak. [Dört Dörtlük TYT Biyoloji konu dizini](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page8.html).
+
+## TYT Sosyal konu kaynak turu — 2026-10-16
+
+TYT Sosyal kataloğundaki 14/14 kayıt MEB OGM veya kurumsal kaynaklarla eşleştirildi. Bu turda kronoloji, kavram tanımları ve coğrafi dağılım açıklamaları gözden geçirildi; soru tahmini gibi sunulan çalışma ipucu kaldırıldı. Bağlantılar kavram dayanağıdır; hedef YKS yılı/kohort kapsamı ve alan uzmanı onayı ayrıca gerekir.
+
+| Topic ID | Konu | Kaynak |
+| --- | --- | --- |
+| `tyt_sos_1` | Osmanlı kuruluş ve yükseliş | [Tarih 10, Osmanlı Devleti](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/tarih/10/unite2/files/basic-html/page4.html) · [Tarih 10, Osmanlı'nın dünya gücü](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/tarih/10/unite5/files/basic-html/page15.html) |
+| `tyt_sos_2` | Osmanlı'da yenileşme ve son dönem | [Tarih 11 Çalışma Defteri, kronoloji](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f7/11/tarih/tarih.pdf) |
+| `tyt_sos_3` | Millî Mücadele | [Dört Dörtlük TYT Tarih, Millî Mücadele, s. 230](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page230.html) |
+| `tyt_sos_4` | Atatürk dönemi inkılapları | [Dört Dörtlük TYT Tarih, Atatürkçülük, s. 238](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page238.html) · [MEB, kadınların siyasal hakları](https://www.meb.gov.tr/belirligunler/10kasim/inkilaplari/toplumsal/kadin_haklari.htm) |
+| `tyt_sos_5` | Türkiye'nin coğrafi özellikleri | [Dört Dörtlük TYT Coğrafya, konum, s. 48](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page48.html) · [Dört Dörtlük TYT Coğrafya, yer şekilleri, s. 169](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page169.html) |
+| `tyt_sos_6` | Türkiye'de iklim | [Dört Dörtlük TYT Coğrafya, Türkiye iklimi, s. 101](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page101.html) |
+| `tyt_sos_7` | Türkiye'de tarım ve ekonomi | [Coğrafya 11 Beceri Temelli, tarım ürünleri, s. 69](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/cografya/files/basic-html/page69.html) |
+| `tyt_sos_8` | Dünya coğrafyası | [Coğrafya 10, okyanuslar ve denizler, s. 64](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/cografya/10/unite1/files/basic-html/page64.html) · [Coğrafya 9, dünya iklimleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/cografya/9/usak/unite3/files/basic-html/page5.html) |
+| `tyt_sos_9` | Varlık felsefesi | [Dört Dörtlük TYT Felsefe, varlık, s. 45](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/files/basic-html/page45.html) |
+| `tyt_sos_10` | Bilgi felsefesi | [Dört Dörtlük TYT Felsefe, bilgi, s. 71](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/files/basic-html/page71.html) |
+| `tyt_sos_11` | Ahlak ve siyaset felsefesi | [Dört Dörtlük TYT Felsefe](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/felsefe.pdf) · [Defterim Felsefe 10, ahlak](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/felsefe/files/basic-html/page188.html) |
+| `tyt_sos_12` | İslam'ın temel ilkeleri | [Diyanet, Dinimi Öğreniyorum](https://yazkurankurslari.diyanet.gov.tr/evrak/kitap/dinimi_ogreniyorum.pdf) |
+| `tyt_sos_13` | Hz. Muhammed'in hayatı | [TDV İslâm Ansiklopedisi, Muhammed](https://islamansiklopedisi.org.tr/muhammed) |
+| `tyt_sos_14` | Kur'an ve temel kavramlar | [Diyanet Kur'an portalı, Bakara](https://kuran.diyanet.gov.tr/tefsir/sure/2) · [Alak suresi](https://dijital.diyanet.gov.tr/Dinle/hatm-i-serif-sureler/alak-suresi?id=3255) · [TÜBİTAK, hadis ve sünnet](https://ansiklopedi.tubitak.gov.tr/ansiklopedi/hadis_ve_sunnet) · [TDV, dinî terimler sözlüğü](https://www.isam.org.tr/yayin/tdv-islam-ansiklopedisi-dini-terimler-sozlugu) |
+
+### Kapsam ve dağılım için açık kararlar
+
+- `tyt_sos_8` açıklaması kıta/okyanus sayısını sabitlemez. OGM Coğrafya 10 kaynağı üç ana okyanus sınıflandırmasını kullanıyor; farklı atlas ve öğretim modelleri farklı sayım yapabildiği için uygulamada hedef müfredat modeline göre uzman kararı bekleniyor.
+- `tyt_sos_1` kuruluş tarihi olarak 1299'u mutlaklaştırmaz; bu tarih geleneksel tarihlemedir ve kuruluş süreci farklı görüşlerle incelenir.
+- `tyt_sos_4` kadınların siyasal haklarını aşamalı tarihlerle verir: belediye seçimleri 1930, köy muhtarlığı 1933, milletvekili seçme-seçilme 1934.
+- Bu 14 başlığın tahmini soru ağırlıkları resmî dağılım değildir. TYT Sosyal alt başlıklarında kodlanan soru sayıları 20 soruluk ders toplamına eşleştirildi; uzman/kohort onayı bekliyor.

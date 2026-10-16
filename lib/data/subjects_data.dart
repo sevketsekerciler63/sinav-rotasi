@@ -932,13 +932,16 @@ List<Subject> getAllSubjects() {
       type: 'TYT',
       totalQuestions: 20,
       tip:
-          'Kurtuluş Savaşı+İnkılaplar tarihleri + Türkiye coğrafyası + İslam\'ın şartları = ~8-10 soru kolay net!',
+          'Tarih konularında neden-sonuç ve kronoloji kur; coğrafyada harita yorumla; felsefe ve din kavramlarını kısa tanım ve örneklerle ayırt et.',
       topics: [
         Topic(
           id: 'tyt_sos_1',
           name: 'Osmanlı Kuruluş ve Yükselme',
           description:
-              'Kuruluş: 1299. Fatih: 1453 İstanbul. Yavuz: Mısır, Halifelik. Kanuni: en geniş sınır.',
+              'Osmanlı Beyliği’nin kuruluşu geleneksel olarak 1299’a tarihlenir; kuruluş süreci ve tarihlemesi farklı görüşlerle ele alınır. II. Mehmed 1453’te İstanbul’u aldı. Yavuz Sultan Selim döneminde 1517 Ridaniye Savaşı’yla Mısır Osmanlı topraklarına katıldı. Olayları dönemleri ve sonuçlarıyla birlikte değerlendir.',
+          sourceLabel: 'MEB OGM Materyal · Tarih 10, Osmanlı Devleti',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/tarih/10/unite2/files/basic-html/page4.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -946,9 +949,12 @@ List<Subject> getAllSubjects() {
         ),
         Topic(
           id: 'tyt_sos_2',
-          name: 'Osmanlı Gerileme ve Reform',
+          name: 'Osmanlı’da Yenileşme ve Son Dönem',
           description:
-              'Tanzimat (1839). 1.Meşrutiyet (1876). 2.Meşrutiyet (1908). 1.Dünya Savaşı. Sevr (1920).',
+              'Tanzimat Fermanı 1839’da, Islahat Fermanı 1856’da ilan edildi. I. Meşrutiyet ve Kanun-ı Esasi 1876’da; II. Meşrutiyet 1908’de ilan edildi. Osmanlı Devleti I. Dünya Savaşı’na 1914’te girdi; Mondros Ateşkes Antlaşması 1918’de, Sevr Antlaşması 1920’de imzalandı. Bu dönemi tek bir “gerileme” nedeni ile açıklama.',
+          sourceLabel: 'MEB OGM Materyal · Tarih 11, Osmanlı’da Yenileşme',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f7/11/tarih/tarih.pdf',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -958,7 +964,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_3',
           name: 'Kurtuluş Savaşı — ÇOK KRİTİK!',
           description:
-              '19 Mayıs 1919: Samsun. Erzurum+Sivas Kongreleri. 23 Nisan 1920: TBMM. Sakarya. Büyük Taarruz. Lozan.',
+              'Mustafa Kemal 19 Mayıs 1919’da Samsun’a çıktı; Erzurum ve Sivas kongreleri millî irade ve bağımsızlık hedefini örgütledi. TBMM 23 Nisan 1920’de açıldı. Sakarya Zaferi (1921) ve Büyük Taarruz (1922) sonrasında Mudanya Ateşkesi yapıldı; Lozan Barış Antlaşması 24 Temmuz 1923’te imzalandı.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Millî Mücadele',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page230.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -966,10 +975,13 @@ List<Subject> getAllSubjects() {
         ),
         Topic(
           id: 'tyt_sos_4',
-          name: 'Atatürk İnkılapları — EZBER ŞART!',
+          name: 'Atatürk Dönemi İnkılapları',
           description:
-              'Saltanat: 1922. Cumhuriyet: 29 Ekim 1923. Halifelik: 1924. Harf devrimi: 1928. Kadına oy: 1934.',
-          questionCount: 2,
+              'Saltanat 1 Kasım 1922’de kaldırıldı; Cumhuriyet 29 Ekim 1923’te ilan edildi; halifelik 3 Mart 1924’te kaldırıldı. Yeni Türk harfleri 1928’de kabul edildi. Kadınlara seçme ve seçilme hakkı belediye seçimlerinde 1930’da, muhtarlık seçimlerinde 1933’te, milletvekili seçimlerinde 1934’te tanındı.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Tarih, Atatürkçülük',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tarih/files/basic-html/page238.html',
+          questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
           estimatedDays: 3,
@@ -978,7 +990,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_5',
           name: 'Türkiye\'nin Coğrafi Özellikleri',
           description:
-              '7 bölge. En büyük: Doğu Anadolu. En kalabalık: Marmara. En yüksek: Ağrı Dağı. En uzun nehir: Kızılırmak.',
+              'Türkiye Kuzey Yarım Küre’de 36°–42° kuzey enlemleri ve 26°–45° doğu boylamları arasında, orta kuşakta yer alır. Yükselti batıdan doğuya genel olarak artar; dağların uzanışı ve yer şekilleri iklimi, ulaşımı ve yerleşmeyi etkiler. Mutlak konum ile göreceli konumun sonuçlarını harita üzerinde karşılaştır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Coğrafya, Konum',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page48.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -988,7 +1003,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_6',
           name: 'Türkiye\'de İklim',
           description:
-              'Akdeniz: yazı kurak, kışı ılık. Karadeniz: her mevsim yağışlı. Karasal: yazı sıcak, kışı soğuk.',
+              'Türkiye’de iklim; enlem, yükselti, denizellik-karasallık, dağların uzanışı ve bakı gibi etkenlerle çeşitlenir. Akdeniz ikliminde yazlar genellikle sıcak-kurak, kışlar ılık-yağışlıdır. Karadeniz kıyılarında yağış yıl geneline yayılır; iç ve doğu kesimlerde karasallık ve yükselti kış koşullarını sertleştirir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Coğrafya, Türkiye İklimi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/cografya/files/basic-html/page101.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -998,7 +1016,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_7',
           name: 'Türkiye\'de Tarım ve Ekonomi',
           description:
-              'Buğday-arpa: İç Anadolu. Fındık: Karadeniz. Pamuk: Ege+Çukurova. Çay: Rize. Zeytin: Ege.',
+              'Tarım ürünlerinin dağılışını iklim, su, toprak, yer şekilleri ve üretim teknolojisi birlikte belirler. Tahıllar İç Anadolu’da yaygındır; çay Doğu Karadeniz’de, fındık Karadeniz kıyılarında, zeytin Ege ve Akdeniz kuşağında, pamuk ise sulamanın elverdiği Ege, Çukurova ve Güneydoğu alanlarında yetiştirilir. Ürün-bölge eşleştirmelerini değişmez sınırlar gibi düşünme.',
+          sourceLabel: 'MEB OGM Materyal · Coğrafya 11, Türkiye’de Tarım Ürünleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/cografya/files/basic-html/page69.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -1008,7 +1029,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_8',
           name: 'Dünya Coğrafyası Temeli',
           description:
-              '6 kıta: Asya en büyük. 4 okyanus. Ekvator: tropikal. Kutup: tundra-buzul.',
+              'Dünya haritasında kıtaları ve okyanusları konumlarıyla tanı; Asya yüzölçümü en büyük kıtadır. Ekvator çevresinde ekvatoral iklim, yüksek enlemlerde tundra ve kutup iklimleri görülür. Kıta ve okyanus sayımı kullanılan coğrafi sınıflandırmaya göre değişebildiğinden kaynakta benimsenen modeli belirt.',
+          sourceLabel: 'MEB OGM Materyal · Coğrafya 10, Okyanuslar ve Denizler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/cografya/10/unite1/files/basic-html/page64.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟡 ORTA',
@@ -1018,7 +1042,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_9',
           name: 'Felsefeye Giriş ve Varlık Felsefesi',
           description:
-              'Felsefe: merak, sorgulama. İdealizm: sadece zihin var. Materyalizm: sadece madde var. Dualizm: ikisi de var.',
+              'Felsefe, kavramları ve varsayımları gerekçeleriyle sorgular. Varlık felsefesi “Varlık var mıdır, temeli nedir?” gibi soruları ele alır. Materyalizm varlığın temelinde maddeyi, idealizm ideayı, düalizm madde ve ideayı birlikte görür; bu görüşler “yalnızca ... vardır” diye özetlenmemelidir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Felsefe, Varlık',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/files/basic-html/page45.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -1028,7 +1055,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_10',
           name: 'Bilgi Felsefesi — Akımlar',
           description:
-              'Rasyonalizm: bilgi akıldan (Descartes). Empirizm: bilgi deneyden (Locke). Kant: akıl+deney.',
+              'Rasyonalizm aklı, empirizm deneyimi bilginin kaynağı olarak öne çıkarır. Kant’ın kritisizmi, deneyimin sağladığı içeriğin zihnin a priori biçim ve kategorileriyle işlendiğini savunarak iki yaklaşımın rolünü birlikte değerlendirir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Felsefe, Bilgi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/files/basic-html/page71.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1038,7 +1068,11 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_11',
           name: 'Ahlak ve Siyaset Felsefesi',
           description:
-              'Hedonizm: haz amaç. Erdem ahlakı: Aristo. Ödev ahlakı: Kant. Faydacılık: Mill.',
+              'Ahlak felsefesi iyi-kötü ve doğru eylemin ölçütlerini sorgular: hazcılık hazzı, erdem etiği karakter ve erdemi, Kant’ın ödev etiği evrenselleştirilebilir ilkeyi, faydacılık eylemlerin sonuçlarını öne çıkarır. Siyaset felsefesi devletin kaynağını, iktidarın sınırlarını, adalet ve özgürlük sorunlarını inceler.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Felsefe, Ahlak ve Siyaset',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/felsefe/felsefe.pdf',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1048,7 +1082,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_12',
           name: 'İslam\'ın Temel İlkeleri',
           description:
-              'İmanın 6 şartı. İslam\'ın 5 şartı: Kelime-i şahadet, namaz, oruç, zekat, hac.',
+              'İmanın esasları altıdır: Allah’a, meleklere, kitaplara, peygamberlere, ahiret gününe ve kadere inanmak. İslam’ın beş şartı kelime-i şehadet, namaz, oruç, zekât ve hacdır. İman esasları ile ibadet şartlarını aynı liste olarak karıştırma.',
+          sourceLabel: 'Diyanet İşleri Başkanlığı · Dinimi Öğreniyorum',
+          sourceUrl:
+              'https://yazkurankurslari.diyanet.gov.tr/evrak/kitap/dinimi_ogreniyorum.pdf',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -1058,7 +1095,9 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_13',
           name: 'Hz. Muhammed\'in Hayatı',
           description:
-              '570: Mekke. 610: İlk vahiy. 622: Hicret. 630: Mekke fethi. 632: Vefat.',
+              'Hz. Muhammed yaklaşık 570/571’de Mekke’de doğdu. İslamî kaynaklarda ilk vahiy 610’a, Hicret 622’ye, Mekke’nin fethi 630’a, vefatı 632’ye tarihlenir. Doğum yılının 570 veya 571 verilmesi kaynaklarda görülen farklı tarihleme geleneğindendir.',
+          sourceLabel: 'Türkiye Diyanet Vakfı İslâm Ansiklopedisi · Muhammed',
+          sourceUrl: 'https://islamansiklopedisi.org.tr/muhammed',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -1068,7 +1107,9 @@ List<Subject> getAllSubjects() {
           id: 'tyt_sos_14',
           name: 'Kuran ve Temel Kavramlar',
           description:
-              '114 sure, 6236 ayet. İlk inen: Alak. En uzun: Bakara. Meal, tefsir, hadis, sünnet, fıkıh, siyer.',
+              'Kur’an 114 sureden oluşur; yaygın Kûfî sayımında 6.236 ayet kabul edilir. İlk vahiy olarak Alak suresinin ilk ayetleri kabul edilir; Bakara 286 ayetle en uzun suredir. Meal anlam aktarımı, tefsir açıklama ve yorum, hadis Hz. Peygamber’e nispet edilen söz-fiil-onay rivayetleri, sünnet örnek yaşayışı, fıkıh amelî hükümleri konu edinir; siyer Hz. Muhammed’in hayatını inceler.',
+          sourceLabel: 'Diyanet · Kur’an-ı Kerim ve Temel Kavramlar',
+          sourceUrl: 'https://kuran.diyanet.gov.tr/tefsir/sure/2',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
