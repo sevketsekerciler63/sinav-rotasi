@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 57 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7 kaynaklı; diğer 51 kaydın 50'sinde kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 62 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7 ve TYT Biyoloji 6/6 kaynaklı; diğer 45 kayıtta kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -165,3 +165,25 @@ TYT Kimya kataloğundaki 7/7 kayda MEB OGM'nin Dört Dörtlük TYT Kimya konu b�
 ## Kapanış ölçütü
 
 Her kayıt için güvenilir birincil/kurumsal kaynak, güncelleme tarihi, gerekli tanım koşulu, en az bir denetlenmiş örnek ve kapsam eşlemesi yazılmalı. Kaynağı bulunamayan veya uzman değerlendirmesi isteyen içerik “taslak/doğrulanmadı” diye işaretlenmeli. 44/44 kartta URL bulunması içerik, kapsam, örnek veya editoryal doğrulamayı tamamlamaz. Tam editoryal onay yalnız bu envanter ve kaynakların içerik uzmanı tarafından kontrol edilmesiyle verilebilir.
+
+## TYT Biyoloji konu kaynak turu — 2026-10-16
+
+TYT Biyoloji kataloğundaki 6/6 kaydın kaynak bağı mevcut. Bu turda beş yeni konu kaydı OGM/MEB materyaline bağlandı; Hücre kaydının var olan bağlantısı korundu ve açıklaması hücre tipleri arasındaki farkı gösterecek biçimde düzeltildi. Bu bağlantılar kavramsal dayanak sağlar; güncel YKS kapsamını, alan uzmanı onayını veya her örneğin denetimini tek başına kanıtlamaz.
+
+| Topic ID | Konu | MEB OGM kaynak |
+| --- | --- | --- |
+| `tyt_bio_1` | Hücre — Sıfırdan | [Defterim Biyoloji 9, s. 100](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/biyoloji/files/basic-html/page100.html) |
+| `tyt_bio_2` | Prokaryot – Ökaryot | [Biyoloji 9, Hücrenin Yapısı, s. 9–10](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/9/unite2/files/basic-html/page9.html) |
+| `tyt_bio_3` | Canlıların Sınıflandırılması | [Dört Dörtlük TYT Biyoloji, Sınıflandırma, s. 101](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page101.html) |
+| `tyt_bio_4` | Fotosentez ve Solunum | [Biyoloji 12, Ünite 2 — fotosentez ve hücresel solunum](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/index.html) · [Fotosentez denklemi, s. 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/files/basic-html/page11.html) · [Hücresel solunum, s. 29](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/files/basic-html/page29.html) |
+| `tyt_bio_5` | Ekosistem ve Besin Zinciri | [Dört Dörtlük TYT Biyoloji, Ekosistem Ekolojisi, s. 231](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page231.html) |
+| `tyt_bio_6` | Kalıtım Temeli (TYT) | [Biyoloji 10, Mitoz ve Eşeysiz Üreme, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/10/unite1/files/basic-html/page6.html) · [Biyoloji 10, gametlerde n=23](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/calisma_defteri/f2/10/biyoloji/biyoloji.pdf) |
+
+### Düzeltilen biyoloji koşulları ve açık kapsam kararı
+
+- Hücre zarı, sitoplazma, DNA ve ribozomun hücrelerdeki ortaklığı belirtildi; çekirdek ve zarla çevrili organeller yalnız ökaryotlara atfedildi. Mitokondri/kloroplastın tüm hücrelerde bulunduğu izlenimi kaldırıldı.
+- Prokaryot açıklamasına arkeler eklendi; sınıflandırma açıklamasındaki “virüs cansız”, “mantarların tümü ayrıştırıcı” ve “bitkilerin tümünde kloroplast” biçimindeki genellemeler kaldırıldı.
+- Oksijenli fotosentez eşitliği sadeleştirilmiş net denklem olarak etiketlendi. Solunum denkleminden evrenselmiş gibi verilen `38 ATP` çıkarıldı; ATP veriminin hücre ve hesap modeline göre değiştiği belirtildi.
+- Besin basamakları için enerji aktarımının azaldığı korundu; “%10 kuralı” sabit ve evrensel oran gibi sunulmadı.
+- Kalıtım açıklamasında gen tanımı işlevsel ürünle ilişkilendirildi; 46 kromozom bilgisi diploit insan vücut hücresiyle sınırlandı ve gametlerdeki 23 kromozom ayrıca belirtildi.
+- **Kapsam doğrulaması bekliyor:** OGM Dört Dörtlük TYT Biyoloji'nin konu dizininde sınıflandırma, hücre, kalıtım ve ekosistem başlıkları yer alırken Fotosentez ve Solunum aynı dizinde görünmüyor. Bu, tek başına YKS dışı olduğuna kanıt değildir. Hedef YKS yılı için resmi/kohort kapsamı teyit edilene kadar `tyt_bio_4` kataloğunda korunacak, fakat uygulama kapsamı uzman incelemesinde açık kalacak. [Dört Dörtlük TYT Biyoloji konu dizini](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page8.html).

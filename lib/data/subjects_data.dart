@@ -19,7 +19,8 @@ List<Subject> getAllSubjects() {
           name: 'Sayılar — Doğal, Tam, Rasyonel',
           description:
               'Doğal sayılar 0, 1, 2, ...; tam sayılar negatif tam sayılar, 0 ve pozitif tam sayılardır. Rasyonel sayılar a/b biçiminde yazılır (a,b tam sayı; b≠0); irrasyonel sayılar bu biçimde yazılamaz ve ondalık gösterimleri sonsuz, devirsizdir. π ve √2 irrasyoneldir. Sayı doğrusunda negatifler 0\'ın solunda, pozitifler sağındadır; 0 orijin noktasıdır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Sayı Kümeleri',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Sayı Kümeleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page54.html',
           questionCount: 2,
@@ -71,7 +72,8 @@ List<Subject> getAllSubjects() {
           name: 'Köklü Sayılar',
           description:
               '√a, a≥0 için karesi a olan negatif olmayan gerçek sayıyı gösterir. a,b≥0 iken √a·√b=√(ab); a≥0 ve b>0 iken √(a/b)=√a/√b. Örnek: √4=2, √9=3, √25=5. 1/√2, payda sıfır olmadığı için √2/2 biçiminde yazılabilir.',
-          sourceLabel: 'MEB OGM Materyal · Matematik 9 Beceri Temelli Etkinlikler',
+          sourceLabel:
+              'MEB OGM Materyal · Matematik 9 Beceri Temelli Etkinlikler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/pdf/9/matematik.pdf',
           questionCount: 2,
@@ -84,7 +86,8 @@ List<Subject> getAllSubjects() {
           name: 'EBOB-EKOK',
           description:
               'EBOB, iki pozitif tam sayının en büyük ortak böleni; EKOK, en küçük ortak katıdır. Pozitif tam sayılar a,b için EBOB(a,b)·EKOK(a,b)=a·b. Asal çarpanlara ayırma iki değeri bulma yöntemlerinden biridir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, EBOB-EKOK',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, EBOB-EKOK',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page78.html',
           questionCount: 2,
@@ -97,7 +100,8 @@ List<Subject> getAllSubjects() {
           name: 'Bölme-Bölünebilme',
           description:
               'Bir tam sayının 2\'ye bölünmesi için son rakamı çift; 3 veya 9\'a bölünmesi için rakamları toplamı sırasıyla 3 veya 9\'un katı olmalıdır. 4\'te son iki basamak, 5\'te son rakam 0 veya 5, 10\'da son rakam 0 olmalıdır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Bölünebilme Kuralları',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Bölünebilme Kuralları',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page72.html',
           questionCount: 1,
@@ -123,7 +127,8 @@ List<Subject> getAllSubjects() {
           name: 'Yüzde Problemleri',
           description:
               'Bir niceliğin %p\'si, niceliğin p/100 ile çarpımıdır. %20 artış başlangıç değerini 1,20 ile; %20 azalış 0,80 ile çarpar. Ardışık yüzde değişimleri her adımda güncel değer üzerinden uygulanır; yüzdeler doğrudan toplanmaz.',
-          sourceLabel: 'MEB OGM Materyal · Temel Düzey Matematik 12, Yüzde Hesapları',
+          sourceLabel:
+              'MEB OGM Materyal · Temel Düzey Matematik 12, Yüzde Hesapları',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematiktemelduzey/12/unite1/files/basic-html/page46.html',
           questionCount: 2,
@@ -136,7 +141,8 @@ List<Subject> getAllSubjects() {
           name: 'Denklem Kurma — 1. Derece',
           description:
               'Bilinmeyeni x ile göster; “5 fazlası” x+5, “3 katı” 3x olur. Eşitliğin iki tarafına aynı işlemi uygulayarak bilinmeyeni yalnız bırak. Örnek: 3x+5=20 ise x=5.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Birinci Dereceden Denklemler',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Birinci Dereceden Denklemler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page105.html',
           questionCount: 2,
@@ -162,7 +168,8 @@ List<Subject> getAllSubjects() {
           name: 'Yaş Problemleri',
           description:
               'Bugünkü yaşı x olan kişinin n yıl sonraki yaşı x+n, n yıl önceki yaşı x−n olur (geçmiş yaşlar soruda anlamlı olmalıdır). İki kişinin aynı tarihteki yaş farkı zamanla değişmez.',
-          sourceLabel: 'MEB OGM Materyal · Defterim Matematik 9, Yaş Problemleri',
+          sourceLabel:
+              'MEB OGM Materyal · Defterim Matematik 9, Yaş Problemleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page175.html',
           questionCount: 1,
@@ -201,7 +208,8 @@ List<Subject> getAllSubjects() {
           name: 'Kar-Zarar ve Karışım',
           description:
               'Kâr=satış fiyatı−maliyet; maliyete göre kâr yüzdesi=kâr/maliyet×100\'dür. Aynı tür ve birimdeki iki karışımın derişimi c₁,c₂ ve miktarları m₁,m₂ ise son derişim (c₁m₁+c₂m₂)/(m₁+m₂) olur; bu ortalama, miktar birimleri ve derişim tanımları uyumluysa kullanılır.',
-          sourceLabel: 'MEB OGM Materyal · Defterim Matematik 9, Karışım Problemleri',
+          sourceLabel:
+              'MEB OGM Materyal · Defterim Matematik 9, Karışım Problemleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page200.html',
           questionCount: 2,
@@ -240,7 +248,8 @@ List<Subject> getAllSubjects() {
           name: 'Dik Üçgen ve Pisagor',
           description:
               'Dik üçgende dik kenarlar a,b ve hipotenüs c ise a²+b²=c². Özel dik üçgen oranları: 3–4–5; 5–12–13; 30°–60°–90° açılarının karşısındaki kenarlar 1:√3:2; 45°–45°–90° üçgeninde 1:1:√2.',
-          sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9, Pisagor Teoremi',
+          sourceLabel:
+              'MEB OGM Materyal · Fen Lisesi Matematik 9, Pisagor Teoremi',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite4/files/basic-html/page89.html',
           questionCount: 2,
@@ -305,7 +314,8 @@ List<Subject> getAllSubjects() {
           name: 'Fonksiyonlar (Temel)',
           description:
               'Fonksiyon, tanım kümesindeki her girdiyi değer kümesinde tam bir çıktıyla eşler. f(2)=5, 2 girdisinin görüntüsünün 5 olduğunu söyler. Örnek: f(x)=2x+1 ise f(3)=7.',
-          sourceLabel: 'MEB OGM Materyal · Matematik 10, Fonksiyon Kavramı ve Gösterimi',
+          sourceLabel:
+              'MEB OGM Materyal · Matematik 10, Fonksiyon Kavramı ve Gösterimi',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/10/unite2/files/basic-html/page4.html',
           questionCount: 2,
@@ -318,7 +328,8 @@ List<Subject> getAllSubjects() {
           name: 'Olasılık',
           description:
               'Sonlu ve eş olasılıklı sonuçlarda P(A)=A\'yı sağlayan sonuç sayısı/tüm sonuç sayısı. Dengeli zar atışında çift gelme olasılığı 3/6=1/2\'dir. Bağımsız A ve B olayları için P(A∩B)=P(A)·P(B).',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Olasılık',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Olasılık',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page332.html',
           questionCount: 1,
@@ -331,7 +342,8 @@ List<Subject> getAllSubjects() {
           name: 'İstatistik',
           description:
               'Aritmetik ortalama=verilerin toplamı/veri sayısı. Medyan (ortanca), veriler sıralandığında ortada kalan değerdir; veri sayısı çiftse ortadaki iki değerin aritmetik ortalaması alınır. Mod, en sık görülen değerdir; bir veri grubunun birden fazla modu olabilir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Merkezi Eğilim Ölçüleri',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Merkezi Eğilim Ölçüleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page283.html',
           questionCount: 1,
@@ -358,7 +370,8 @@ List<Subject> getAllSubjects() {
           name: 'Ana Fikir / Başlık Bulma',
           description:
               'Ana düşünce, metnin bütünüyle ilettiği temel yargıdır; başlık metnin konusunu veya ana düşüncesini kısa ve kapsayıcı biçimde yansıtır. Seçeneğin metnin tamamıyla uyumunu kontrol et.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 4,
@@ -371,7 +384,8 @@ List<Subject> getAllSubjects() {
           name: 'Boşluğa Uygun Cümle',
           description:
               'Boşluğun öncesi ve sonrasındaki düşünce akışını birlikte değerlendir. Bağlaçlar, zamirler ve tekrar edilen kavramlar ilişkiyi gösterebilir; uygun cümle paragrafın anlam ve bütünlüğünü sürdürür.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 3,
@@ -384,7 +398,8 @@ List<Subject> getAllSubjects() {
           name: 'Paragraftan Çıkarılacak Sonuç',
           description:
               'Çıkarım, metinde doğrudan söylenmeyen ancak verilen bilgilerden desteklenen sonuçtur. Metin dışı varsayım ekleme; seçeneğin bütün dayanaklarını paragrafta ara.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 3,
@@ -397,7 +412,8 @@ List<Subject> getAllSubjects() {
           name: 'Paragrafın Açıklama Yöntemi',
           description:
               'Paragrafta düşünce tanımlama, örnekleme, karşılaştırma, tanık gösterme, sayısal verilerden yararlanma veya betimleme gibi yollarla açıklanabilir. Yalnızca anahtar sözcüğe değil, cümlelerin paragraftaki işlevine bak.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
@@ -410,7 +426,8 @@ List<Subject> getAllSubjects() {
           name: 'Anlam Bütünlüğünü Bozan Cümle',
           description:
               'Paragrafın konusu ve ana düşüncesiyle doğrudan ilişkisi kurulamayan, düşünce akışını başka yöne çeviren cümleyi bul. Cümle sayısı değişebilir; ortak sözcük bulunması tek başına anlam bütünlüğü sağlamaz.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
@@ -423,7 +440,8 @@ List<Subject> getAllSubjects() {
           name: 'Paragrafın Planı (Sıralama)',
           description:
               'Cümleleri giriş, gelişme ve sonuç ilişkilerine göre sırala. Bağlaçlar ve gönderim sözleri (bu, şu, o gibi) önceki bağlama işaret edebilir; ilişkiyi cümle anlamıyla doğrula.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
@@ -436,7 +454,8 @@ List<Subject> getAllSubjects() {
           name: 'Sözcükte Anlam (Gerçek-Mecaz-Terim)',
           description:
               'Gerçek anlam sözcüğün temel anlamıdır; mecaz anlam, sözcüğün gerçek anlamından uzaklaşarak kazandığı anlamdır. Terim anlam belirli bir bilim, sanat, spor veya meslek alanına özgüdür. Anlamı cümle bağlamında belirle.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 3,
@@ -449,7 +468,8 @@ List<Subject> getAllSubjects() {
           name: 'Eş Anlamlı Sözcükler',
           description:
               'Eş anlamlı sözcükler bazı bağlamlarda aynı veya yakın anlamı karşılayabilir; her kullanımda birbirinin yerine geçmeyebilir. Seçimi cümledeki anlam ve kullanıma göre yap.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 2,
@@ -462,7 +482,8 @@ List<Subject> getAllSubjects() {
           name: 'Cümlede Anlam (İlgi-Koşul-Amaç)',
           description:
               'Koşul, bir yargının gerçekleşmesini başka bir duruma bağlar; amaç, eylemin hedefini; neden-sonuç ise eylemin gerekçesini bildirir. “-se/-sa”, “için” veya “çünkü” ipucu olabilir ama ilişkiyi cümlenin anlamından belirle.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümlede Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümlede Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page21.html',
           questionCount: 3,
@@ -475,7 +496,8 @@ List<Subject> getAllSubjects() {
           name: 'Atasözü ve Deyim',
           description:
               'Atasözü, deneyim ve gözleme dayalı, genellikle öğüt veya genel yargı bildiren kalıplaşmış sözdür. Deyim, çoğunlukla gerçek anlamından uzaklaşmış, kalıplaşmış söz öbeğidir; mutlaka fiil biçiminde veya tam cümle olmak zorunda değildir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 2,
@@ -488,7 +510,8 @@ List<Subject> getAllSubjects() {
           name: 'Sözcük Türleri — Sıfırdan',
           description:
               'Sözcük türünü cümledeki görevine göre belirle: isim varlık/kavramı adlandırır; sıfat ismi niteler veya belirtir; zamir ismin yerini tutar; zarf fiil, sıfat ya da başka bir zarfı etkiler. Edat, bağlaç ve ünlem de ayrı türlerdir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, İsim Soylu Sözcükler',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, İsim Soylu Sözcükler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page109.html',
           questionCount: 3,
@@ -501,7 +524,8 @@ List<Subject> getAllSubjects() {
           name: 'Fiil ve Fiilimsi — Sıfırdan',
           description:
               'Fiiller iş, oluş veya durum bildirir; çekimli fiiller kip/zaman ve kişi özellikleriyle yüklem olabilir. Fiilimsiler fiil kök veya gövdelerinden türeyip isim, sıfat ya da zarf görevinde kullanılır; isim-fiil, sıfat-fiil ve zarf-fiil olarak incelenir. Eklerin görevini sözcüğün bağlamında belirle.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Fiiller ve Fiilimsiler',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Fiiller ve Fiilimsiler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page123.html',
           questionCount: 2,
@@ -514,7 +538,8 @@ List<Subject> getAllSubjects() {
           name: 'Cümle Türleri',
           description:
               'Cümleler yüklemin türüne göre fiil/isim; yüklemin yerine göre kurallı/devrik; anlamına göre olumlu/olumsuz, soru, ünlem veya emir; yapısına göre basit, birleşik, sıralı ya da bağlı olarak sınıflandırılabilir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümle Türleri',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümle Türleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page159.html',
           questionCount: 2,
@@ -540,7 +565,8 @@ List<Subject> getAllSubjects() {
           name: 'Noktalama',
           description:
               'Virgül eş görevli sözcük ve söz öbeklerini ayırabilir; noktalı virgül, içinde virgül bulunan grupları veya sıralı cümleleri ayırmada kullanılabilir. İki nokta açıklama/örnekten önce gelebilir. İşaret seçimini cümlenin yapısına ve TDK kurallarına göre yap.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Noktalama İşaretleri',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Noktalama İşaretleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page87.html',
           questionCount: 1,
@@ -553,7 +579,8 @@ List<Subject> getAllSubjects() {
           name: 'Anlatım Bozuklukları',
           description:
               'Anlatım bozukluklarında özne-yüklem uyumsuzluğu, öge eksikliği, gereksiz/yanlış sözcük kullanımı, anlamca çelişen ifadeler ve tamlama/çatı uyumsuzluğu gibi sorunları ara. Düzeltmenin cümledeki anlamı koruduğunu kontrol et.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Anlatım Bozuklukları',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Anlatım Bozuklukları',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page169.html',
           questionCount: 2,
@@ -566,7 +593,8 @@ List<Subject> getAllSubjects() {
           name: 'Ses Bilgisi',
           description:
               'Ses olayları arasında ünsüz yumuşaması (kitap→kitabı) ve bazı sözcüklerde ünlü düşmesi (ağız→ağzı) bulunur. Ses değişimleri ekin/sözcüğün yapısına ve kullanımına bağlıdır; her p/ç/t/k ile biten sözcük yumuşamaz ve istisnalar vardır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Ses Bilgisi',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Ses Bilgisi',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page45.html',
           questionCount: 1,
@@ -593,7 +621,8 @@ List<Subject> getAllSubjects() {
           name: 'Ölçme ve Birimler',
           description:
               'SI temel birimleri: uzunluk metre (m), kütle kilogram (kg), zaman saniye (s), elektrik akımı amper (A), sıcaklık kelvin (K), madde miktarı mol (mol), ışık şiddeti kandela (cd). Türetilmiş birim örnekleri: kuvvet newton (N=kg·m/s²), enerji joule (J=N·m).',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Fizik Bilimine Giriş',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Fizik Bilimine Giriş',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page12.html',
           questionCount: 1,
@@ -606,7 +635,8 @@ List<Subject> getAllSubjects() {
           name: 'Kuvvet ve Hareket — Newton Kanunları',
           description:
               'Newton I: net kuvvet sıfırsa cisim durur veya sabit hızla hareket eder. Newton II: net kuvvet ΣF=ma bağıntısını sağlar. Newton III: etki-tepki kuvvetleri eşit büyüklükte, zıt yönlü ve farklı cisimler üzerindedir; birbirini aynı cisim üzerinde yok etmez.',
-          sourceLabel: 'MEB OGM Materyal · Fizik 11, Newton’ın Hareket Yasaları',
+          sourceLabel:
+              'MEB OGM Materyal · Fizik 11, Newton’ın Hareket Yasaları',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fizik/11/unite1/files/basic-html/page32.html',
           questionCount: 2,
@@ -619,7 +649,8 @@ List<Subject> getAllSubjects() {
           name: 'Enerji – İş – Güç',
           description:
               'Sabit kuvvetin yaptığı iş W=Fd cosθ (θ, kuvvet ile yer değiştirme arasındaki açı); kinetik enerji Eₖ=½mv² (Newton mekaniğinde). Dünya yüzeyine yakın ve g yaklaşık sabitken, seçilen referans düzeyine göre çekim potansiyel enerjisi Eₚ=mgh; ortalama güç yapılan iş/zamandır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, İş, Güç ve Enerji',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Fizik, İş, Güç ve Enerji',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page79.html',
           questionCount: 2,
@@ -645,7 +676,8 @@ List<Subject> getAllSubjects() {
           name: 'Isı ve Sıcaklık',
           description:
               'Sıcaklık, taneciklerin ortalama kinetik enerjisiyle ilişkili bir ölçüdür; °C veya K ile ifade edilir. Isı, sıcaklık farkı nedeniyle sistemler arasında aktarılan enerjidir. Hal değişimi olmayan ve c sabit kabul edilen durumda Q=mcΔT kullanılabilir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Isı ve Sıcaklık',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Isı ve Sıcaklık',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page113.html',
           questionCount: 1,
@@ -658,7 +690,8 @@ List<Subject> getAllSubjects() {
           name: 'Elektrik Temeli',
           description:
               'Elektrik akımı, yüklerin yönlü hareketidir; metal iletkende hareketli yükler elektronlardır, geleneksel akım yönü elektronların sürüklenme yönüne terstir. Potansiyel farkı birim yük başına enerji değişimidir. Ohm yasası, ohmik iletkende fiziksel koşullar sabitken V=IR bağıntısıdır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Elektrik ve Manyetizma',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Elektrik ve Manyetizma',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/files/basic-html/page155.html',
           questionCount: 1,
@@ -671,7 +704,8 @@ List<Subject> getAllSubjects() {
           name: 'Dalgalar ve Optik',
           description:
               'İdeal mekanik dalgada ortam tanecikleri denge konumu çevresinde titreşirken dalga enerji taşır; aynı ortamda dalga hızı v=fλ. Yansıma açısı gelme açısına eşittir (açılar normale göre ölçülür). Işık, yansıma ve kırılmanın yanında gölge, ayna ve merceklerle incelenir; kırılmada ışının yönü her gelişte değişmek zorunda değildir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Dalgalar ve Optik',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Fizik, Dalgalar ve Optik',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/fizik/index.html',
           questionCount: 1,
@@ -698,7 +732,8 @@ List<Subject> getAllSubjects() {
           name: 'Atom Modeli — Sıfırdan',
           description:
               'Proton (+) ve nötron (yüksüz) çekirdekte; elektronlar çekirdek çevresindeki orbitallerde bulunur. Atom numarası proton sayısıdır; kütle numarası proton+nötron sayısıdır. Nötron sayısı=kütle numarası−atom numarası; nötr atomda elektron sayısı proton sayısına eşittir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Atom Modelleri ve Atomun Yapısı',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Atom Modelleri ve Atomun Yapısı',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page51.html',
           questionCount: 1,
@@ -711,7 +746,8 @@ List<Subject> getAllSubjects() {
           name: 'Periyodik Tablo — Temeli',
           description:
               'Periyodik tabloda gruplar sütun, periyotlar satırdır. Aynı ana grup elementleri benzer kimyasal özellikler gösterebilir. Modern numaralandırmada gruplar 1–18’dir; halojenler 17., soy gazlar 18. gruptadır. Metaller çoğunlukla sol/orta, ametaller sağ üst bölgede; yarı metaller arada yer alır.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Periyodik Sistem',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Periyodik Sistem',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page67.html',
           questionCount: 1,
@@ -724,7 +760,8 @@ List<Subject> getAllSubjects() {
           name: 'Kimyasal Bağlar',
           description:
               'İyonik bağ zıt yüklü iyonlar arasındaki elektrostatik çekimdir (NaCl); kovalent bağ atomların elektron çiftlerini paylaşmasıyla oluşur (H₂O’da polar kovalent bağ); metalik bağ, metal örgüsündeki tanecikler ve delokalize elektronlar arasındaki etkileşimle açıklanır. “Metal+ametal” ve “ametal+ametal” tipik örüntüdür, mutlak sınıflandırma kuralı değildir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Türler Arası Etkileşimler',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Türler Arası Etkileşimler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page93.html',
           questionCount: 1,
@@ -737,7 +774,8 @@ List<Subject> getAllSubjects() {
           name: 'Madde ve Karışımlar',
           description:
               'Saf maddeler element veya bileşiktir; belirli bileşimleri vardır. Karışımlar, maddelerin kimyasal kimlikleri korunarak fiziksel olarak bir araya gelmesiyle oluşur; homojen veya heterojen olabilir. Ayırma yöntemi bileşenlerin fiziksel özellik farkına göre seçilir (süzme, damıtma, buharlaştırma gibi).',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Karışımlar ve Ayırma Teknikleri',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Karışımlar ve Ayırma Teknikleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page219.html',
           questionCount: 1,
@@ -750,7 +788,8 @@ List<Subject> getAllSubjects() {
           name: 'Asit-Baz (TYT)',
           description:
               'Sulu çözeltide asit H₃O⁺ derişimini, baz OH⁻ derişimini artırır; Brønsted tanımında asit proton verir, baz proton alır. 25 °C’de pH<7 asidik, pH=7 nötr, pH>7 bazik çözeltiyi gösterir. İndikatörler renk değiştirir; maddeleri tatma veya dokunarak tanıma yöntemi değildir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Asitler, Bazlar ve Tuzlar',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Asitler, Bazlar ve Tuzlar',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page251.html',
           questionCount: 1,
@@ -763,7 +802,8 @@ List<Subject> getAllSubjects() {
           name: 'Kimyasal Tepkimeler',
           description:
               'Kapalı sistemde kimyasal tepkimede toplam kütle korunur. Denklem denkleştirilirken formüllerin indisleri değiştirilmez; katsayılar, her elementin atom sayıları tepkime öncesi ve sonrasında eşit olacak şekilde seçilir.',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Tepkimeler',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyasal Tepkimeler',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page201.html',
           questionCount: 1,
@@ -776,7 +816,8 @@ List<Subject> getAllSubjects() {
           name: 'Mol Kavramı (Temel TYT)',
           description:
               '1 mol, tam olarak 6,02214076×10²³ belirtilmiş temel varlık içerir. Kütlesi m ve mol kütlesi M olan örnek için n=m/M (M g/mol, m g ise n mol). Okul düzeyinde H₂O’nun mol kütlesi yaklaşık 18 g/mol’dür (2×1+16).',
-          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyanın Temel Kanunları ve Mol Kavramı',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Kimya, Kimyanın Temel Kanunları ve Mol Kavramı',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/kimya/files/basic-html/page181.html',
           questionCount: 1,
@@ -802,7 +843,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_1',
           name: 'Hücre — Sıfırdan',
           description:
-              'Hücre = yaşamın temel birimi. Hücre zarı: kontrollü geçiş. Sitoplazma: organeller burada. Çekirdek: DNA var. Mitokondri: ATP üretir. Ribozom: protein üretir. Kloroplast, bitkilerde ve algler gibi fotosentez yapan bazı ökaryotlarda bulunur.',
+              'Hücre, canlıların yapısal ve işlevsel temel birimidir. Tipik prokaryot ve ökaryot hücrelerde hücre zarı, sitoplazma, DNA ve ribozom bulunur. Ökaryotların tipik hücrelerinde çekirdek ve zarla çevrili organeller yer alır. Ribozom protein sentezler; mitokondri hücresel solunumla ATP üretiminde görevlidir. Kloroplast, fotosentez yapan bitki ve alg gibi bazı ökaryotlarda bulunur.',
           sourceLabel: 'MEB OGM Materyal · Defterim Biyoloji 9',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/biyoloji/files/basic-html/page100.html',
@@ -815,7 +856,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_2',
           name: 'Prokaryot – Ökaryot',
           description:
-              'Prokaryot hücrelerde zarla çevrili çekirdek yoktur; DNA nükleoit bölgede bulunur (ör. bakteriler). Ökaryot hücrelerde çekirdek vardır (bitki, hayvan, mantar ve protist hücreleri). Virüsler hücre yapısında değildir.',
+              'Her iki hücre tipinde de hücre zarı, sitoplazma, DNA ve ribozom bulunur. Prokaryotlarda zarla çevrili çekirdek ve organeller yoktur; DNA nükleoit bölgede bulunur. Bakteriler ve arkeler prokaryottur. Ökaryotlarda çekirdek ve zarla çevrili organeller vardır; protist, bitki, mantar ve hayvanlar ökaryottur. Virüsler hücresel yapıda değildir.',
+          sourceLabel: 'MEB OGM Materyal · Biyoloji 9, Hücrenin Yapısı',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/9/unite2/files/basic-html/page9.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -825,7 +869,11 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_3',
           name: 'Canlıların Sınıflandırılması',
           description:
-              'Alem→Şube→Sınıf→Takım→Aile→Cins→Tür. Virüs cansız. Bakteri prokaryot. Mantar ayrıştırıcı. Bitki kloroplast var. Hayvan kloroplast yok.',
+              'Sınıflandırma basamakları büyükten küçüğe âlem → şube → sınıf → takım → familya (aile) → cins → türdür. Türden âleme doğru gidildikçe ortak özellik ve akrabalık azalırken kapsanan canlı çeşitliliği artar. Bakteriler prokaryot hücrelidir; mantarlar arasında ayrıştırıcılar bulunur. Virüsler hücresel canlı gruplarına dâhil edilmez.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Biyoloji, Sınıflandırma',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page101.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -835,7 +883,11 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_4',
           name: 'Fotosentez ve Solunum',
           description:
-              'Fotosentez: 6CO₂+6H₂O+ışık→C₆H₁₂O₆+6O₂. Solunum: C₆H₁₂O₆+6O₂→6CO₂+6H₂O+38ATP.',
+              'Oksijenli fotosentezin sadeleştirilmiş net denklemi: 6CO₂ + 6H₂O + ışık enerjisi → C₆H₁₂O₆ + 6O₂. Oksijenli solunumun genel denklemi: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + enerji; açığa çıkan enerji ATP sentezinde kullanılır. ATP verimi sabit bir katsayı değildir; hücreye ve kullanılan hesaplama modeline göre değişir.',
+          sourceLabel:
+              'MEB OGM Materyal · Biyoloji 12, Canlılarda Enerji Dönüşümleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/12/unite2/index.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -845,7 +897,11 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_5',
           name: 'Ekosistem ve Besin Zinciri',
           description:
-              'Üretici: bitki. Tüketici: hayvan. Ayrıştırıcı: bakteri/mantar. Enerji yukarıya gidince AZALIR (%10 kuralı).',
+              'Üreticiler kendi organik besinini üreten ototroflardır; tüketiciler besinini dışarıdan alan heterotroflardır. Bazı bakteri ve mantarlar ayrıştırıcıdır. Enerji beslenme basamakları arasında tek yönlü aktarılır ve bir üst basamağa aktarılabilen enerji azalır; oran ekosisteme göre değişir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Biyoloji, Ekosistem Ekolojisi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/biyoloji/files/basic-html/page231.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -855,7 +911,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_bio_6',
           name: 'Kalıtım Temeli (TYT)',
           description:
-              'DNA: kalıtım materyali. Gen: DNA bölümü. Kromozom: DNA+protein. İnsan: 46 kromozom (23 çift).',
+              'DNA kalıtsal bilgiyi taşır. Gen, DNA üzerindeki işlevsel bir RNA veya polipeptit ürününün oluşumuyla ilişkili nükleotit dizisidir. Ökaryot kromozomları DNA ve proteinlerden oluşur. İnsanın diploit vücut hücrelerinde 46 kromozom (23 çift), gametlerinde 23 kromozom bulunur.',
+          sourceLabel: 'MEB OGM Materyal · Biyoloji 10, Mitoz ve Eşeysiz Üreme',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/biyoloji/10/unite1/files/basic-html/page6.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
