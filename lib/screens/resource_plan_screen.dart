@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/resource_plan.dart';
@@ -48,7 +49,7 @@ class ResourceTodayCard extends StatelessWidget {
             FilledButton.icon(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ResourcePlanScreen()),
+                AppPageRoute(builder: (_) => const ResourcePlanScreen()),
               ),
               icon: const Icon(Icons.route_outlined),
               label: const Text('Kaynak planını aç'),
@@ -130,9 +131,7 @@ class _ResourcePlanScreenState extends State<ResourcePlanScreen> {
                     ? null
                     : () => Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const SettingsScreen(),
-                        ),
+                        AppPageRoute(builder: (_) => const SettingsScreen()),
                       ),
                 child: const Text('Kapasite ve hedef tarihi'),
               ),
@@ -141,7 +140,7 @@ class _ResourcePlanScreenState extends State<ResourcePlanScreen> {
                     ? null
                     : () => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        AppPageRoute(
                           builder: (_) =>
                               const DailyPlanScreen(showLegacy: true),
                         ),
@@ -243,7 +242,7 @@ class _ResourcePlanScreenState extends State<ResourcePlanScreen> {
                                         );
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
+                                          AppPageRoute(
                                             builder: (_) => StudyResourceDetail(
                                               resourceId: task.resourceId,
                                               profileId: state.activeProfile.id,

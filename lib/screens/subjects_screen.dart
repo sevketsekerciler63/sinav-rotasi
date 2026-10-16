@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -594,7 +595,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
             borderRadius: BorderRadius.circular(16),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
+              AppPageRoute(
                 builder: (_) => SubjectDetailScreen(
                   subject: subject,
                   onEditTopic: (selectedSubject, {topic}) =>

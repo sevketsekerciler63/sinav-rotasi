@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -286,8 +287,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (_current < _pageCount - 1) {
       await _persistDraft();
       if (!mounted) return;
+      if (AppMotion.reduced(context)) {
+        _controller.jumpToPage(_current + 1);
+        return;
+      }
       await _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: AppMotion.duration(context, AppMotion.standard),
         curve: Curves.easeInOut,
       );
       return;
@@ -434,7 +439,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: List.generate(
                 _pageCount,
                 (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+                  duration: AppMotion.duration(context, AppMotion.standard),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   width: index == _current ? 28 : 8,
                   height: 8,

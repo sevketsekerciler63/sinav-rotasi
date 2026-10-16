@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -71,7 +72,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 icon: const Icon(Icons.compare_arrows),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  AppPageRoute(
                     builder: (_) =>
                         const ExamComparisonScreen(showLegacy: true),
                   ),

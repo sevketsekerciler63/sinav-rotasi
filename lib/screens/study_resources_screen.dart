@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/learning_workspace.dart';
@@ -383,7 +384,7 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
             icon: const Icon(Icons.help_outline),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ResourcesScreen()),
+              AppPageRoute(builder: (_) => const ResourcesScreen()),
             ),
           ),
         ],
@@ -404,7 +405,7 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
           TextButton.icon(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ResourcePlanScreen()),
+              AppPageRoute(builder: (_) => const ResourcePlanScreen()),
             ),
             icon: const Icon(Icons.route_outlined),
             label: const Text('Kaynaklardan günlük plan'),
@@ -434,7 +435,7 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  AppPageRoute(
                     builder: (_) => StudyResourceDetail(
                       resourceId: resource.id,
                       profileId: state.activeProfile.id,
@@ -590,7 +591,7 @@ class _ResourceDetailState extends State<StudyResourceDetail> {
                               ? null
                               : () => Navigator.push(
                                   context,
-                                  MaterialPageRoute(
+                                  AppPageRoute(
                                     builder: (_) => PomodoroScreen(
                                       autoStart: true,
                                       taskTitle:

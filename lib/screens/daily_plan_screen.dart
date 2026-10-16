@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/weak_topic.dart';
@@ -35,9 +36,13 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     final idx = state.dailyLogs.indexWhere((l) => l.dateKey == todayKey);
     if (idx >= 0 && _scrollController.hasClients) {
+      if (AppMotion.reduced(context)) {
+        _scrollController.jumpTo(idx * 200.0);
+        return;
+      }
       _scrollController.animateTo(
         idx * 200.0,
-        duration: const Duration(milliseconds: 400),
+        duration: AppMotion.standard,
         curve: Curves.easeOut,
       );
     }
@@ -47,7 +52,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
-        if (!widget.showLegacy && state.learningWorkspace.resources.isNotEmpty) {
+        if (!widget.showLegacy &&
+            state.learningWorkspace.resources.isNotEmpty) {
           return const ResourcePlanScreen();
         }
         final colors = Theme.of(context).colorScheme;
@@ -723,9 +729,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
             alignment: AlignmentDirectional.centerEnd,
             child: TextButton.icon(
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const WeakTopicsScreen(),
-                ),
+                AppPageRoute<void>(builder: (_) => const WeakTopicsScreen()),
               ),
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: const Text('Zayıf konuları aç'),
@@ -793,7 +797,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
             TextButton(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                AppPageRoute(builder: (_) => const SettingsScreen()),
               ),
               child: const Text('Tarihi seç'),
             ),

@@ -1,3 +1,4 @@
+import 'theme/app_motion.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:file_picker/file_picker.dart';
@@ -508,6 +509,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _celebrate() {
+    if (!mounted || AppMotion.reduced(context)) return;
     setState(() => _showConfetti = true);
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) setState(() => _showConfetti = false);
@@ -546,13 +548,13 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           IndexedStack(index: _selectedIndex, children: _screens),
-          if (_showConfetti)
+          if (_showConfetti && !AppMotion.reduced(context))
             IgnorePointer(
               child: SizedBox.expand(
                 child: CustomPaint(painter: _ConfettiPainter()),
               ),
             ),
-          if (_showConfetti)
+          if (_showConfetti && !AppMotion.reduced(context))
             Positioned(
               top: 60,
               left: 20,

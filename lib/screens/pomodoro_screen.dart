@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -210,18 +211,20 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       _totalStudyMinutes = _completedPomodoros * workMinutes;
       _pendingSessionStatus = null;
     }
-    if (!mounted) {
-      _phaseEndInProgress = false;
-      return;
-    }
-    setState(() {
+    void advancePhase() {
       _isRunning = false;
       _isTimerActive = true;
       _phaseDeadline = null;
       _isBreak = !_isBreak;
       _totalSeconds = _isBreak ? _nextBreakDurationSeconds : workMinutes * 60;
       _remainingSeconds = _totalSeconds;
-    });
+    }
+
+    if (mounted) {
+      setState(advancePhase);
+    } else {
+      advancePhase();
+    }
     _phaseEndInProgress = false;
     await _persistTimerState();
   }
@@ -243,6 +246,8 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     );
     final safeEndedAt = endedAt.isBefore(startedAt) ? startedAt : endedAt;
     if (state == null) return false;
+    // Stable pending identity/time survives a crash between session and timer writes.
+    if (!await _persistTimerState()) return false;
     final saved = await state.recordStudySession(
       StudySession(
         id: sessionId,
@@ -329,10 +334,12 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   Future<void> _resetTimer() async {
     if (_phaseEndInProgress) return;
+    _phaseEndInProgress = true;
     _timer?.cancel();
     _pendingSessionStatus ??= StudySessionStatus.cancelled;
     final saved = await _finishCurrentSession(_pendingSessionStatus!);
     if (!saved) {
+      _phaseEndInProgress = false;
       await _persistTimerState();
       _schedulePendingSessionRetry();
       return;
@@ -340,8 +347,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     _pendingSessionStatus = null;
     _pendingSessionEndedAt = null;
     _pendingSessionActiveSeconds = null;
-    if (!mounted) return;
-    setState(() {
+    void resetPhase() {
       _isRunning = false;
       _isTimerActive = false;
       _isBreak = false;
@@ -349,7 +355,14 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       _activeSegmentBudgetSeconds = 0;
       _totalSeconds = workMinutes * 60;
       _remainingSeconds = _totalSeconds;
-    });
+    }
+
+    if (mounted) {
+      setState(resetPhase);
+    } else {
+      resetPhase();
+    }
+    _phaseEndInProgress = false;
     await _persistTimerState();
     _timerProfileId = null;
   }
@@ -378,9 +391,9 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     );
   }
 
-  Future<void> _persistTimerState({bool? activeOverride}) async {
+  Future<bool> _persistTimerState({bool? activeOverride}) async {
     final snapshot = _timerStateSnapshot(activeOverride: activeOverride);
-    if (snapshot == null) return;
+    if (snapshot == null) return false;
     final saved = await _appState?.savePomodoroTimerState(snapshot) ?? false;
     if (!saved && !_timerSaveFailed && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -393,6 +406,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       );
     }
     _timerSaveFailed = !saved;
+    return saved;
   }
 
   String get _timeDisplay {
@@ -424,7 +438,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
             children: [
               // Status
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
+                duration: AppMotion.duration(context, AppMotion.standard),
                 child: Container(
                   key: ValueKey(_isBreak),
                   padding: const EdgeInsets.symmetric(
@@ -731,7 +745,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '25 dk çalış, 5 dk mola\nHer 4 Pomodorodan sonra 15 dk uzun mola\nTamamlanan seanslar otomatik kaydedilir.',
+                      '25 dk çalış, 5 dk mola\nHer 4 Pomodorodan sonra 15 dk uzun mola\nEkrandan ayrılsan da süre korunur. Süresi dolan seans, sayacı yeniden açınca kaydedilir. Tamamlanan seanslar bir kez kaydedilir.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: secondaryText,
                         fontSize: 12,
@@ -847,32 +861,8 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   @override
   void dispose() {
     _timer?.cancel();
-    unawaited(_closeTimer());
+    if (!_phaseEndInProgress) unawaited(_persistTimerState());
     _pulseController.dispose();
     super.dispose();
-  }
-
-  Future<void> _closeTimer() async {
-    if (_phaseEndInProgress) return;
-    final hadActiveTimer = _isTimerActive || _isRunning;
-    if (_sessionStartedAt != null) {
-      _pendingSessionStatus ??= StudySessionStatus.cancelled;
-      final saved = await _finishCurrentSession(_pendingSessionStatus!);
-      if (!saved) {
-        _pendingSessionStatus = StudySessionStatus.cancelled;
-        await _persistTimerState();
-        return;
-      }
-    }
-    _pendingSessionStatus = null;
-    _pendingSessionEndedAt = null;
-    _pendingSessionActiveSeconds = null;
-    if (!hadActiveTimer) return;
-    _isRunning = false;
-    _isTimerActive = false;
-    _phaseDeadline = null;
-    _activeSegmentStartedAt = null;
-    _activeSegmentBudgetSeconds = 0;
-    await _persistTimerState(activeOverride: false);
   }
 }

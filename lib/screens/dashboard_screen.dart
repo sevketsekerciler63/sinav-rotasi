@@ -1,7 +1,7 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../models/subject.dart';
 import '../models/daily_log.dart';
 import '../providers/app_state.dart';
@@ -37,73 +37,62 @@ class DashboardScreen extends StatelessWidget {
         final quote = getDailyQuote();
         return Scaffold(
           body: SafeArea(
-            child: AnimationLimiter(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: AnimationConfiguration.toStaggeredList(
-                    duration: const Duration(milliseconds: 250),
-                    childAnimationBuilder: (widget) => SlideAnimation(
-                      verticalOffset: 16.0,
-                      child: FadeInAnimation(child: widget),
-                    ),
-                    children: [
-                      _buildHeader(context, state),
-                      const SizedBox(height: 16),
-                      if (state.daysRemaining < 0) ...[
-                        _buildExpiredTargetBanner(context),
-                        const SizedBox(height: 16),
-                      ],
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context, state),
+                  const SizedBox(height: 16),
+                  if (state.daysRemaining < 0) ...[
+                    _buildExpiredTargetBanner(context),
+                    const SizedBox(height: 16),
+                  ],
 
-                      if (state.learningWorkspace.resources.isNotEmpty)
-                        const ResourceTodayCard()
-                      else if (today != null)
-                        _buildTodayCard(context, state, today)
-                      else
-                        _buildNoTodayPlanCard(context),
-                      const SizedBox(height: 16),
+                  if (state.learningWorkspace.resources.isNotEmpty)
+                    const ResourceTodayCard()
+                  else if (today != null)
+                    _buildTodayCard(context, state, today)
+                  else
+                    _buildNoTodayPlanCard(context),
+                  const SizedBox(height: 16),
 
-                      // Achievement notification
-                      if (state.lastUnlockedAchievement != null) ...[
-                        _buildAchievementBanner(context, state),
-                        const SizedBox(height: 16),
-                      ],
+                  // Achievement notification
+                  if (state.lastUnlockedAchievement != null) ...[
+                    _buildAchievementBanner(context, state),
+                    const SizedBox(height: 16),
+                  ],
 
-                      if (state.daysRemaining >= 0) ...[
-                        _buildCountdownCard(state),
-                        const SizedBox(height: 16),
-                      ],
-                      _buildStatsRow(context, state),
-                      const SizedBox(height: 16),
+                  if (state.daysRemaining >= 0) ...[
+                    _buildCountdownCard(context, state),
+                    const SizedBox(height: 16),
+                  ],
+                  _buildStatsRow(context, state),
+                  const SizedBox(height: 16),
 
-                      _buildMotivationCard(context, quote),
-                      const SizedBox(height: 16),
+                  _buildMotivationCard(context, quote),
+                  const SizedBox(height: 16),
 
-                      // Active goals
-                      if (state.goals
-                          .where((g) => !g.isCompleted)
-                          .isNotEmpty) ...[
-                        _buildActiveGoals(context, state),
-                        const SizedBox(height: 16),
-                      ],
+                  // Active goals
+                  if (state.goals.where((g) => !g.isCompleted).isNotEmpty) ...[
+                    _buildActiveGoals(context, state),
+                    const SizedBox(height: 16),
+                  ],
 
-                      const AppSectionHeader(title: '📚 Ders İlerlemen'),
-                      const SizedBox(height: 12),
-                      _buildSubjectProgress(context, state),
-                      const SizedBox(height: 20),
-                      _buildQuickAccess(context),
-                      const SizedBox(height: 20),
-                      if (state.nextUpcomingMockExam != null) ...[
-                        const AppSectionHeader(title: '📅 Yaklaşan Deneme'),
-                        const SizedBox(height: 12),
-                        _buildNextExam(context, state),
-                      ],
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
+                  const AppSectionHeader(title: '📚 Ders İlerlemen'),
+                  const SizedBox(height: 12),
+                  _buildSubjectProgress(context, state),
+                  const SizedBox(height: 20),
+                  _buildQuickAccess(context),
+                  const SizedBox(height: 20),
+                  if (state.nextUpcomingMockExam != null) ...[
+                    const AppSectionHeader(title: '📅 Yaklaşan Deneme'),
+                    const SizedBox(height: 12),
+                    _buildNextExam(context, state),
+                  ],
+                  const SizedBox(height: 40),
+                ],
               ),
             ),
           ),
@@ -172,7 +161,7 @@ class DashboardScreen extends StatelessWidget {
         state.lastUnlockedAchievement = null;
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+          AppPageRoute(builder: (_) => const AchievementsScreen()),
         );
       },
       child: Container(
@@ -230,7 +219,7 @@ class DashboardScreen extends StatelessWidget {
           trailing: TextButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const GoalsScreen()),
+              AppPageRoute(builder: (_) => const GoalsScreen()),
             ),
             child: const Text('Tümü →'),
           ),
@@ -322,7 +311,7 @@ class DashboardScreen extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+                  AppPageRoute(builder: (_) => const AchievementsScreen()),
                 ),
                 icon: const Icon(Icons.emoji_events_outlined),
                 label: Text('${state.unlockedAchievements}'),
@@ -332,7 +321,7 @@ class DashboardScreen extends StatelessWidget {
               tooltip: 'İstatistikleri aç',
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const StatsScreen()),
+                AppPageRoute(builder: (_) => const StatsScreen()),
               ),
               icon: const Icon(Icons.bar_chart_rounded),
             ),
@@ -342,7 +331,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCountdownCard(AppState state) {
+  Widget _buildCountdownCard(BuildContext context, AppState state) {
     final remaining = state.daysRemaining;
     final totalTopics = state.subjects.fold<int>(
       0,
@@ -442,7 +431,10 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: progress),
-                        duration: const Duration(milliseconds: 720),
+                        duration: AppMotion.duration(
+                          context,
+                          AppMotion.progress,
+                        ),
                         curve: Curves.easeOutCubic,
                         builder: (context, animatedProgress, _) =>
                             CircularPercentIndicator(
@@ -490,7 +482,7 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(height: 5),
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0, end: progress),
-                    duration: const Duration(milliseconds: 720),
+                    duration: AppMotion.duration(context, AppMotion.progress),
                     curve: Curves.easeOutCubic,
                     builder: (context, animatedProgress, _) => ClipRRect(
                       borderRadius: BorderRadius.circular(8),
@@ -567,7 +559,7 @@ class DashboardScreen extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                AppPageRoute(builder: (_) => const SettingsScreen()),
               ),
               icon: const Icon(Icons.edit_calendar_outlined, size: 18),
               label: const Text('Hedef tarihini düzenle'),
@@ -626,7 +618,7 @@ class DashboardScreen extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const DailyPlanScreen()),
+                AppPageRoute(builder: (_) => const DailyPlanScreen()),
               ),
               icon: const Icon(Icons.route_outlined),
               label: const Text('Günlük planı aç'),
@@ -916,13 +908,11 @@ class DashboardScreen extends StatelessWidget {
                       : focusTask == null && !today.isCompleted
                       ? () => Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const DailyPlanScreen(),
-                          ),
+                          AppPageRoute(builder: (_) => const DailyPlanScreen()),
                         )
                       : () => Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          AppPageRoute(
                             builder: (_) => PomodoroScreen(
                               autoStart: true,
                               taskTitle: focusTask == null
@@ -1108,9 +1098,7 @@ class DashboardScreen extends StatelessWidget {
         child: InkWell(
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => SubjectDetailScreen(subject: subject),
-            ),
+            AppPageRoute(builder: (_) => SubjectDetailScreen(subject: subject)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -1180,9 +1168,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const PomodoroScreen(autoStart: true),
-          ),
+          AppPageRoute(builder: (_) => const PomodoroScreen(autoStart: true)),
         ),
       ),
       _QuickItem(
@@ -1192,7 +1178,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const DailyPlanScreen()),
+          AppPageRoute(builder: (_) => const DailyPlanScreen()),
         ),
       ),
       _QuickItem(
@@ -1202,7 +1188,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.olc,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const MockExamScreen()),
+          AppPageRoute(builder: (_) => const MockExamScreen()),
         ),
       ),
       _QuickItem(
@@ -1212,7 +1198,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.olc,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ScoreCalculatorScreen()),
+          AppPageRoute(builder: (_) => const ScoreCalculatorScreen()),
         ),
       ),
       _QuickItem(
@@ -1222,7 +1208,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.gelis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const GoalsScreen()),
+          AppPageRoute(builder: (_) => const GoalsScreen()),
         ),
       ),
       _QuickItem(
@@ -1232,7 +1218,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.gelis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const WeakTopicsScreen()),
+          AppPageRoute(builder: (_) => const WeakTopicsScreen()),
         ),
       ),
       _QuickItem(
@@ -1242,7 +1228,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.olc,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ExamCalendarScreen()),
+          AppPageRoute(builder: (_) => const ExamCalendarScreen()),
         ),
       ),
       _QuickItem(
@@ -1252,7 +1238,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.gelis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const WeeklyReportScreen()),
+          AppPageRoute(builder: (_) => const WeeklyReportScreen()),
         ),
       ),
       _QuickItem(
@@ -1262,7 +1248,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const StudyResourcesScreen()),
+          AppPageRoute(builder: (_) => const StudyResourcesScreen()),
         ),
       ),
       _QuickItem(
@@ -1272,7 +1258,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.olc,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ExamComparisonScreen()),
+          AppPageRoute(builder: (_) => const ExamComparisonScreen()),
         ),
       ),
       _QuickItem(
@@ -1282,7 +1268,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const FormulaCardsScreen()),
+          AppPageRoute(builder: (_) => const FormulaCardsScreen()),
         ),
       ),
       _QuickItem(
@@ -1292,7 +1278,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const FlashcardScreen()),
+          AppPageRoute(builder: (_) => const FlashcardScreen()),
         ),
       ),
       _QuickItem(
@@ -1302,7 +1288,7 @@ class DashboardScreen extends StatelessWidget {
         category: _QuickCategory.ayarlar,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          AppPageRoute(builder: (_) => const SettingsScreen()),
         ),
       ),
     ];
@@ -1536,9 +1522,7 @@ class _FeaturedQuickAccessTileState extends State<_FeaturedQuickAccessTile> {
           message: 'Pomodoro ile odak seansı başlat',
           child: AnimatedScale(
             scale: _isPressed && !reduceMotion ? 0.99 : 1,
-            duration: reduceMotion
-                ? Duration.zero
-                : const Duration(milliseconds: 140),
+            duration: reduceMotion ? Duration.zero : AppMotion.press,
             curve: Curves.easeOutCubic,
             child: Material(
               color: Colors.transparent,
@@ -1720,9 +1704,7 @@ class _QuickAccessTileState extends State<_QuickAccessTile> {
               message: item.label,
               child: AnimatedScale(
                 scale: _isPressed && !reduceMotion ? 0.97 : 1,
-                duration: reduceMotion
-                    ? Duration.zero
-                    : const Duration(milliseconds: 120),
+                duration: reduceMotion ? Duration.zero : AppMotion.press,
                 curve: Curves.easeOutCubic,
                 child: Material(
                   color: surface,

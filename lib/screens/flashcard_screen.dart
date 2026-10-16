@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -640,7 +641,10 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
+                            duration: AppMotion.duration(
+                              context,
+                              AppMotion.standard,
+                            ),
                             child: Container(
                               key: ValueKey(
                                 '${cards[_currentIndex].id}_$_showAnswer',
@@ -911,7 +915,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
           borderRadius: BorderRadius.circular(14),
           onTap: enabled ? () => _rateCard(rating) : null,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: AppMotion.duration(context, AppMotion.press),
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
             decoration: BoxDecoration(
               color: enabled

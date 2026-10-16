@@ -21,8 +21,9 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.showLegacy)
+    if (!widget.showLegacy) {
       return const ExamAttemptsScreen(comparisonOnly: true);
+    }
     return Consumer<AppState>(
       builder: (context, state, _) {
         final colors = Theme.of(context).colorScheme;

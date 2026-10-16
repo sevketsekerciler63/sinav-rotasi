@@ -246,7 +246,8 @@ class ExamAttemptBook {
       for (final raw in json['attempts'])
         ExamAttempt.fromJson(Map<String, dynamic>.from(raw as Map)),
     ];
-    if (attempts.map((attempt) => attempt.id).toSet().length != attempts.length) {
+    if (attempts.map((attempt) => attempt.id).toSet().length !=
+        attempts.length) {
       throw const FormatException('Deneme kimliği yineleniyor.');
     }
     return ExamAttemptBook(json['profileId'], attempts);

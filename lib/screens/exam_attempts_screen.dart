@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/exam_attempt.dart';
@@ -47,7 +48,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
             icon: const Icon(Icons.history),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
+              AppPageRoute(
                 builder: (_) => const MockExamScreen(showLegacy: true),
               ),
             ),
@@ -59,7 +60,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
             ? null
             : () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ExamAttemptEditor()),
+                AppPageRoute(builder: (_) => const ExamAttemptEditor()),
               ),
         icon: const Icon(Icons.add),
         label: const Text('Deneme ekle'),
@@ -153,7 +154,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
                             ? null
                             : () => Navigator.push(
                                 context,
-                                MaterialPageRoute(
+                                AppPageRoute(
                                   builder: (_) =>
                                       ExamAttemptEditor(attempt: attempt),
                                 ),
@@ -457,7 +458,7 @@ class _ExamAttemptEditorState extends State<ExamAttemptEditor> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${session} ${test.label} · ${test.questions} soru',
+                        '$session ${test.label} · ${test.questions} soru',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (!counts)

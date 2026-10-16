@@ -105,3 +105,13 @@ Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel prof
 - Resmî katalog sürümü `yks-2026-v1`. Kaynak: [ÖSYM 2026 YKS başvuru kılavuzu](https://dokuman.osym.gov.tr/pdfdokuman/2026/YKS/basvuru_kilavuz06022026.pdf), PDF s. 50 / basılı s. 46 Tablo 1A–1B; süreler PDF s. 2. Gelecek yılın kuralları doğrulanmış gibi etiketlenmez.
 - 3 model kabulü (EA/SÖZ/YDT ayrılığı, sayım/net/tarih sınırları, 20 kayıt/retry/arşiv), gerçek depo hata/eşzamanlılık/profil/yedek kontrolü ve 320px yüzde 200 yazıda AYT-only 20,5 net + başarısız yazım sonrası taslağı yeniden kaydetme geçti. Toplam 40 test bekleniyor; tam son çalışma aşağıda güncellenecek.
 - **Açık:** eski net isimlerinin tüm tarihsel/custom ders varyasyonlarını birleştiren AUD-12 geçişi; YKS dışı sınav adaptörleri; gerçek öğrenci/device kabulü. Eski takvim grafiklerinde serbest kayıtlar varmış gibi gösterilmiyor; yeni defter kendi doğrulanmış gruplarını karşılaştırıyor.
+
+
+## SOL-06 / LUNA-06 · Ortak hareket ve sayaç gezinmesi
+
+- [Hareket sözleşmesi](motion-contract.md) uygulandı: ortak 120/180/240 ms süreler, Flutter platform rotaları, azaltılmış hareket; dashboard liste uçuşu kaldırıldı, kalan kart/ilerleme/odak/onboarding geçişleri ortak süreyi kullanır. Zorunlu 2,8 saniyelik açılış beklemesi ve gerçek başlatmayı temsil etmeyen dekoratif dolum kaldırıldı.
+- **Yeni gerçek hata:** Pomodoro `dispose` ekrandan çıkışı iptal seansı sayıyordu. Artık süre/görev/olay kimliği korunur. Süresi dolan seans geri açınca kaydedilir. Seans sonucu yazılmadan önce bekleyen durum/tarih/süre saklanır; hata veya gezinmeden sonra aynı kayıt tam aynı içerikle denenir.
+- 3 yeni ekran kabulü geçti: azaltılmış hareketle beklemeden açılış; geri çık/gir aynı çalışan sayaç/son tarih/görev; seans yazımı hatası → geri çık/gir → aynı seans bir kez tamamlanmış ve mola durumuna geçmiş.
+- Gerçek cihaz jest/performance ve eski iyimser eylemler için kapsam açık; yeni hareket sözleşmesi bunların tamamlandığı anlamına gelmez.
+
+Son ortak kabul: 43 test geçti; `flutter analyze --no-pub` temiz.

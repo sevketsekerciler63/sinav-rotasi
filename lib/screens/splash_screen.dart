@@ -1,3 +1,4 @@
+import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
@@ -15,7 +16,8 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeIn;
   late Animation<double> _scaleUp;
-  late Animation<double> _progressAnim;
+  bool _started = false;
+  bool _navigated = false;
 
   @override
   void initState() {
@@ -32,37 +34,39 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    _scaleUp = Tween<double>(begin: 0.5, end: 1.0).animate(
+    _scaleUp = Tween<double>(begin: 0.98, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0, 0.5, curve: Curves.elasticOut),
+        curve: const Interval(0, 0.5, curve: AppMotion.curve),
       ),
     );
+  }
 
-    _progressAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.3, 0.9, curve: Curves.easeInOut),
-      ),
-    );
+  void _openApp() {
+    if (!mounted || _navigated) return;
+    _navigated = true;
+    Navigator.of(
+      context,
+    ).pushReplacement(AppPageRoute(builder: (_) => widget.nextScreen));
+  }
 
-    _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                pageBuilder: (c1, a1, a2) => widget.nextScreen,
-                transitionsBuilder: (c1, animation, a2, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 500),
-              ),
-            );
-          }
-        });
-      }
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (AppMotion.reduced(context)) {
+      _controller.stop();
+      _controller.value = 1;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openApp());
+    } else if (!_started) {
+      _started = true;
+      _controller.duration = AppMotion.progress;
+      _controller.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => _openApp());
+        }
+      });
+      _controller.forward();
+    }
   }
 
   @override
@@ -138,33 +142,6 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 50),
-
-                  // Progress bar
-                  Opacity(
-                    opacity: _fadeIn.value,
-                    child: SizedBox(
-                      width: 200,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: _progressAnim.value,
-                          minHeight: 4,
-                          backgroundColor: AppTheme.borderDark,
-                          valueColor: const AlwaysStoppedAnimation(
-                            AppTheme.accentBlue,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Opacity(
-                    opacity: _fadeIn.value,
-                    child: const Text(
-                      'Hazırlanıyor...',
-                      style: TextStyle(color: Colors.white24, fontSize: 11),
-                    ),
-                  ),
                 ],
               ),
             );
