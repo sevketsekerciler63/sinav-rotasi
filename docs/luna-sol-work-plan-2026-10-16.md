@@ -2,7 +2,9 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: LUNA-01–04 uygulandı; dördü de Sol incelemesi bekliyor. LUNA-05/06 altyapı ve sözleşme bağımlılıkları nedeniyle sonraki sırada. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Durum: LUNA-01–04 Sol tarafından incelendi; eksikler 02e6a76 ile düzeltildi, 5 widget testi geçti. Fiziksel cihaz kabulü açık. LUNA-05/06 altyapı ve sözleşme bağımlılıkları nedeniyle sonraki sırada. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+
+Güncel bulgular ve devam kaydı: [Sol incelemesi](sol-review-and-progress-2026-10-16.md).
 
 ## 1. Devralırken kısa bağlam
 
@@ -10,7 +12,7 @@ Durum: LUNA-01–04 uygulandı; dördü de Sol incelemesi bekliyor. LUNA-05/06 a
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
-- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`, LUNA-04 teslimi `9c799d4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
+- İlk devir noktası `9878621`; Luna `8b7c4ff` iş bölümü notundan başladı; mevcut kullanıcı değişikliği korunuyor. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`, LUNA-04 teslimi `9c799d4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
 - Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
@@ -30,7 +32,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-01 · Türkçe metinler ve ekran durumları
 
-- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `475721c`).
+- [x] Durum: ilk teslim `475721c`; Sol kaynak/widget incelemesi ve düzeltmesi `02e6a76`. Fiziksel cihaz kabulü açık.
 - Kapsam: ekran/widget metinlerindeki Zamanlayici, Ilerleme, Yapilacak, gun gibi kalıntıları düzelt; noktalama, düğme fiilleri ve başlık dilini tutarlı yap.
 - Alanlar: lib/screens, lib/widgets. Verilerin kimlikleri, JSON anahtarları, eski takma adlar ve model enum değerleri kullanıcıya görünen metin diye değiştirilmez.
 - Sınır: “kaydedildi”, “bulutta”, “kişiselleştirildi” gibi ifadeler yalnız gerçek davranış karşılıyorsa kullanılır. Netler resmî puan/sıralama gibi sunulmaz.
@@ -50,7 +52,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-02 · Alan etiketleri ve erişilebilirlik
 
-- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `2cc8c7e`).
+- [x] Durum: ilk teslim `2cc8c7e`; Sol kaynak/widget incelemesi ve düzeltmesi `02e6a76`. Fiziksel cihaz kabulü açık.
 - Kapsam: özellikle deneme net alanlarına ders+oturum içeren etiketler (ör. TYT Matematik neti); ikon düğmelerine açıklamalar; odak sırası ve dokunma alanları.
 - Alanlar: mock_exam_screen.dart ve ilgili ekran/widget sunumları.
 - Sınır: async updateMockExam sözleşmesi, Kaydediliyor koruması, taslak girişleri ve hata bildirimleri korunur. Net doğrulama kuralları ve hesaplar değiştirilmez.
@@ -70,7 +72,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-03 · Ortak görsel bileşenler
 
-- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `5a2eea4`).
+- [x] Durum: ilk teslim `5a2eea4`; Sol kaynak/widget incelemesi ve düzeltmesi `02e6a76`. Fiziksel cihaz kabulü açık.
 - Kapsam: benzer bölüm başlığı, boş durum, kısa bilgi satırı ve birincil/ikincil eylem bileşenlerini küçük parçalar halinde ortaklaştır.
 - Alanlar: lib/widgets ve lib/theme/app_theme.dart; yalnız bunları kullanan ekran sunumları.
 - Sınır: mevcut renk/typografi kimliği korunur. Kapsamlı dosya yeniden yazımı, yeni tasarım paketi, gereksiz bağımlılık veya sayfa başına farklı stil eklenmez. Kart sayısı ihtiyaç olan yerlerde azaltılır.
@@ -90,7 +92,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-04 · Ana ekranın bilgi sırası
 
-- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `9c799d4`).
+- [x] Durum: ilk teslim `9c799d4`; Sol kaynak/widget incelemesi ve düzeltmesi `02e6a76`. Fiziksel cihaz kabulü açık.
 - Kapsam: mevcut bugünkü görev/plan kartını üst sıraya taşı; motivasyon sözünü ve büyük hedef/sayaç yoğunluğunu aşağı al; geçmiş hedef uyarısını kısa ama erişilebilir tut.
 - Alanlar: dashboard_screen.dart ve gerekirse LUNA-03 bileşenleri.
 - Sınır: mevcut plan verisi kullanılır. Gerçek kaynak/sayfa/test/süre altyapısı hazır değilse bu bilgiler uydurulmaz; “30 dakikaya uygun” gibi doğrulanmayan kapasite iddiası gösterilmez. Görev yoksa dürüst boş durum ve mevcut plan sayfasına yol gösterilir.
@@ -209,10 +211,10 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 
 | İş | Uygulama durumu | Sol sonucu | Açık düzeltme/kanıt |
 |---|---|---|---|
-| LUNA-01 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `475721c`; cihaz/ekran okuyucu kabulü açık |
-| LUNA-02 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `2cc8c7e`; cihaz/ekran okuyucu kabulü açık |
-| LUNA-03 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `5a2eea4`; dar ekran/tema görünüm kabulü açık |
-| LUNA-04 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `9c799d4`; gerçek görünüm/boş ve geçmiş hedef kabulü açık |
+| LUNA-01 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
+| LUNA-02 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
+| LUNA-03 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
+| LUNA-04 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
 | LUNA-05 | Altyapı bekliyor | İncelenmedi | SOL-04/05 |
 | LUNA-06 | Sözleşme bekliyor | İncelenmedi | SOL-06 |
 | SOL-01/02 önceki veri dilimi | Kaynak uygulandı | Kabul açık | Otomatik regresyon/cihaz kurtarma |
