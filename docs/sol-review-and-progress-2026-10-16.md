@@ -159,3 +159,12 @@ Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son
 - Eski belirsiz özel/resmî ad değerleri `legacy-unmapped:<eski anahtar>` altında korunur, resmî/kişisel toplamlara katılmaz. Eski takvim ekranı eşleştirilemeyen netleri açıkça listeler. Kullanıcı doğru sonucu biliyorsa ilgili kimlikli alana yeniden girebilir; ham eski değer yedekte kalır. Hangi derse ait olduğu bilinmeyen eski değer tahminle dağıtılmaz.
 - Açılışta son kalıcı deneme haritası kuyruk içinde dönüştürülür; hata işaretlenir ve eski ham değer kaybolmaz. Backup/import da aynı adaptörü kullanır. Deneme geçmişi bağlı kişisel dersin silinmesi engellenir.
 - Alias/çelişki sınırları, eşzamanlı iki deneme, eski düz yedek, gerçek etiket semantiği ve belirsiz özel ders → ID ile yeni net → export/import kabulü geçti. **Toplam 55 test geçti; analiz temiz.**
+
+
+## 17 Ekim · Alan kaynakları ve kopuk eski hata kayıtları
+
+- Kişisel kaynak ve hata kaydına AYT EA/SÖZ dersleri ve beş YDT dili için sabit ders kimlikleri eklendi. Bu bağlar tam hazır konu/kazanım listesi sunduğu iddiası taşımaz. EA/SÖZ/DİL profilinde konu rehberinin TYT + AYT Sayısal ile sınırlı olduğu açıkça yazılır; öğrenci kendi kaynak/görev/manuel konusunu kullanabilir.
+- Puan türünü seçmiş profilde boş başlangıç da kaynak planına yönelir ve ilk kaynak ekleme çağrısı gösterir. Eski hazır şablon arşiv bağlantısında korunur.
+- Yeni kabulde ilk kez kaynak dersleri için yedek referans denetiminin eksik olduğu bulundu/düzeltildi; EA/SÖZ/YDT kaynak + manuel hata → export/import → yeniden yükle geçti.
+- Ek veri kaybı önlendi: eski hata kaydının ders/konu bağlantısı bulunamayınca kayıt silinmiyor. Not, tekrar geçmişi ve özgün kopuk kimlikler korunuyor; etkin olmayan bağ ayrılıyor ve ekranda açıklanıyor. Export/import kabulü geçti.
+- Güncel profil şeması 13. Tam hazır EA/SÖZ/YDT kazanım envanteri ve akademik editoryal doğrulama ayrı açık kapsamdır. Kaynak bağlarıyla tamamlanmış müfredat iddiası yapılmıyor.

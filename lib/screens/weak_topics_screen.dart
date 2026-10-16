@@ -143,6 +143,14 @@ class WeakTopicsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (topic.unlinkedSubjectId != null ||
+                topic.unlinkedTopicId != null)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'Eski ders/konu bağlantısı bulunamadı. Not ve tekrar geçmişi korundu.',
+                ),
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -435,7 +443,7 @@ class WeakTopicsScreen extends StatelessWidget {
 
   void _showAddDialog(BuildContext context, AppState state) {
     final colors = Theme.of(context).colorScheme;
-    final subjects = List.of(state.subjects);
+    final subjects = List.of(state.resourceSubjects);
     if (subjects.isEmpty) return;
 
     var selectedSubject = subjects.firstWhere(

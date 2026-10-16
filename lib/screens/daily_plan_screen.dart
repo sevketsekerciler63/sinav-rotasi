@@ -54,7 +54,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
     return Consumer<AppState>(
       builder: (context, state, _) {
         if (!widget.showLegacy &&
-            state.learningWorkspace.resources.isNotEmpty) {
+            (state.learningWorkspace.resources.isNotEmpty ||
+                state.activeProfile.scoreType != 'unspecified')) {
           return const ResourcePlanScreen();
         }
         final colors = Theme.of(context).colorScheme;

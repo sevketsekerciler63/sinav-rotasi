@@ -16,6 +16,7 @@ import '../models/goal.dart';
 import '../models/exam_profile.dart';
 import '../models/study_schedule_preferences.dart';
 import '../data/subjects_data.dart';
+import '../data/resource_subjects_data.dart';
 import '../data/daily_schedule_data.dart';
 import '../data/exam_calendar_data.dart';
 import '../data/achievements_data.dart';
@@ -71,6 +72,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   late LearningWorkspace _learningWorkspace;
   String? _learningWorkspaceError;
 
+  List<Subject> get resourceSubjects => getResourceSubjects(subjects);
   LearningWorkspace get learningWorkspace => _learningWorkspace;
   String? get learningWorkspaceError => _learningWorkspaceError;
 
@@ -1437,25 +1439,35 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   bool _removeOrphanedWeakTopicReferences() {
-    final subjectIds = subjects.map((subject) => subject.storageId).toSet();
-    final topicIds = {
-      for (final subject in subjects)
-        for (final topic in subject.topics) topic.id,
+    final catalog = resourceSubjects;
+    final subjectIds = catalog.map((subject) => subject.storageId).toSet();
+    final parents = {
+      for (final subject in catalog)
+        for (final topic in subject.topics) topic.id: subject.storageId,
     };
-    final initialCount = weakTopics.length;
-    weakTopics.removeWhere(
-      (weakTopic) =>
-          (weakTopic.subjectId != null &&
-              !subjectIds.contains(weakTopic.subjectId)) ||
-          (weakTopic.topicId != null && !topicIds.contains(weakTopic.topicId)),
-    );
-    return weakTopics.length != initialCount;
+    var changed = false;
+    for (final topic in weakTopics) {
+      if (topic.subjectId != null && !subjectIds.contains(topic.subjectId)) {
+        topic.unlinkedSubjectId ??= topic.subjectId;
+        topic.subjectId = null;
+        changed = true;
+      }
+      if (topic.topicId != null &&
+          (!parents.containsKey(topic.topicId) ||
+              (topic.subjectId != null &&
+                  parents[topic.topicId] != topic.subjectId))) {
+        topic.unlinkedTopicId ??= topic.topicId;
+        topic.topicId = null;
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   bool _attachWeakTopicCatalogIds() {
     var changed = false;
     for (final weakTopic in weakTopics) {
-      var matchingSubjects = subjects
+      var matchingSubjects = resourceSubjects
           .where((subject) => subject.name == weakTopic.subject)
           .toList();
       if (weakTopic.subjectId != null) {
@@ -2079,7 +2091,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<bool> saveStudyResource(StudyResource resource) {
     final catalog = {
-      for (final subject in subjects) subject.storageId: subject.type,
+      for (final subject in resourceSubjects) subject.storageId: subject.type,
     };
     return _changeLearningWorkspace('resource:${resource.id}', (workspace) {
       final existing = workspace.resources

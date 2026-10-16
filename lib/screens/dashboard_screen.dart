@@ -51,7 +51,8 @@ class DashboardScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
 
-                  if (state.learningWorkspace.resources.isNotEmpty)
+                  if (state.learningWorkspace.resources.isNotEmpty ||
+                      state.activeProfile.scoreType != 'unspecified')
                     const ResourceTodayCard()
                   else if (today != null)
                     _buildTodayCard(context, state, today)

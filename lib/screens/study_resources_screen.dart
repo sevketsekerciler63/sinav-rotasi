@@ -139,7 +139,7 @@ Future<void> _resourceEditor(
   final initial = TextEditingController(
     text: resource?.initialCompletedUnits.toString() ?? '0',
   );
-  final subjects = state.subjects;
+  final subjects = state.resourceSubjects;
   String? subjectId = resource?.subjectId ?? subjects.firstOrNull?.storageId;
   var unit = resource?.unit ?? StudyResourceUnit.page;
   final locked =
@@ -165,7 +165,9 @@ Future<void> _resourceEditor(
               for (final subject in subjects)
                 DropdownMenuItem(
                   value: subject.storageId,
-                  child: Text('${subject.type} · ${subject.name}'),
+                  child: Text(
+                    '${subject.type} · ${subject.name}${subject.isCustom ? ' (kişisel)' : ''}',
+                  ),
                 ),
               if (resource != null &&
                   !subjects.any(

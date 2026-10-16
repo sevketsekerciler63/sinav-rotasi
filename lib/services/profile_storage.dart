@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/subjects_data.dart';
+import '../data/resource_subjects_data.dart';
 import '../models/exam_profile.dart';
 import '../models/goal.dart';
 import '../models/study_schedule_preferences.dart';
@@ -55,7 +56,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 12;
+  static const int schemaVersion = 13;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
@@ -1117,6 +1118,8 @@ class ProfileStorage {
           if (id is! String || id.trim().isEmpty || !ids.add(id)) {
             _invalid('$path.id', 'boş olmayan ve benzersiz zayıf konu kimliği');
           }
+          _optionalString(item, 'unlinkedSubjectId', path);
+          _optionalString(item, 'unlinkedTopicId', path);
           for (final field in [
             'id',
             'date',
@@ -1263,7 +1266,7 @@ class ProfileStorage {
       topicSubjects.putIfAbsent(topicId, () => <String>{}).add(subjectId);
     }
 
-    for (final subject in getAllSubjects()) {
+    for (final subject in getResourceSubjects(getAllSubjects())) {
       final subjectId = subject.storageId;
       subjectIds.add(subjectId);
       for (final topic in subject.topics) {

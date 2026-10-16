@@ -58,6 +58,18 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
             ),
             body: Column(
               children: [
+                if ([
+                  'ea',
+                  'soz',
+                  'dil',
+                ].contains(state.activeProfile.scoreType))
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(
+                      'Hazır konu rehberi şu an TYT ve AYT Sayısal kapsamındadır. EA/SÖZ/YDT için Kaynaklarım’da uygun dersi seçip kendi konu/görevlerini ekleyebilirsin; bu rehber tam alan müfredatı değildir.',
+                      style: textTheme.bodySmall,
+                    ),
+                  ),
                 // Search bar
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),

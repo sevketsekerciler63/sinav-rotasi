@@ -7,6 +7,7 @@ class WeakTopic {
   String? subjectId;
   String topic;
   String? topicId;
+  String? unlinkedSubjectId, unlinkedTopicId;
   String errorType;
   int errorCount;
   String action;
@@ -25,6 +26,8 @@ class WeakTopic {
     this.subjectId,
     required this.topic,
     this.topicId,
+    this.unlinkedSubjectId,
+    this.unlinkedTopicId,
     required this.errorType,
     required this.errorCount,
     required this.action,
@@ -123,6 +126,8 @@ class WeakTopic {
     'subjectId': subjectId,
     'topic': topic,
     'topicId': topicId,
+    if (unlinkedSubjectId != null) 'unlinkedSubjectId': unlinkedSubjectId,
+    if (unlinkedTopicId != null) 'unlinkedTopicId': unlinkedTopicId,
     'errorType': errorType,
     'errorCount': errorCount,
     'action': action,
@@ -145,6 +150,8 @@ class WeakTopic {
           : null,
       topic: json['topic'] ?? '',
       topicId: json['topicId'] is String ? json['topicId'] as String : null,
+      unlinkedSubjectId: json['unlinkedSubjectId'] as String?,
+      unlinkedTopicId: json['unlinkedTopicId'] as String?,
       errorType: json['errorType'] ?? '',
       errorCount: json['errorCount'] ?? 0,
       action: json['action'] ?? '',

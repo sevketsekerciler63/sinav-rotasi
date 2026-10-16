@@ -1021,4 +1021,94 @@ void main() {
       );
     },
   );
+  test(
+    'EA SOZ and YDT resource bindings and manual weak topic survive backup',
+    () async {
+      for (final courseId in [
+        'yks_course_ayt_edebiyat',
+        'yks_course_ayt_tarih2',
+        'yks_course_ydt_english',
+      ]) {
+        final subject = state.resourceSubjects.firstWhere(
+          (subject) => subject.storageId == courseId,
+        );
+        expect(
+          await state.saveStudyResource(
+            StudyResource(
+              id: courseId,
+              name: 'Kaynağım',
+              subjectId: courseId,
+              subjectName: subject.name,
+              session: subject.type,
+              unit: StudyResourceUnit.page,
+              totalUnits: 100,
+            ),
+          ),
+          isTrue,
+        );
+        expect(
+          await state.addWeakTopic(
+            WeakTopic(
+              id: 'weak-$courseId',
+              date: DateTime.now().toIso8601String(),
+              subject: subject.name,
+              subjectId: courseId,
+              topic: 'Kendi konum',
+              errorType: 'Test',
+              errorCount: 1,
+              action: 'Tekrar',
+            ),
+          ),
+          isTrue,
+        );
+      }
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.learningWorkspace.resources.length, 3);
+      expect(state.weakTopics.length, 3);
+      expect(
+        state.resourceSubjects
+            .map((subject) => subject.storageId)
+            .toSet()
+            .length,
+        state.resourceSubjects.length,
+      );
+    },
+  );
+  test(
+    'old orphaned weak topic keeps notes repetitions and original broken IDs',
+    () async {
+      final topic = WeakTopic(
+        id: 'orphan',
+        date: DateTime.now().toIso8601String(),
+        subject: 'Eski ders',
+        subjectId: 'missing-subject',
+        topic: 'Eski konu',
+        topicId: 'missing-topic',
+        errorType: 'Kavram',
+        errorCount: 2,
+        action: 'Notum',
+        isStudied: true,
+        reviewRepetitions: 3,
+        reviewIntervalDays: 6,
+        nextReviewAt: DateTime.now().add(const Duration(days: 6)),
+      );
+      await storage.writeStringsForProfile(state.activeProfile.id, {
+        'weak_topics': jsonEncode([topic.toJson()]),
+      });
+      await state.loadData();
+      expect(state.weakTopics.length, 1);
+      expect(state.weakTopics.single.action, 'Notum');
+      expect(state.weakTopics.single.reviewRepetitions, 3);
+      expect(state.weakTopics.single.subjectId, isNull);
+      expect(state.weakTopics.single.unlinkedSubjectId, 'missing-subject');
+      expect(state.weakTopics.single.unlinkedTopicId, 'missing-topic');
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.weakTopics.single.unlinkedSubjectId, 'missing-subject');
+      expect(state.weakTopics.single.reviewRepetitions, 3);
+    },
+  );
 }

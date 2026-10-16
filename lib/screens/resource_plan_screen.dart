@@ -46,14 +46,24 @@ class ResourceTodayCard extends StatelessWidget {
                 '${day.plannedMinutes} / ${day.capacityMinutes} dakika planlandı',
               ),
             const SizedBox(height: 8),
-            FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                AppPageRoute(builder: (_) => const ResourcePlanScreen()),
+            if (workspace.resources.isEmpty)
+              FilledButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  AppPageRoute(builder: (_) => const StudyResourcesScreen()),
+                ),
+                icon: const Icon(Icons.add),
+                label: const Text('İlk kaynağını ekle'),
               ),
-              icon: const Icon(Icons.route_outlined),
-              label: const Text('Kaynak planını aç'),
-            ),
+            if (workspace.resources.isNotEmpty)
+              FilledButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  AppPageRoute(builder: (_) => const ResourcePlanScreen()),
+                ),
+                icon: const Icon(Icons.route_outlined),
+                label: const Text('Kaynak planını aç'),
+              ),
           ],
         ),
       ),
@@ -115,6 +125,15 @@ class _ResourcePlanScreenState extends State<ResourcePlanScreen> {
           const Text(
             'Bugün ve geçmiş günler korunur. Güncelleme yalnız yarından itibaren dağılımı değiştirir. Geçmişte yetişmeyen iş uygun sonraki günlere taşınır; geçmiş beklenti silinmez.',
           ),
+          if (workspace.resources.isEmpty)
+            FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                AppPageRoute(builder: (_) => const StudyResourcesScreen()),
+              ),
+              icon: const Icon(Icons.add),
+              label: const Text('Kaynak ve görev ekle'),
+            ),
           Wrap(
             spacing: 8,
             children: [
