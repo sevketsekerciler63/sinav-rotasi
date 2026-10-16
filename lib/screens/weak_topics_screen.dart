@@ -18,8 +18,19 @@ class WeakTopicsScreen extends StatelessWidget {
     return Consumer<AppState>(
       builder: (context, state, _) {
         final colors = Theme.of(context).colorScheme;
+        final today = DateTime.now();
+        final dueReviews = state.weakTopics
+            .where(
+              (topic) =>
+                  topic.isStudied &&
+                  (topic.needsRepeat || topic.isReviewDueOn(today)),
+            )
+            .toList();
         final active = state.weakTopics.where((t) => !t.isStudied).toList();
-        final studied = state.weakTopics.where((t) => t.isStudied).toList();
+        final dueIds = dueReviews.map((topic) => topic.id).toSet();
+        final studied = state.weakTopics
+            .where((t) => t.isStudied && !dueIds.contains(t.id))
+            .toList();
 
         return Scaffold(
           appBar: AppBar(title: const Text('Zayif Konularim')),
@@ -54,6 +65,32 @@ class WeakTopicsScreen extends StatelessWidget {
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colors.tertiaryContainer.withValues(alpha: 0.45),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colors.tertiary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(
+                        '“Çalışıldı” ilk tekrarı 1 gün sonrasına alır. “Tekrar ettim” aralıkları 3 günden başlayarak en fazla 30 güne çıkarır. Bu yerel çalışma önerisidir; bildirim göndermez ve öğrenme garantisi vermez.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    if (dueReviews.isNotEmpty) ...[
+                      Text(
+                        'Tekrar zamanı (${dueReviews.length})',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      ...dueReviews.map((t) => _topicCard(context, state, t)),
+                    ],
                     if (active.isNotEmpty) ...[
                       Text(
                         'Calisilacak (${active.length})',
@@ -80,6 +117,9 @@ class WeakTopicsScreen extends StatelessWidget {
 
   Widget _topicCard(BuildContext context, AppState state, WeakTopic topic) {
     final colors = Theme.of(context).colorScheme;
+    final dueReview =
+        topic.isStudied &&
+        (topic.needsRepeat || topic.isReviewDueOn(DateTime.now()));
     return Dismissible(
       key: Key(topic.id),
       direction: DismissDirection.endToStart,
@@ -173,6 +213,20 @@ class WeakTopicsScreen extends StatelessWidget {
               'Yapilacak: ${topic.action}',
               style: TextStyle(color: colors.tertiary, fontSize: 12),
             ),
+            if (topic.nextReviewAt != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _reviewStatus(topic, dueReview),
+                  style: TextStyle(
+                    color: dueReview
+                        ? colors.tertiary
+                        : colors.onSurfaceVariant,
+                    fontSize: 11,
+                    fontWeight: dueReview ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ),
             const SizedBox(height: 10),
 
             // A real button keeps this action available to keyboard and
@@ -234,20 +288,34 @@ class WeakTopicsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => state.toggleWeakTopicStudied(topic.id),
+                    onPressed: dueReview
+                        ? () => state.completeWeakTopicReview(topic.id)
+                        : () => state.toggleWeakTopicStudied(topic.id),
                     icon: Icon(
-                      topic.isStudied
+                      dueReview
+                          ? Icons.replay_rounded
+                          : topic.isStudied
                           ? Icons.check_circle
                           : Icons.circle_outlined,
                       size: 16,
                     ),
-                    label: Text(topic.isStudied ? 'Calisildi' : 'Calis'),
+                    label: Text(
+                      dueReview
+                          ? 'Tekrar ettim'
+                          : topic.isStudied
+                          ? 'Çalışıldı'
+                          : 'Çalış',
+                    ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: topic.isStudied
+                      foregroundColor: dueReview
+                          ? colors.tertiary
+                          : topic.isStudied
                           ? colors.secondary
                           : colors.onSurfaceVariant,
                       side: BorderSide(
-                        color: topic.isStudied
+                        color: dueReview
+                            ? colors.tertiary
+                            : topic.isStudied
                             ? colors.secondary
                             : colors.outline,
                       ),
@@ -290,6 +358,21 @@ class WeakTopicsScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _reviewStatus(WeakTopic topic, bool dueReview) {
+    final last = topic.lastReviewedAt?.toLocal();
+    final next = topic.nextReviewAt?.toLocal();
+    final lastText = last == null ? null : _formatDate(last);
+    if (dueReview) {
+      return lastText == null
+          ? 'Önceki çalışma kaydından sonra tekrar zamanı geldi.'
+          : 'Son çalışma: $lastText · Tekrar zamanı geldi.';
+    }
+    return 'Son çalışma: $lastText · Sonraki tekrar: ${_formatDate(next!)}';
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year}';
 
   void _removeTopicWithUndo(
     BuildContext context,

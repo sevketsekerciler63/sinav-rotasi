@@ -883,6 +883,10 @@ class ProfileStorage {
           _optionalInt(item, 'errorCount', path, min: 0);
           _optionalBool(item, 'isStudied', path);
           _optionalBool(item, 'needsRepeat', path);
+          _optionalDate(item, 'lastReviewedAt', path);
+          _optionalDate(item, 'nextReviewAt', path);
+          _optionalInt(item, 'reviewRepetitions', path, min: 0, max: 10000);
+          _optionalInt(item, 'reviewIntervalDays', path, min: 0, max: 30);
         });
       case 'goals_data':
         _validateRecordList(value, key, (item, path) {
@@ -1193,6 +1197,7 @@ class ProfileStorage {
     _optionalBool(progress, 'isCompleted', path);
     _optionalInt(progress, 'solvedQuestions', path, min: 0);
     _optionalString(progress, 'weakTopicNotes', path);
+    _optionalNullableString(progress, 'reviewTopicId', path);
     _optionalDate(progress, 'completedAt', path);
     _optionalDate(progress, 'activityAt', path);
   }
@@ -1244,9 +1249,11 @@ class ProfileStorage {
     String field,
     String path, {
     required int min,
+    int? max,
   }) {
     final value = record[field];
-    if (record.containsKey(field) && (value is! int || value < min)) {
+    if (record.containsKey(field) &&
+        (value is! int || value < min || (max != null && value > max))) {
       _invalid('$path.$field', 'geçerli tam sayı');
     }
   }

@@ -11,6 +11,7 @@ class DailyLog {
   DateTime? completedAt;
   DateTime? activityAt;
   List<String> progressIds;
+  String? reviewTopicId;
   final List<String> completedTaskSummaries;
   bool isRestDay;
   int completedProgressCount = 0;
@@ -28,6 +29,7 @@ class DailyLog {
     this.completedAt,
     this.activityAt,
     this.progressIds = const [],
+    this.reviewTopicId,
     this.completedTaskSummaries = const [],
     this.isRestDay = false,
   });
@@ -46,6 +48,7 @@ class DailyLog {
     'weakTopicNotes': weakTopicNotes,
     'completedAt': completedAt?.toIso8601String(),
     'activityAt': activityAt?.toIso8601String(),
+    'reviewTopicId': reviewTopicId,
   };
 
   void fromJson(Map<String, dynamic> json) {
@@ -55,6 +58,9 @@ class DailyLog {
     weakTopicNotes = json['weakTopicNotes'] ?? '';
     completedAt = _readDate(json['completedAt']);
     activityAt = _readDate(json['activityAt']);
+    reviewTopicId = json['reviewTopicId'] is String
+        ? json['reviewTopicId'] as String
+        : null;
   }
 
   static DateTime? _readDate(dynamic value) =>

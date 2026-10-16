@@ -477,6 +477,16 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               ),
                             ),
                           ],
+                          if (log.reviewTopicId != null) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              'Bu tekrar görevini tamamlamak, önerilen konunun sonraki tekrar tarihini günceller.',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.tertiary,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
 
                           // Motivation
                           const SizedBox(height: 8),

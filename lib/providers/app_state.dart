@@ -55,15 +55,31 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   String? get persistenceError => _persistenceError;
   List<ExamProfile> get profiles => _profileStorage.profiles;
   StudySchedulePreferences get schedulePreferences => _schedulePreferences;
-  List<WeakTopic> get prioritizedWeakTopics {
-    final topics = weakTopics
-        .where((topic) => !topic.isStudied || topic.needsRepeat)
-        .toList();
+  List<WeakTopic> get prioritizedWeakTopics =>
+      _prioritizedWeakTopicsFor(DateTime.now());
+
+  List<WeakTopic> _prioritizedWeakTopicsFor(DateTime date) {
+    final targetDay = DateTime(date.year, date.month, date.day);
+    final topics = weakTopics.where((topic) {
+      final addedOn = _weakTopicDate(topic.date);
+      if (addedOn != null &&
+          DateTime(
+            addedOn.year,
+            addedOn.month,
+            addedOn.day,
+          ).isAfter(targetDay)) {
+        return false;
+      }
+      return !topic.isStudied || topic.needsRepeat || topic.isReviewDueOn(date);
+    }).toList();
     topics.sort((a, b) {
       final repeatOrder = (b.needsRepeat ? 1 : 0).compareTo(
         a.needsRepeat ? 1 : 0,
       );
       if (repeatOrder != 0) return repeatOrder;
+      final aDue = a.isReviewDueOn(date);
+      final bDue = b.isReviewDueOn(date);
+      if (aDue != bDue) return bDue ? 1 : -1;
       final errorOrder = b.errorCount.compareTo(a.errorCount);
       if (errorOrder != 0) return errorOrder;
       return (_weakTopicDate(b.date) ?? DateTime(0)).compareTo(
@@ -459,9 +475,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (weakJson != null) {
       final List<dynamic> data = jsonDecode(weakJson);
       weakTopics = data.map((e) => WeakTopic.fromJson(e)).toList();
+      final migratedReviewDates = weakTopics.fold<bool>(
+        false,
+        (changed, topic) =>
+            topic.migrateLegacyReviewToDue(DateTime.now()) || changed,
+      );
       final removedOrphans = _removeOrphanedWeakTopicReferences();
       final attachedIds = _attachWeakTopicCatalogIds();
-      if (removedOrphans || attachedIds) {
+      if (removedOrphans || attachedIds || migratedReviewDates) {
         await _saveWeakTopicsForProfile(profileId, _weakTopicsJson());
         if (!isCurrentRequest()) return;
       }
@@ -529,6 +550,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       previous['solvedQuestions'] = each + (index < remainder ? 1 : 0);
       previous['weakTopicNotes'] = index == 0 ? changedLog.weakTopicNotes : '';
       previous['activityAt'] = changedLog.activityAt?.toIso8601String();
+      if (changedLog.reviewTopicId == null) {
+        previous.remove('reviewTopicId');
+      } else {
+        previous['reviewTopicId'] = changedLog.reviewTopicId;
+      }
       if (completedOverride != null) {
         previous['isCompleted'] = completedOverride;
         previous['completedAt'] = completedOverride
@@ -895,8 +921,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _applyWeakTopicReviews() {
-    final priorityTopics = prioritizedWeakTopics;
-
     final reviewDays = dailyLogs
         .where(
           (log) =>
@@ -904,38 +928,58 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
               log.progressIds.single.startsWith('review_'),
         )
         .toList();
-    if (priorityTopics.isEmpty) {
-      for (final log in reviewDays) {
+    for (var index = 0; index < reviewDays.length; index++) {
+      final log = reviewDays[index];
+      final priorityTopics = _prioritizedWeakTopicsFor(log.date);
+      WeakTopic? topic;
+      final assignedTopicId = log.reviewTopicId;
+      if (assignedTopicId != null) {
+        for (final candidate in weakTopics) {
+          if (candidate.id == assignedTopicId) {
+            topic = candidate;
+            break;
+          }
+        }
+      }
+      if (topic != null &&
+          !log.isCompleted &&
+          !priorityTopics.any((candidate) => candidate.id == topic!.id)) {
+        topic = null;
+      }
+      topic ??= log.isCompleted || priorityTopics.isEmpty
+          ? null
+          : priorityTopics[index % priorityTopics.length];
+      final selectedTopic = topic;
+      if (selectedTopic == null) {
+        log.reviewTopicId = null;
         log.tytContent =
             'Önceki konulardan kısa tekrar yap; takıldığın başlıkları not et.';
         log.aytContent =
             'Dersler veya Zayıf Konular bölümünden bir eksik seçip çalış.';
         log.motivationNote =
             'Sınava kadar kalan dönemi tekrar ve eksik kapatmaya ayır.';
+        continue;
       }
-      return;
-    }
-    for (var index = 0; index < reviewDays.length; index++) {
-      final topic = priorityTopics[index % priorityTopics.length];
+      log.reviewTopicId = selectedTopic.id;
       final subject = subjects.where(
         (item) =>
-            item.storageId == topic.subjectId || item.name == topic.subject,
+            item.storageId == selectedTopic.subjectId ||
+            item.name == selectedTopic.subject,
       );
       final isAyt = subject.isNotEmpty
           ? subject.first.type == 'AYT'
-          : topic.subject.toUpperCase().startsWith('AYT');
+          : selectedTopic.subject.toUpperCase().startsWith('AYT');
       final content =
-          'Öncelikli tekrar: ${topic.topic} · ${topic.errorType}. ${topic.action}';
-      final log = reviewDays[index];
+          'Öncelikli tekrar: ${selectedTopic.topic} · ${selectedTopic.errorType}. ${selectedTopic.action}';
       if (isAyt) {
         log.tytContent = 'Kısa paragraf veya temel matematik tekrarı yap.';
-        log.aytContent = '${topic.subject}: $content';
+        log.aytContent = '${selectedTopic.subject}: $content';
       } else {
-        log.tytContent = '${topic.subject}: $content';
+        log.tytContent = '${selectedTopic.subject}: $content';
         log.aytContent = 'Son işlediğin konudan kısa tekrar yap.';
       }
       log.motivationNote =
-          'Deneme ve hata kayıtlarına göre ${topic.subject} önceliklendirildi.';
+          'Deneme ve hata kayıtlarına göre ${selectedTopic.subject} önceliklendirildi.';
     }
   }
 
@@ -1505,6 +1549,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final now = DateTime.now();
         log.activityAt = now;
         log.completedAt = log.isCompleted ? now : null;
+        if (log.isCompleted &&
+            log.progressIds.length == 1 &&
+            log.progressIds.single.startsWith('review_') &&
+            log.reviewTopicId != null) {
+          _recordWeakTopicReview(log.reviewTopicId!, fromPlanTask: true);
+        }
         _saveDailyLogs(log, completedOverride: log.isCompleted);
         checkAchievements();
         notifyListeners();
@@ -1613,6 +1663,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (_isProfileTransitioning) return;
     final topic = weakTopics.firstWhere((t) => t.id == id);
     topic.isStudied = !topic.isStudied;
+    if (topic.isStudied) {
+      topic.needsRepeat = false;
+      topic.scheduleNextReview(DateTime.now());
+    }
     _applyWeakTopicReviews();
     _saveWeakTopics();
     checkAchievements();
@@ -1623,6 +1677,27 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (_isProfileTransitioning) return;
     final topic = weakTopics.firstWhere((t) => t.id == id);
     topic.needsRepeat = !topic.needsRepeat;
+    _applyWeakTopicReviews();
+    _saveWeakTopics();
+    notifyListeners();
+  }
+
+  void completeWeakTopicReview(String id) {
+    _recordWeakTopicReview(id, fromPlanTask: false);
+  }
+
+  void _recordWeakTopicReview(String id, {required bool fromPlanTask}) {
+    if (_isProfileTransitioning) return;
+    final topic = weakTopics.firstWhere((t) => t.id == id);
+    final now = DateTime.now();
+    if (!fromPlanTask &&
+        (!topic.isStudied ||
+            (!topic.needsRepeat && !topic.isReviewDueOn(now)))) {
+      return;
+    }
+    topic.isStudied = true;
+    topic.needsRepeat = false;
+    topic.scheduleNextReview(now);
     _applyWeakTopicReviews();
     _saveWeakTopics();
     notifyListeners();
