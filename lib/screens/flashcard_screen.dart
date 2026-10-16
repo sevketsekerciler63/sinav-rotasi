@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import '../models/flashcard_review.dart';
 import '../providers/app_state.dart';
 import '../services/profile_storage.dart';
 import '../theme/app_theme.dart';
@@ -18,6 +19,8 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   int _currentIndex = 0;
   bool _showAnswer = false;
   final List<String> _knownIds = [];
+  final Map<String, FlashcardReview> _reviews = {};
+  bool _dueOnly = false;
   String? _loadedProfileId;
   int _loadGeneration = 0;
   bool _knownLoaded = false;
@@ -187,6 +190,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     if (profileId == _loadedProfileId) return;
     _loadedProfileId = profileId;
     _knownIds.clear();
+    _reviews.clear();
     _knownLoaded = false;
     _isSavingKnown = false;
     _knownStorageError = null;
@@ -195,22 +199,40 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
 
   Future<void> _loadKnown(String profileId, int generation) async {
     try {
-      final data = await ProfileStorage.instance.readStringForProfile(
-        profileId,
-        'flashcard_known',
-      );
+      final storage = ProfileStorage.instance;
+      final values = await Future.wait([
+        storage.readStringForProfile(profileId, 'flashcard_known'),
+        storage.readStringForProfile(profileId, 'flashcard_reviews'),
+      ]);
+      final data = values[0];
       final decoded = data == null ? const <String>[] : jsonDecode(data);
       if (decoded is! List || decoded.any((item) => item is! String)) {
         throw const FormatException('Kart ilerleme biçimi geçersiz.');
+      }
+      final reviewData = values[1] == null
+          ? const FlashcardReviewData({})
+          : FlashcardReviewData.fromJson(jsonDecode(values[1]!));
+      final reviews = Map<String, FlashcardReview>.of(reviewData.cards);
+      final knownIds = decoded.cast<String>().toSet();
+      var needsMigration = false;
+      for (final id in knownIds) {
+        if (!reviews.containsKey(id)) {
+          reviews[id] = FlashcardReview.legacyKnown(DateTime.now());
+          needsMigration = true;
+        }
       }
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _knownIds
           ..clear()
-          ..addAll(decoded.cast<String>().toSet());
+          ..addAll(knownIds);
+        _reviews
+          ..clear()
+          ..addAll(reviews);
         _knownLoaded = true;
         _knownStorageError = null;
       });
+      if (needsMigration) await _saveKnown();
     } catch (_) {
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
@@ -227,11 +249,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     final generation = _loadGeneration;
     setState(() => _isSavingKnown = true);
     try {
-      await ProfileStorage.instance.writeStringForProfile(
-        profileId,
-        'flashcard_known',
-        jsonEncode(_knownIds),
-      );
+      await ProfileStorage.instance.writeStringsForProfile(profileId, {
+        'flashcard_known': jsonEncode(_knownIds),
+        'flashcard_reviews': jsonEncode(
+          FlashcardReviewData(Map.unmodifiable(_reviews)).toJson(),
+        ),
+      });
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _isSavingKnown = false;
@@ -263,14 +286,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   ) async {
     if (!_knownLoaded) return;
     final cardIds = cards.map((card) => card.id).toSet();
-    final categoryKnownCount = _knownIds.where(cardIds.contains).length;
-    if (categoryKnownCount == 0) return;
+    final categoryReviewCount = _reviews.keys.where(cardIds.contains).length;
+    if (categoryReviewCount == 0) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Bilinen kartları sıfırla?'),
+        title: const Text('Kart geçmişini sıfırla?'),
         content: Text(
-          '$_selectedCategory için $categoryKnownCount kartın “Biliyorum” işareti kaldırılacak.',
+          '$_selectedCategory için $categoryReviewCount kartın tekrar geçmişi silinecek ve yeniden çalışmaya hazır olacak.',
         ),
         actions: [
           TextButton(
@@ -285,7 +308,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    setState(() => _knownIds.removeWhere(cardIds.contains));
+    setState(() {
+      _knownIds.removeWhere(cardIds.contains);
+      _reviews.removeWhere((id, _) => cardIds.contains(id));
+      _currentIndex = 0;
+      _showAnswer = false;
+    });
     await _saveKnown();
   }
 
@@ -308,6 +336,50 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
 
   List<Flashcard> get _currentCards => _cards[_selectedCategory] ?? [];
 
+  List<Flashcard> _cardsDueAt(DateTime now) => _currentCards
+      .where((card) => _reviews[card.id]?.isDueAt(now) ?? true)
+      .toList(growable: false);
+
+  List<Flashcard> get _visibleCards =>
+      _dueOnly ? _cardsDueAt(DateTime.now()) : _currentCards;
+
+  Future<void> _rateCard(FlashcardRating rating) async {
+    final cards = _visibleCards;
+    if (!_knownLoaded || _isSavingKnown || !_showAnswer || cards.isEmpty) {
+      return;
+    }
+    final card = cards[_currentIndex.clamp(0, cards.length - 1).toInt()];
+    final oldReview = _reviews[card.id];
+    final review =
+        (oldReview ??
+                const FlashcardReview(
+                  lastRating: null,
+                  repetitions: 0,
+                  intervalDays: 0,
+                  lastReviewedAt: null,
+                  nextReviewAt: null,
+                ))
+            .rate(rating, DateTime.now());
+    setState(() {
+      _reviews[card.id] = review;
+      if (rating == FlashcardRating.remembered) {
+        if (!_knownIds.contains(card.id)) _knownIds.add(card.id);
+      } else {
+        _knownIds.remove(card.id);
+      }
+    });
+    await _saveKnown();
+    if (!mounted) return;
+    if (_dueOnly) {
+      setState(() {
+        if (_currentIndex >= _visibleCards.length) _currentIndex = 0;
+        _showAnswer = false;
+      });
+    } else {
+      _nextCard();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -319,8 +391,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       AppTheme.accentCyan,
       AppTheme.accentGreen,
     ];
-    final cards = _currentCards;
-    final knownCount = cards.where((c) => _knownIds.contains(c.id)).length;
+    final allCards = _currentCards;
+    final dueCards = _cardsDueAt(DateTime.now());
+    final cards = _dueOnly ? dueCards : allCards;
+    final knownCount = allCards.where((c) => _knownIds.contains(c.id)).length;
+    final reviewedCount = allCards
+        .where((c) => _reviews.containsKey(c.id))
+        .length;
+    final dueCount = dueCards.length;
     final totalCardCount = _cards.values.fold<int>(
       0,
       (total, categoryCards) => total + categoryCards.length,
@@ -331,9 +409,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
         title: const Text('Bilgi Kartları'),
         actions: [
           TextButton(
-            onPressed: !_knownLoaded || _isSavingKnown || knownCount == 0
+            onPressed: !_knownLoaded || _isSavingKnown || reviewedCount == 0
                 ? null
-                : () => _confirmResetKnown(context, cards),
+                : () => _confirmResetKnown(context, allCards),
             child: Text(
               'Sıfırla',
               style: textTheme.labelLarge?.copyWith(
@@ -404,13 +482,52 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                 ),
               ),
               child: Text(
-                'Başlangıç seti: $totalCardCount kart. Matematik, Fizik, Kimya ve Biyolojiyle sınırlı; tüm müfredatı kapsamaz. “Biliyorum” işareti tekrar planlamaz.',
+                'Başlangıç seti: $totalCardCount kart. Set tüm müfredatı kapsamaz. Tekrar aralığı yerel ve basit bir çalışma önerisidir; öğrenme garantisi vermez.',
                 style: textTheme.bodySmall?.copyWith(
                   color: colors.onSurface,
                   fontSize: 11,
                   height: 1.35,
                 ),
               ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                FilterChip(
+                  avatar: const Icon(Icons.replay_rounded, size: 18),
+                  label: Text('Çalışılacak · $dueCount'),
+                  selected: _dueOnly,
+                  onSelected: !_knownLoaded || _isSavingKnown
+                      ? null
+                      : (selected) => setState(() {
+                          _dueOnly = selected;
+                          _currentIndex = 0;
+                          _showAnswer = false;
+                        }),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Hatırladım: 1, 3, sonra en fazla 30 gün',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+                Tooltip(
+                  message:
+                      'Unuttum: 1 gün. Tereddüt: 1 gün veya önceki aralığın yarısı. Hatırladım: 1 ve 3 gün; sonra aralık ikiye katlanır, en çok 30 gün olur.',
+                  child: Icon(
+                    Icons.info_outline_rounded,
+                    size: 18,
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -456,14 +573,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${_currentIndex + 1} / ${cards.length}',
+                  '${cards.isEmpty ? 0 : _currentIndex + 1} / ${cards.length}',
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
                 Text(
                   _knownLoaded
-                      ? '$knownCount / ${cards.length} işaretli'
+                      ? '$knownCount / ${allCards.length} son yanıtta bildim'
                       : 'İlerleme yükleniyor',
                   style: textTheme.bodySmall?.copyWith(color: colors.secondary),
                 ),
@@ -476,7 +593,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
-                value: cards.isEmpty ? 0 : knownCount / cards.length,
+                value: allCards.isEmpty ? 0 : knownCount / allCards.length,
                 minHeight: 4,
                 backgroundColor: colors.outlineVariant,
                 valueColor: AlwaysStoppedAnimation(colors.secondary),
@@ -490,7 +607,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
             child: cards.isEmpty
                 ? Center(
                     child: Text(
-                      'Kart yok',
+                      _dueOnly
+                          ? 'Şu an tekrar zamanı gelen kart yok.'
+                          : 'Kart yok',
                       style: textTheme.bodyMedium?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -623,7 +742,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                         fontSize: 11,
                                       ),
                                     ),
-                                  if (_knownIds.contains(
+                                  if (_reviews.containsKey(
                                     cards[_currentIndex].id,
                                   ))
                                     Container(
@@ -639,10 +758,13 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        'Biliyorum',
+                                        _reviewStatus(
+                                          _reviews[cards[_currentIndex].id]!,
+                                        ),
                                         style: TextStyle(
                                           color: colors.secondary,
                                           fontSize: 11,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ),
@@ -659,105 +781,78 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
 
           // Controls
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Previous
-                _navButton(
-                  context,
-                  Icons.arrow_back_ios_rounded,
-                  'Önceki kart',
-                  () {
-                    if (_currentIndex > 0) {
-                      setState(() {
-                        _currentIndex--;
-                        _showAnswer = false;
-                      });
-                    }
-                  },
+                Row(
+                  children: [
+                    _ratingButton(
+                      context,
+                      label: 'Unuttum',
+                      rating: FlashcardRating.forgotten,
+                      color: colors.error,
+                      enabled:
+                          _knownLoaded &&
+                          !_isSavingKnown &&
+                          _showAnswer &&
+                          cards.isNotEmpty,
+                    ),
+                    const SizedBox(width: 8),
+                    _ratingButton(
+                      context,
+                      label: 'Tereddüt',
+                      rating: FlashcardRating.hesitant,
+                      color: colors.tertiary,
+                      enabled:
+                          _knownLoaded &&
+                          !_isSavingKnown &&
+                          _showAnswer &&
+                          cards.isNotEmpty,
+                    ),
+                    const SizedBox(width: 8),
+                    _ratingButton(
+                      context,
+                      label: 'Hatırladım',
+                      rating: FlashcardRating.remembered,
+                      color: colors.secondary,
+                      enabled:
+                          _knownLoaded &&
+                          !_isSavingKnown &&
+                          _showAnswer &&
+                          cards.isNotEmpty,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                // I don't know
-                Expanded(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: !_knownLoaded || _isSavingKnown
-                        ? null
-                        : () async {
-                            if (_isSavingKnown) return;
-                            setState(
-                              () => _knownIds.remove(cards[_currentIndex].id),
-                            );
-                            await _saveKnown();
-                            if (mounted) _nextCard();
-                          },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: colors.errorContainer,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: colors.error.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Bilmiyorum',
-                          style: TextStyle(
-                            color: colors.onErrorContainer,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
+                      onPressed: cards.isEmpty || _currentIndex == 0
+                          ? null
+                          : () => setState(() {
+                              _currentIndex--;
+                              _showAnswer = false;
+                            }),
+                      icon: const Icon(Icons.arrow_back_rounded, size: 16),
+                      label: const Text('Önceki'),
+                    ),
+                    Text(
+                      _showAnswer
+                          ? 'Tekrar aralığını seç'
+                          : 'Değerlendirmek için cevabı aç',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 10,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // I know
-                Expanded(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: !_knownLoaded || _isSavingKnown
-                        ? null
-                        : () async {
-                            if (_isSavingKnown) return;
-                            final id = cards[_currentIndex].id;
-                            if (!_knownIds.contains(id)) {
-                              setState(() => _knownIds.add(id));
-                              await _saveKnown();
-                            }
-                            if (mounted) _nextCard();
-                          },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: colors.secondaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: colors.secondary.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Biliyorum',
-                          style: TextStyle(
-                            color: colors.onSecondaryContainer,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                    TextButton.icon(
+                      onPressed: cards.isEmpty ? null : () => _nextCard(),
+                      iconAlignment: IconAlignment.end,
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                      label: const Text('Atla'),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Next
-                _navButton(
-                  context,
-                  Icons.arrow_forward_ios_rounded,
-                  'Sonraki kart',
-                  () {
-                    _nextCard();
-                  },
+                  ],
                 ),
               ],
             ),
@@ -768,7 +863,14 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
   }
 
   void _nextCard() {
-    final cards = _currentCards;
+    final cards = _visibleCards;
+    if (cards.isEmpty) {
+      setState(() {
+        _currentIndex = 0;
+        _showAnswer = false;
+      });
+      return;
+    }
     if (_currentIndex < cards.length - 1) {
       setState(() {
         _currentIndex++;
@@ -783,31 +885,67 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     }
   }
 
-  Widget _navButton(
-    BuildContext context,
-    IconData icon,
-    String label,
-    VoidCallback onTap,
-  ) {
+  Widget _ratingButton(
+    BuildContext context, {
+    required String label,
+    required FlashcardRating rating,
+    required Color color,
+    required bool enabled,
+  }) {
     final colors = Theme.of(context).colorScheme;
-    return Semantics(
-      button: true,
-      label: label,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.outlineVariant),
+    return Expanded(
+      child: Semantics(
+        button: true,
+        enabled: enabled,
+        label: label,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: enabled ? () => _rateCard(rating) : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+            decoration: BoxDecoration(
+              color: enabled
+                  ? color.withValues(alpha: 0.14)
+                  : colors.surfaceContainerHighest.withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: enabled
+                    ? color.withValues(alpha: 0.55)
+                    : colors.outlineVariant,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: enabled ? color : colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           ),
-          child: Icon(icon, color: colors.onSurfaceVariant, size: 18),
         ),
       ),
     );
+  }
+
+  String _reviewStatus(FlashcardReview review) {
+    final rating = switch (review.lastRating) {
+      FlashcardRating.forgotten => 'Unuttum',
+      FlashcardRating.hesitant => 'Tereddüt ettim',
+      FlashcardRating.remembered => 'Hatırladım',
+      null => 'Henüz değerlendirilmedi',
+    };
+    final due = review.nextReviewAt;
+    if (due == null || !due.isAfter(DateTime.now().toUtc())) {
+      return 'Son yanıt: $rating · Tekrar zamanı geldi';
+    }
+    final days = (due.difference(DateTime.now().toUtc()).inHours / 24).ceil();
+    return 'Son yanıt: $rating · $days gün sonra';
   }
 }
 

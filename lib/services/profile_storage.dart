@@ -10,6 +10,7 @@ import '../models/study_schedule_preferences.dart';
 import '../models/pomodoro_timer_state.dart';
 import '../models/net_score.dart';
 import '../models/mock_exam.dart';
+import '../models/flashcard_review.dart';
 
 class BackupImportPreview {
   final bool isLegacy;
@@ -44,7 +45,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 4;
+  static const int schemaVersion = 5;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const List<String> dataKeys = [
     'topics_data',
@@ -56,6 +57,7 @@ class ProfileStorage {
     'goals_data',
     'achievements_data',
     'flashcard_known',
+    'flashcard_reviews',
     'custom_curriculum',
     'schedule_preferences',
     'pomodoro_state',
@@ -953,6 +955,12 @@ class ProfileStorage {
       case 'flashcard_known':
         if (value is! List || value.any((item) => item is! String)) {
           _invalid(key, 'metin listesi');
+        }
+      case 'flashcard_reviews':
+        try {
+          FlashcardReviewData.fromJson(value);
+        } on FormatException catch (error) {
+          _invalid(key, error.message);
         }
       case 'custom_curriculum':
         _validateCustomCurriculum(value, key);
