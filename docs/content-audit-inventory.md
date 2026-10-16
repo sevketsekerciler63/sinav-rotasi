@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 4 | 103 konu için kaynak ve sürüm bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 27 | TYT Matematik 25/25 kayıt kaynaklı; diğer 82 konuda kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,43 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Dört kaynak etiketi bütün kataloğun doğrulandığı anlamına gelmez.
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 27 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik dışındaki 82 kayıt için kaynak bağı eksik.
+
+## TYT Matematik konu kaynak turu — 2026-10-16
+
+TYT Matematik kataloğundaki 25/25 kayda MEB OGM Materyal kaynak etiketi ve URL eklendi. İki eski kaynak korunup açıklamaları koşullandırıldı; 23 kayıt bu turda kaynaklandırıldı. Bu kaynaklar kavramları ve örnek alanlarını dayanaklandırır; güncel YKS kapsam eşlemesi, sınıf/sürüm kontrolü ve tüm örneklerin uzman denetimi henüz tamamlanmadı.
+
+| Topic ID | Konu | MEB OGM kaynak |
+| --- | --- | --- |
+| `tyt_mat_1` | Sayı kümeleri | [Dört Dörtlük TYT Matematik, Sayı Kümeleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page54.html) |
+| `tyt_mat_2` | İşlem önceliği | [Matematik 9, İşlem Önceliği](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/hzr/unite1/files/basic-html/page46.html) |
+| `tyt_mat_3` | Kesirler | [Matematik 9, Kavram Çalışmaları](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/9y/matematik/files/basic-html/page57.html) |
+| `tyt_mat_4` | Üslü sayılar | [Matematik 9, OGM fasikülü](https://ogmmateryal.eba.gov.tr/panel/upload/fasikul/55qeme0jn1g.pdf) |
+| `tyt_mat_5` | Köklü sayılar | [Matematik 9, Beceri Temelli Etkinlikler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/pdf/9/matematik.pdf) |
+| `tyt_mat_6` | EBOB-EKOK | [Dört Dörtlük TYT Matematik, EBOB-EKOK](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page78.html) |
+| `tyt_mat_7` | Bölünebilme | [Dört Dörtlük TYT Matematik, Bölünebilme Kuralları](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page72.html) |
+| `tyt_mat_8` | Oran-orantı | [Matematik 9, Oran ve Orantı](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite3/files/basic-html/page77.html) |
+| `tyt_mat_9` | Yüzde | [Temel Düzey Matematik 12, Yüzde Hesapları](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematiktemelduzey/12/unite1/files/basic-html/page46.html) |
+| `tyt_mat_10` | Birinci dereceden denklem | [Dört Dörtlük TYT Matematik, Birinci Dereceden Denklemler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page105.html) |
+| `tyt_mat_11` | Sayı ve kesir problemleri | [Fen Lisesi Matematik 9, Problemler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html) |
+| `tyt_mat_12` | Yaş problemleri | [Defterim Matematik 9, Yaş Problemleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page175.html) |
+| `tyt_mat_13` | İşçi-havuz problemleri | [Fen Lisesi Matematik 9, Problemler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html) |
+| `tyt_mat_14` | Hız problemleri | [Fen Lisesi Matematik 9, Problemler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html) |
+| `tyt_mat_15` | Kâr-zarar ve karışım | [Defterim Matematik 9, Karışım Problemleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page200.html) |
+| `tyt_mat_16` | Mutlak değer | [Matematik 9, Mutlak Değer](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite3/files/basic-html/page43.html) |
+| `tyt_mat_17` | Üçgenler | [Matematik, Üçgenler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/elazig-telafi/matematik/files/basic-html/page21.html) |
+| `tyt_mat_18` | Dik üçgen ve Pisagor | [Fen Lisesi Matematik 9, Pisagor](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite4/files/basic-html/page89.html) |
+| `tyt_mat_19` | Dörtgenler | [Matematik, Dörtgenler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/elazig-telafi/matematik/files/basic-html/page98.html) |
+| `tyt_mat_20` | Çember ve daire | [Matematik 11, Dairenin Çevresi ve Alanı](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/11/unite5/files/basic-html/page34.html) |
+| `tyt_mat_21` | Kümeler | [Matematik 9, Kümelerde İşlemler](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite2/files/basic-html/page12.html) |
+| `tyt_mat_22` | Mantık | [Matematik 9, Mantık](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite1/files/basic-html/page2.html) |
+| `tyt_mat_23` | Fonksiyonlar (temel) | [Matematik 10, Fonksiyon Kavramı ve Gösterimi](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/10/unite2/files/basic-html/page4.html) |
+| `tyt_mat_24` | Olasılık | [Dört Dörtlük TYT Matematik, Olasılık](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page332.html) |
+| `tyt_mat_25` | İstatistik | [Dört Dörtlük TYT Matematik, Merkezi Eğilim Ölçüleri](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page283.html) |
+
+Bu turda ifadeler özellikle şu durumlarda daraltıldı/koşullandırıldı: sayı doğrusunda 0'ın konumu; aynı öncelikli işlemlerin soldan sağa yapılması; kesir ve köklerde payda/işlem koşulları; doğru/ters orantı tanımları; art arda yüzde değişimi; sabit iş ve hız varsayımları; karışımda derişim ve birim uyumu; üçgen alanında dik yükseklik; özel üçgen oranları; daire çevresi/alanı ve derece cinsinden merkez açı; sonlu kümelerde birleşim sayımı; bağımsız olay koşulu ve çift sayıda veride medyan.
+
+**Açık takip:** güncel hedef sınav yılı/kohortunun resmi kapsam belgesiyle 25 başlığın tek tek eşleştirilmesi; TYT'de yer alıp almadığı belirsiz ayrıntıların (özellikle fonksiyon/mantık/kümeler alt kazanımları ve özel üçgen oranları) işaretlenmesi; kaynakların içerik sürüm/tarihinin kaydı; örnek çözümlerin alan uzmanı kontrolü.
 
 ## Kaynaklı düzeltmeler — 2026-10-16
 

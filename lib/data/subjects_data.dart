@@ -18,7 +18,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_1',
           name: 'Sayılar — Doğal, Tam, Rasyonel',
           description:
-              'Doğal sayılar: 0,1,2,3... Tam sayılar: ...,-2,-1,0,1,2... Rasyonel: kesir olarak yazılabilen (1/2, 0.75, -3/4). İrrasyonel: kök2 gibi, ondalık bitmez tekrarlamaz. Pi=3.14159... İrrasyonel. Sayı doğrusu: solda negatif, sağda pozitif. 0 her zaman ortada.',
+              'Doğal sayılar 0, 1, 2, ...; tam sayılar negatif tam sayılar, 0 ve pozitif tam sayılardır. Rasyonel sayılar a/b biçiminde yazılır (a,b tam sayı; b≠0); irrasyonel sayılar bu biçimde yazılamaz ve ondalık gösterimleri sonsuz, devirsizdir. π ve √2 irrasyoneldir. Sayı doğrusunda negatifler 0\'ın solunda, pozitifler sağındadır; 0 orijin noktasıdır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Sayı Kümeleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page54.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -28,7 +31,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_2',
           name: 'Dört İşlem ve İşlem Önceliği',
           description:
-              'Sıra: Parantez→Üs→Çarpma/Bölme→Toplama/Çıkarma. Negatif sayılarla çarpma: (-2)×(-3)=+6. Sıfırla bölme: TANIMSIZ. Sıfırla çarpma=0.',
+              'İşlem sırası: parantez, üs, çarpma/bölme, toplama/çıkarma. Aynı öncelikteki işlemler soldan sağa yapılır. Negatif iki sayının çarpımı pozitiftir: (−2)×(−3)=6. Sıfıra bölme tanımsızdır; sıfırla çarpım sıfırdır.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9, İşlem Önceliği',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/hzr/unite1/files/basic-html/page46.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -38,7 +44,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_3',
           name: 'Kesirler',
           description:
-              'Pay/payda. 3/4, dört eş parçaya bölünmüş bir bütünün üç parçasını gösterir. Ortak payda: sadeleştir veya genişlet. Toplama/çıkarma: ortak payda bul. Çarpma: payları çarp, paydaları çarp. Bölme: ikinci kesri ters çevirip çarp.',
+              'a/b kesrinde b≠0; a pay, b paydadır. Toplama ve çıkarmada ortak payda kullanılır; çarpmada paylar ve paydalar çarpılır. Bölmede ikinci kesir sıfır olmadığında ters çevrilip çarpılır. Sadeleştirme ve genişletme kesrin değerini değiştirmez.',
           sourceLabel: 'MEB OGM Materyal · Matematik 9',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/9y/matematik/files/basic-html/page57.html',
@@ -51,7 +57,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_4',
           name: 'Üslü Sayılar',
           description:
-              'a²=a×a. a≠0 için a⁰=1; 0⁰ bu kuralın dışındadır. a≠0 için a⁻¹=1/a. Kurallar: aᵐ×aⁿ=aᵐ⁺ⁿ. a≠0 için aᵐ÷aⁿ=aᵐ⁻ⁿ. (aᵐ)ⁿ=aᵐˣⁿ. Örnek: 2³=8, 3²=9, 5²=25, 10³=1000.',
+              'Tam sayı üslerinde aᵐ, a\'nın m kez çarpımını gösterir (m>0). a≠0 için a⁰=1 ve a⁻ⁿ=1/aⁿ. Aynı tabanda çarpmada üsler toplanır, bölmede (a≠0) çıkarılır; kuvvetin kuvvetinde üsler çarpılır. Örnek: 2³=8, 3²=9, 10³=1000.',
           sourceLabel: 'MEB OGM Materyal · Matematik 9',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/fasikul/55qeme0jn1g.pdf',
@@ -64,7 +70,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_5',
           name: 'Köklü Sayılar',
           description:
-              'Gerçek sayılarda a,b≥0 ise √a×√b=√(a×b); b>0 ise √(a/b)=√a/√b. Örnek: √4=2, √9=3, √16=4, √25=5, √100=10. Paydada 1/√2 varsa √2/2 biçiminde yazılabilir.',
+              '√a, a≥0 için karesi a olan negatif olmayan gerçek sayıyı gösterir. a,b≥0 iken √a·√b=√(ab); a≥0 ve b>0 iken √(a/b)=√a/√b. Örnek: √4=2, √9=3, √25=5. 1/√2, payda sıfır olmadığı için √2/2 biçiminde yazılabilir.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9 Beceri Temelli Etkinlikler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/pdf/9/matematik.pdf',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -74,7 +83,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_6',
           name: 'EBOB-EKOK',
           description:
-              'EBOB: en büyük ortak bölen. EKOK: en küçük ortak kat. Pozitif tam sayılar a ve b için EBOB(a,b)×EKOK(a,b)=a×b. Asal çarpanlarla bul.',
+              'EBOB, iki pozitif tam sayının en büyük ortak böleni; EKOK, en küçük ortak katıdır. Pozitif tam sayılar a,b için EBOB(a,b)·EKOK(a,b)=a·b. Asal çarpanlara ayırma iki değeri bulma yöntemlerinden biridir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, EBOB-EKOK',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page78.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -84,7 +96,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_7',
           name: 'Bölme-Bölünebilme',
           description:
-              '2\'ye bölünme: son rakam çift. 3\'e bölünme: rakamlar toplamı 3\'ün katı. 4\'e bölünme: son 2 basamak 4\'ün katı. 5\'e bölünme: son rakam 0 veya 5. 9\'a bölünme: rakamlar toplamı 9\'un katı.',
+              'Bir tam sayının 2\'ye bölünmesi için son rakamı çift; 3 veya 9\'a bölünmesi için rakamları toplamı sırasıyla 3 veya 9\'un katı olmalıdır. 4\'te son iki basamak, 5\'te son rakam 0 veya 5, 10\'da son rakam 0 olmalıdır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Bölünebilme Kuralları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page72.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -94,7 +109,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_8',
           name: 'Oran-Orantı',
           description:
-              'a/b = c/d → a×d = b×c (çapraz çarpım). Doğru orantı: biri artınca diğeri artar. Ters orantı: biri artınca diğeri azalır.',
+              'b,d≠0 iken a/b=c/d eşitliği ad=bc sonucunu verir. Doğru orantıda oran sabittir; ters orantıda çarpım sabittir. Değişkenlerden birinin artmasının diğerini azaltması tek başına ters orantıyı kanıtlamaz.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9, Oran ve Orantı',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite3/files/basic-html/page77.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -104,7 +122,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_9',
           name: 'Yüzde Problemleri',
           description:
-              '%20 artış: ×1.20. %20 azalış: ×0.80. %10 KDV: fiyat×1.10. Ardışık yüzde: her yüzdeyi ayrı uygula.',
+              'Bir niceliğin %p\'si, niceliğin p/100 ile çarpımıdır. %20 artış başlangıç değerini 1,20 ile; %20 azalış 0,80 ile çarpar. Ardışık yüzde değişimleri her adımda güncel değer üzerinden uygulanır; yüzdeler doğrudan toplanmaz.',
+          sourceLabel: 'MEB OGM Materyal · Temel Düzey Matematik 12, Yüzde Hesapları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematiktemelduzey/12/unite1/files/basic-html/page46.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -114,7 +135,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_10',
           name: 'Denklem Kurma — 1. Derece',
           description:
-              'Bilinmeyen=x koy. "5 fazlası" = x+5. "3 katı" = 3x. Her iki tarafı eşitle, x\'i yalnız bırak.',
+              'Bilinmeyeni x ile göster; “5 fazlası” x+5, “3 katı” 3x olur. Eşitliğin iki tarafına aynı işlemi uygulayarak bilinmeyeni yalnız bırak. Örnek: 3x+5=20 ise x=5.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Birinci Dereceden Denklemler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page105.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -124,7 +148,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_11',
           name: 'Sayı ve Kesir Problemleri',
           description:
-              'Peş peşe sayılar: x, x+1, x+2. Bir sayının 3/4\'ü: x×3/4. Problem çeviri tekniği: kelimeleri matematiğe çevir.',
+              'Ardışık tam sayılar x, x+1, x+2; ardışık çift veya tek tam sayılar x, x+2, x+4 biçiminde modellenebilir. Bir sayının 3/4\'ü 3x/4\'tür. Verilen ilişkileri değişkenlerle ifade edip kurulan denklemi çöz.',
+          sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9, Problemler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -134,7 +161,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_12',
           name: 'Yaş Problemleri',
           description:
-              'Şu anki yaş=x. 5 yıl sonra: x+5. 3 yıl önce: x-3. İki kişinin yaş farkı HEP SABİT kalır!',
+              'Bugünkü yaşı x olan kişinin n yıl sonraki yaşı x+n, n yıl önceki yaşı x−n olur (geçmiş yaşlar soruda anlamlı olmalıdır). İki kişinin aynı tarihteki yaş farkı zamanla değişmez.',
+          sourceLabel: 'MEB OGM Materyal · Defterim Matematik 9, Yaş Problemleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page175.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -144,7 +174,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_13',
           name: 'İşçi-Havuz Problemleri',
           description:
-              'İşçi: 1 günde yapılan iş oranı. A 6 günde, B 3 günde bitiriyorsa birlikte: 1/6+1/3=1/2 → 2 gün.',
+              'Sabit hızla çalışan bir kişi/boru için birim zamandaki iş miktarı 1/toplam bitirme süresidir. Aynı işte birlikte çalışma hızları toplanır: 6 günde ve 3 günde bitiren iki işçi, sabit hız varsayımıyla işi 1/(1/6+1/3)=2 günde bitirir.',
+          sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9, Problemler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -154,7 +187,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_14',
           name: 'Hız Problemleri',
           description:
-              'v=yol/zaman. Yol=hız×zaman. Karşıdan gelen: hızlar TOPLANIR. Aynı yöne giden: hızlar ÇIKARILIR.',
+              'Sabit hızlı harekette sürat=yol/zaman; yol=sürat×zaman. Aynı doğrultuda karşılıklı yaklaşan iki cismin bağıl sürati süratlerin toplamı, aynı yönde hareket edenlerin bağıl sürati farklarının mutlak değeridir. Birimleri tutarlı kullan.',
+          sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9, Problemler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite3/files/basic-html/page101.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -164,7 +200,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_15',
           name: 'Kar-Zarar ve Karışım',
           description:
-              'Kar = Satış - Maliyet. %Kar = Kar/Maliyet×100. Karışım: 1.sıvı×miktar + 2.sıvı×miktar = toplam×ortalama.',
+              'Kâr=satış fiyatı−maliyet; maliyete göre kâr yüzdesi=kâr/maliyet×100\'dür. Aynı tür ve birimdeki iki karışımın derişimi c₁,c₂ ve miktarları m₁,m₂ ise son derişim (c₁m₁+c₂m₂)/(m₁+m₂) olur; bu ortalama, miktar birimleri ve derişim tanımları uyumluysa kullanılır.',
+          sourceLabel: 'MEB OGM Materyal · Defterim Matematik 9, Karışım Problemleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/matematik/files/basic-html/page200.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -174,7 +213,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_16',
           name: 'Mutlak Değer',
           description:
-              '|a| = a eğer a≥0, -a eğer a<0. |3|=3, |-3|=3. |a-b| = a ile b arası mesafe. |x|=5 → x=5 veya x=-5.',
+              '|a|, a≥0 ise a; a<0 ise −a değeridir. Sayı doğrusunda |a−b|, a ile b arasındaki uzaklıktır. |x|=5 denkleminin çözümleri x=5 ve x=−5\'tir.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9, Mutlak Değer',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite3/files/basic-html/page43.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -184,7 +226,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_17',
           name: 'Üçgenler — Temel',
           description:
-              'İç açılar toplamı = 180°. Alan = (taban×yükseklik)/2. Dış açı = karşısındaki iki iç açının toplamı. Eşkenar: 3 kenar eşit, açılar 60°.',
+              'Öklid düzlemindeki üçgende iç açıların toplamı 180°; alan=(taban×tabana dik yükseklik)/2\'dir. Bir dış açı, kendisine komşu olmayan iki iç açının toplamına eşittir. Eşkenar üçgende üç kenar eşit ve her iç açı 60°\'dir.',
+          sourceLabel: 'MEB OGM Materyal · Matematik, Üçgenler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/elazig-telafi/matematik/files/basic-html/page21.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -194,7 +239,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_18',
           name: 'Dik Üçgen ve Pisagor',
           description:
-              'a²+b²=c² (c=hipotenüs). 3-4-5, 5-12-13, 8-15-17 üçgenleri ezberle. 30-60-90: kenarlar 1-√3-2. 45-45-90: kenarlar 1-1-√2.',
+              'Dik üçgende dik kenarlar a,b ve hipotenüs c ise a²+b²=c². Özel dik üçgen oranları: 3–4–5; 5–12–13; 30°–60°–90° açılarının karşısındaki kenarlar 1:√3:2; 45°–45°–90° üçgeninde 1:1:√2.',
+          sourceLabel: 'MEB OGM Materyal · Fen Lisesi Matematik 9, Pisagor Teoremi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesimatematik/9/unite4/files/basic-html/page89.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -204,7 +252,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_19',
           name: 'Dörtgenler',
           description:
-              'Kare: A=a², Ç=4a. Dikdörtgen: A=a×b, Ç=2(a+b). Paralelkenar: A=taban×yükseklik. Yamuk: A=(a+c)×h/2.',
+              'A alanı, Ç çevreyi gösterir. Karenin alanı a² ve çevresi 4a; dikdörtgenin alanı ab ve çevresi 2(a+b); paralelkenarın alanı taban×tabana dik yükseklik; yamuğun alanı paralel kenarların toplamı×yükseklik/2\'dir.',
+          sourceLabel: 'MEB OGM Materyal · Matematik, Dörtgenler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/elazig-telafi/matematik/files/basic-html/page98.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -214,7 +265,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_20',
           name: 'Çember – Daire',
           description:
-              'Çevre=2πr=πd. Alan=πr². Yay=(α/360)×2πr. Dilim=(α/360)×πr². Merkez açı=yay.',
+              'Yarıçapı r olan çemberin çevresi 2πr; dairenin alanı πr²\'dir. Merkez açısı α derece olan yay uzunluğu (α/360)·2πr, daire dilimi alanı (α/360)·πr²\'dir. Merkez açı ölçüsü, gördüğü yayın derece ölçüsüne eşittir.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 11, Çember ve Daire',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/11/unite5/files/basic-html/page34.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -224,7 +278,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_21',
           name: 'Kümeler',
           description:
-              'Birleşim (∪): birine ait. Kesişim (∩): ikisine ait. Fark (A-B): A\'da olup B\'de olmayan. n(A∪B)=n(A)+n(B)-n(A∩B).',
+              'A∪B, A veya B\'de (ya da ikisinde) bulunan elemanları; A∩B ortak elemanları; A\\B yalnız A\'da bulunan elemanları içerir. Sonlu iki küme için n(A∪B)=n(A)+n(B)−n(A∩B).',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9, Kümeler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite2/files/basic-html/page12.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟡 ORTA',
@@ -234,7 +291,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_22',
           name: 'Mantık',
           description:
-              'p→q: "p ise q". Karşıt önermesi: (~q)→(~p). p∧q: ikisi de doğru. p∨q: en az biri doğru.',
+              'p→q, “p ise q” koşullu önermesidir; karşıt tersi ¬q→¬p\'dir ve p→q ile denktir. p∧q iki önerme de doğruysa; p∨q en az biri doğruysa doğrudur (veya kapsayıcıdır).',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9, Mantık',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/09/unite1/files/basic-html/page2.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟡 ORTA',
@@ -244,7 +304,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_23',
           name: 'Fonksiyonlar (Temel)',
           description:
-              'f(x) bir kural: x gir, sonuç çık. f(2)=5 demek x=2 girince 5 çıkar. f(x)=2x+1 ise f(3)=7.',
+              'Fonksiyon, tanım kümesindeki her girdiyi değer kümesinde tam bir çıktıyla eşler. f(2)=5, 2 girdisinin görüntüsünün 5 olduğunu söyler. Örnek: f(x)=2x+1 ise f(3)=7.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 10, Fonksiyon Kavramı ve Gösterimi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/10/unite2/files/basic-html/page4.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -254,7 +317,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_24',
           name: 'Olasılık',
           description:
-              'P(A)=İstenen/Toplam. Zar: P(çift)=3/6=1/2. Bağımsız: P(A ve B)=P(A)×P(B).',
+              'Sonlu ve eş olasılıklı sonuçlarda P(A)=A\'yı sağlayan sonuç sayısı/tüm sonuç sayısı. Dengeli zar atışında çift gelme olasılığı 3/6=1/2\'dir. Bağımsız A ve B olayları için P(A∩B)=P(A)·P(B).',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Olasılık',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page332.html',
           questionCount: 1,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
@@ -264,7 +330,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_25',
           name: 'İstatistik',
           description:
-              'Ortalama=toplamı/adet. Ortanca=sıralayıp ortadaki. Mod=en çok tekrar eden.',
+              'Aritmetik ortalama=verilerin toplamı/veri sayısı. Medyan (ortanca), veriler sıralandığında ortada kalan değerdir; veri sayısı çiftse ortadaki iki değerin aritmetik ortalaması alınır. Mod, en sık görülen değerdir; bir veri grubunun birden fazla modu olabilir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Merkezi Eğilim Ölçüleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page283.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟡 ORTA',
