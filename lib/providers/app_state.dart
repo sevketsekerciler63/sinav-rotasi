@@ -9,7 +9,6 @@ import '../models/study_session.dart';
 import '../models/pomodoro_timer_state.dart';
 import '../models/legacy_daily_activity.dart';
 import '../models/mock_exam.dart';
-import '../models/net_score.dart';
 import '../models/weak_topic.dart';
 import '../models/goal.dart';
 import '../models/exam_profile.dart';
@@ -24,6 +23,7 @@ import '../services/study_history_metrics.dart';
 import '../services/daily_plan_metrics.dart';
 import '../services/daily_plan_migration.dart';
 import '../services/achievement_progress_metrics.dart';
+import '../services/mock_exam_metrics.dart';
 
 enum AppBootStatus { loading, ready, error }
 
@@ -1354,19 +1354,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     DateTime? completedAt,
   }) {
     if (_isProfileTransitioning) return false;
-    if (nets != null) {
-      final normalized = <String, double>{};
-      for (final entry in nets.entries) {
-        if (!NetScore.isStorable(entry.value)) return false;
-        normalized[MockExam.normalizeNetKey(entry.key)] = entry.value;
-      }
-      for (final subject in subjects) {
-        final key = MockExam.netKeyForSubject(subject.type, subject.name);
-        final value = normalized[key];
-        if (value != null && !NetScore.isValid(value, subject.totalQuestions)) {
-          return false;
-        }
-      }
+    if (nets != null &&
+        !MockExamMetrics.areNetUpdatesValid(nets: nets, subjects: subjects)) {
+      return false;
     }
     for (var exam in mockExams) {
       if (exam.id == examId) {
