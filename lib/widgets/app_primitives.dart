@@ -37,7 +37,7 @@ class AppEmptyState extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -68,6 +68,16 @@ class AppEmptyState extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: constraints.hasBoundedHeight ? constraints.maxHeight : 0,
+          ),
+          child: Center(child: content),
+        ),
       ),
     );
   }

@@ -565,12 +565,14 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () => _chooseAttemptDate(
-                    context,
-                    sliderKey,
-                    attemptDate,
-                    today,
-                  ),
+                  onPressed: _savingExams.contains(sliderKey)
+                      ? null
+                      : () => _chooseAttemptDate(
+                          context,
+                          sliderKey,
+                          attemptDate,
+                          today,
+                        ),
                   icon: const Icon(Icons.event_outlined, size: 16),
                   label: const Text('Tarihi seç'),
                 ),

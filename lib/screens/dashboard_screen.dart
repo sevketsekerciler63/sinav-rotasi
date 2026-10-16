@@ -285,22 +285,21 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, AppState state) {
-    final colors = Theme.of(context).colorScheme;
     final hour = DateTime.now().hour;
-    String greeting;
-    if (hour < 12) {
-      greeting = 'Günaydın! ☀️';
-    } else if (hour < 18) {
-      greeting = 'İyi Çalışmalar! 📖';
-    } else {
-      greeting = 'İyi Akşamlar! 🌙';
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final greeting = hour < 12
+        ? 'Günaydın! ☀️'
+        : hour < 18
+        ? 'İyi çalışmalar! 📖'
+        : 'İyi akşamlar! 🌙';
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 12,
+      runSpacing: 8,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(greeting, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 4),
@@ -313,56 +312,26 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AchievementsScreen()),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentOrange.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.accentOrange.withValues(alpha: 0.3),
-                  ),
+            Tooltip(
+              message: 'Başarımlar: ${state.unlockedAchievements} rozet',
+              child: TextButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AchievementsScreen()),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('🏆', style: TextStyle(fontSize: 16)),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${state.unlockedAchievements}',
-                      style: TextStyle(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
+                icon: const Icon(Icons.emoji_events_outlined),
+                label: Text('${state.unlockedAchievements}'),
               ),
             ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => Navigator.push(
+            IconButton.filledTonal(
+              tooltip: 'İstatistikleri aç',
+              onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const StatsScreen()),
               ),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.bar_chart_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
+              icon: const Icon(Icons.bar_chart_rounded),
             ),
           ],
         ),
@@ -418,16 +387,17 @@ class DashboardScreen extends StatelessWidget {
                         size: 17,
                       ),
                       const SizedBox(width: 7),
-                      Text(
-                        'KİŞİSEL HEDEF ROTASI',
-                        style: TextStyle(
-                          color: AppTheme.accentGreen,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.35,
+                      Expanded(
+                        child: Text(
+                          'KİŞİSEL HEDEF ROTASI',
+                          style: TextStyle(
+                            color: AppTheme.accentGreen,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.35,
+                          ),
                         ),
                       ),
-                      const Spacer(),
                       Icon(
                         Icons.explore_outlined,
                         color: Colors.white.withValues(alpha: 0.7),
@@ -439,31 +409,33 @@ class DashboardScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            remaining < 0
-                                ? 'Hedef tarihi geçti'
-                                : 'Hedefe kalan',
-                            style: const TextStyle(
-                              color: Color(0xFFD2DFD9),
-                              fontSize: 14,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              remaining < 0
+                                  ? 'Hedef tarihi geçti'
+                                  : 'Hedefe kalan',
+                              style: const TextStyle(
+                                color: Color(0xFFD2DFD9),
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            remaining < 0
-                                ? '${-remaining} gün önce'
-                                : '$remaining gün',
-                            style: const TextStyle(
-                              color: Color(0xFFF3F4E8),
-                              fontSize: 40,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -1.2,
+                            const SizedBox(height: 4),
+                            Text(
+                              remaining < 0
+                                  ? '${-remaining} gün önce'
+                                  : '$remaining gün',
+                              style: const TextStyle(
+                                color: Color(0xFFF3F4E8),
+                                fontSize: 40,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -1.2,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: progress),
@@ -493,11 +465,13 @@ class DashboardScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Konu ilerlemesi',
-                        style: TextStyle(
-                          color: Color(0xFFD2DFD9),
-                          fontSize: 11,
+                      const Expanded(
+                        child: Text(
+                          'Konu ilerlemesi',
+                          style: TextStyle(
+                            color: Color(0xFFD2DFD9),
+                            fontSize: 11,
+                          ),
                         ),
                       ),
                       Text(
@@ -536,11 +510,13 @@ class DashboardScreen extends StatelessWidget {
                         size: 15,
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        'Plan hedefi: ${state.activeProfile.targetDate.day} ${_turkishMonth(state.activeProfile.targetDate.month)} ${state.activeProfile.targetDate.year} · ${turkishWeekdayName(state.activeProfile.targetDate)}',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.78),
-                          fontSize: 11,
+                      Expanded(
+                        child: Text(
+                          'Plan hedefi: ${state.activeProfile.targetDate.day} ${_turkishMonth(state.activeProfile.targetDate.month)} ${state.activeProfile.targetDate.year} · ${turkishWeekdayName(state.activeProfile.targetDate)}',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.78),
+                            fontSize: 11,
+                          ),
                         ),
                       ),
                     ],
@@ -810,10 +786,14 @@ class DashboardScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(

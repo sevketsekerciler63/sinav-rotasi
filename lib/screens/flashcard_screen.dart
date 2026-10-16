@@ -32,7 +32,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'mat_1',
         'Pisagor Teoremi nedir?',
-        'a\u00B2 + b\u00B2 = c\u00B2\nDik ucgenin iki dik kenari karelerinin toplami hipotenusun karesine esittir.',
+        'a\u00B2 + b\u00B2 = c\u00B2\nDik üçgenin iki dik kenarının kareleri toplamı hipotenüsün karesine eşittir.',
       ),
       Flashcard(
         'mat_2',
@@ -45,27 +45,33 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'mat_3',
         'Faktoryel nedir?\n5! = ?',
-        '5! = 5 x 4 x 3 x 2 x 1 = 120\n0! = 1 (tanimla)',
+        '5! = 5 x 4 x 3 x 2 x 1 = 120\n0! = 1 (tanım gereği)',
       ),
       Flashcard(
         'mat_4',
-        'Logaritma ozellikleri?',
-        'log(ab) = log(a) + log(b)\nlog(a/b) = log(a) - log(b)\nlog(a^n) = n.log(a)',
+        'Logaritma özellikleri?',
+        'Taban a > 0 ve a ≠ 1; x > 0, y > 0 ve r gerçek sayı olmak üzere:\nlogₐ(xy) = logₐ(x) + logₐ(y)\nlogₐ(x/y) = logₐ(x) − logₐ(y)\nlogₐ(xʳ) = r · logₐ(x)',
+        sourceLabel: 'MEB OGM Materyal · Matematik 12, Logaritma',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/12/unite1/files/basic-html/page11.html',
       ),
       Flashcard(
         'mat_5',
-        'Turev nedir?',
-        'Bir fonksiyonun degisim hizi.\nf\'(x) = lim(\u0394x->0) [f(x+\u0394x) - f(x)] / \u0394x',
+        'Türev nedir?',
+        'Bir fonksiyonun anlık değişim hızı.\nf\'(x) = lim(\u0394x->0) [f(x+\u0394x) - f(x)] / \u0394x',
       ),
       Flashcard(
         'mat_6',
-        'Integral nedir?',
-        'Turev\'in tersi. Egri altinda kalan alan.\n\u222Bf(x)dx = F(x) + C',
+        'İntegral nedir?',
+        'F′(x) = f(x) ise belirsiz integral:\n∫f(x) dx = F(x) + C\nBelirli integral işaretli birikimi verir. [a, b] aralığında grafikle x ekseni arasındaki geometrik alan ∫ₐᵇ|f(x)| dx ile hesaplanır.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 12, İntegral ile alan',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/12/unite6/files/basic-html/page49.html',
       ),
       Flashcard(
         'mat_7',
         'sin\u00B2x + cos\u00B2x = ?',
-        'sin\u00B2x + cos\u00B2x = 1\n(Temel trigonometrik ozdeslik)',
+        'sin\u00B2x + cos\u00B2x = 1\n(Temel trigonometrik özdeşlik)',
       ),
       Flashcard(
         'mat_8',
@@ -76,35 +82,35 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
     'Fizik': [
       Flashcard(
         'fiz_1',
-        'Newton\'un 1. yasasi?',
-        'Eylemsizlik Yasasi: Cisme etki eden net kuvvet sifirsa, cisim duruyorsa durur, hareket ediyorsa duzgun dogusal hareket yapar.',
+        'Newton\'un 1. yasası?',
+        'Eylemsizlik yasası: Net kuvvet sıfırsa cisim durgun kalır veya sabit hızla doğrusal hareketini sürdürür.',
       ),
       Flashcard(
         'fiz_2',
-        'Newton\'un 2. yasasi?',
-        'F = m x a\nKuvvet = Kutle x Ivme\nBirimi: Newton (N)',
+        'Newton\'un 2. yasası?',
+        'F = m x a\nKuvvet = Kütle x İvme\nBirimi: Newton (N)',
       ),
       Flashcard(
         'fiz_3',
         'Enerji korunumu?',
-        'Yalitilmis sistemin toplam enerjisi korunur. Mekanik enerji Ek + Ep, yalnizca korunumlu kuvvetler is yaptiginda sabit kalir; surtunme varsa mekanik enerji isi ve isiya donusebilir.',
+        'Yalıtılmış sistemin toplam enerjisi korunur. Yalnızca korunumlu kuvvetler iş yaptığında mekanik enerji (Ek + Ep) korunur. Sürtünme gibi etkiler mekanik enerjiyi iç enerjiye dönüştürebilir.',
         sourceLabel: 'MEB OGM Materyal · Fizik 11',
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/fizik/files/basic-html/page112.html',
       ),
       Flashcard(
         'fiz_4',
-        'Ohm Yasasi?',
-        'V = I x R\nV: Gerilim (Volt)\nI: Akim (Amper)\nR: Direnc (Ohm)',
+        'Ohm yasası?',
+        'V = I x R\nV: Gerilim (Volt)\nI: Akım (Amper)\nR: Direnç (Ohm)',
       ),
       Flashcard(
         'fiz_5',
-        'Serbest dusme?',
-        'Cisim durgunluktan birakiliyor, hava direnci yok ve asagi yon pozitif secilmisse:\nv = gt\nh = 1/2 gt\u00B2\ng degerini soruda verilen degerden al; verilmezse kullanilan yaklasimi belirt.',
+        'Serbest düşme?',
+        'Cisim durgunluktan bırakılıyor, hava direnci yok ve aşağı yön pozitif seçilmişse:\nv = gt\nh = 1/2 gt\u00B2\ng değerini sorudan al; verilmemişse kullandığın yaklaşımı belirt.',
       ),
       Flashcard(
         'fiz_6',
-        'Is-Enerji teoremi?',
+        'İş-enerji teoremi?',
         'Wnet = \u0394Ek = 1/2mv\u00B2 - 1/2mv0\u00B2\nNet iş = Kinetik enerji değişimi',
       ),
     ],
@@ -112,11 +118,11 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_1',
         'Mol nedir?',
-        '1 mol = 6.022 x 10\u00B2\u00B3 tane\nn = m/M\nn: mol, m: kutle(g), M: mol kutlesi(g/mol)',
+        '1 mol = 6.022 x 10\u00B2\u00B3 tane\nn = m/M\nn: mol, m: kütle (g), M: mol kütlesi (g/mol)',
       ),
       Flashcard(
         'kim_2',
-        'Ideal gaz denklemi?',
+        'İdeal gaz denklemi?',
         'PV = nRT\nR = 0.082 L.atm/mol.K\nR = 8.314 J/mol.K',
       ),
       Flashcard(
@@ -129,7 +135,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       ),
       Flashcard(
         'kim_4',
-        'Elektron dizilimi kurallari?',
+        'Elektron dizilimi kuralları?',
         '1. Aufbau (düşük enerjiden başlama)\n2. Pauli (en fazla 2 elektron/orbital)\n3. Hund (aynı alt kabuklarda önce tek tek)',
       ),
       Flashcard(
@@ -143,42 +149,45 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_6',
         'Le Chatelier ilkesi?',
-        'Denge halindeki sisteme yapilan etki, dengeyi bu etkiyi azaltacak yone kaydirir.',
+        'Dengedeki sisteme yapılan etki, dengeyi bu etkiyi azaltacak yöne kaydırır.',
       ),
     ],
     'Biyoloji': [
       Flashcard(
         'bio_1',
-        'Hucre zari modeli?',
-        'Akici Mozaik Model:\n- Fosfolipit cift tabaka\n- Yapisal ve tasinan proteinler\n- Kolesterol (hayvan hucresi)',
+        'Hücre zarı modeli?',
+        'Akıcı mozaik model:\n- Fosfolipit çift tabaka\n- Yapısal ve taşıyıcı proteinler\n- Kolesterol (hayvan hücresi)',
       ),
       Flashcard(
         'bio_2',
-        'Mitoz bolunme safhalari?',
-        'Hucresel dongu: interfaz, ardindan mitoz ve sitokinez.\nMitoz evreleri: Profaz -> Metafaz -> Anafaz -> Telofaz.\nBolunme sonunda kromozom sayisi korunur (2n -> 2n).',
+        'Mitoz bölünme evreleri?',
+        'Hücresel döngü: interfaz, ardından mitoz ve sitokinez.\nMitoz evreleri: Profaz -> Metafaz -> Anafaz -> Telofaz.\nBölünme sonunda kromozom sayısı korunur (2n -> 2n).',
         sourceLabel: 'MEB OGM Materyal · Fen Lisesi Biyoloji 10',
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/10/unite1/files/basic-html/page7.html',
       ),
       Flashcard(
         'bio_3',
-        'Mayoz bolunme farki?',
-        'Mayoz I: Tetrat olusumu, crossing over\nMayoz II: Mitoza benzer\n2n -> n (kromozom yariya iner)',
+        'Mayoz bölünmenin farkı?',
+        'Mayoz I: Tetrat oluşumu, crossing over\nMayoz II: Mitoza benzer\n2n -> n (kromozom sayısı yarıya iner)',
       ),
       Flashcard(
         'bio_4',
-        'Fotosentez asamalari?',
-        'Isiga bagimli: Tilakoid zarda\n(H2O parcalanir, ATP+NADPH olusur)\nIsiktan bagimsiz (Calvin): Stromada\n(CO2 + ATP -> Glikoz)',
+        'Fotosentezin aşamaları?',
+        'Işığa bağımlı tepkimeler: Tilakoit zarda gerçekleşir; su parçalanır, O₂ açığa çıkar, ATP ve NADPH üretilir.\nKalvin döngüsü: Stromada CO₂, ATP ve NADPH kullanılarak organik bileşiklerin öncülleri üretilir. Bunlardan glikoz ve diğer organik bileşikler sentezlenebilir.',
+        sourceLabel: 'MEB OGM Materyal · Biyoloji 12, Kalvin döngüsü',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite2/files/basic-html/page12.html',
       ),
       Flashcard(
         'bio_5',
         'DNA replikasyonu?',
-        'Yari korumaci (semi-konservatif)\nHelikaz: Acma\nPrimaz: Primer sentezi\nDNA Polimeraz: Yeni zincir sentezi\nLigaz: Birlestirme',
+        'Yarı korumacı (semi-konservatif)\nHelikaz: Açma\nPrimaz: Primer sentezi\nDNA Polimeraz: Yeni zincir sentezi\nLigaz: Birleştirme',
       ),
       Flashcard(
         'bio_6',
-        'Mendel yasalari?',
-        '1. Ayrilma (segregasyon)\n2. Bagimsiz dagilma\nGenotip: Aa, AA, aa\nFenotip: Dis gorunus',
+        'Mendel yasaları?',
+        '1. Ayrılma (segregasyon)\n2. Bağımsız dağılım\nGenotip: Aa, AA, aa\nFenotip: Dış görünüş',
       ),
     ],
   };
