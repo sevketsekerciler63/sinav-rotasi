@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../providers/app_state.dart';
+import '../services/weekly_report_metrics.dart';
 import '../theme/app_theme.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -385,50 +386,30 @@ class StatsScreen extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final currentWeek = today.subtract(Duration(days: today.weekday - 1));
-    final firstWeek = currentWeek.subtract(const Duration(days: 77));
-    final weekData = <int, Map<String, bool>>{
-      for (var week = 0; week < 12; week++) week: {},
-    };
-    for (final date in state.completedStudyDates) {
-      if (date.isBefore(firstWeek) || date.isAfter(today)) continue;
-      final week = date.difference(firstWeek).inDays ~/ 7;
-      final dateKey =
-          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-      weekData[week]![dateKey] = true;
-    }
-    for (final log in state.dailyLogs) {
-      final date = DateTime(log.date.year, log.date.month, log.date.day);
-      if (log.isRestDay || date.isBefore(firstWeek) || date.isAfter(today)) {
-        continue;
-      }
-      final week = date.difference(firstWeek).inDays ~/ 7;
-      final dateKey = log.dateKey;
-      weekData[week]![dateKey] =
-          (weekData[week]![dateKey] ?? false) || log.isCompleted;
-    }
-
-    final barGroups = <BarChartGroupData>[];
-    for (var entry in weekData.entries) {
-      final completed = entry.value.values.where((done) => done).length;
-      barGroups.add(
-        BarChartGroupData(
-          x: entry.key,
-          barRods: [
-            BarChartRodData(
-              toY: completed.toDouble(),
-              color: entry.value.isNotEmpty && completed == entry.value.length
-                  ? colors.secondary
-                  : colors.primary,
-              width: 12,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(4),
+    final buckets = WeeklyReportMetrics.trailingCompletionBuckets(
+      today: today,
+      completedStudyDates: state.completedStudyDates,
+      logs: state.dailyLogs,
+    );
+    final barGroups = buckets
+        .map(
+          (bucket) => BarChartGroupData(
+            x: bucket.weekIndex,
+            barRods: [
+              BarChartRodData(
+                toY: bucket.completedDays.toDouble(),
+                color: bucket.hasData && bucket.allScheduledDaysCompleted
+                    ? colors.secondary
+                    : colors.primary,
+                width: 12,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(4),
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    }
+            ],
+          ),
+        )
+        .toList();
 
     return Container(
       height: 160,

@@ -13,6 +13,13 @@ typedef WeeklyReportDay = ({
   int minutes,
 });
 
+typedef WeeklyCompletionBucket = ({
+  int weekIndex,
+  int completedDays,
+  bool hasData,
+  bool allScheduledDaysCompleted,
+});
+
 /// Builds one date-consistent snapshot for the weekly report.
 class WeeklyReportMetrics {
   const WeeklyReportMetrics._({
@@ -42,6 +49,65 @@ class WeeklyReportMetrics {
   final int focusSessions;
   final int focusSeconds;
   final List<MockExam> exams;
+
+  static List<WeeklyCompletionBucket> trailingCompletionBuckets({
+    required DateTime today,
+    required Iterable<DateTime> completedStudyDates,
+    required Iterable<DailyLog> logs,
+    int weekCount = 12,
+  }) {
+    if (weekCount <= 0) return const [];
+
+    final throughDate = _day(today);
+    final currentWeekStart = DateTime(
+      throughDate.year,
+      throughDate.month,
+      throughDate.day - throughDate.weekday + 1,
+    );
+    final firstWeekStart = currentWeekStart.subtract(
+      Duration(days: (weekCount - 1) * 7),
+    );
+    final completedDateKeys = completedStudyDates
+        .map(_day)
+        .map(_dateKey)
+        .toSet();
+    final scheduledDateKeys = logs
+        .where((log) => !log.isRestDay)
+        .map((log) => log.dateKey)
+        .toSet();
+    final observedThroughKey = _dateKey(throughDate);
+    final buckets = <WeeklyCompletionBucket>[];
+
+    for (var weekIndex = 0; weekIndex < weekCount; weekIndex++) {
+      final weekStart = firstWeekStart.add(Duration(days: weekIndex * 7));
+      final weekEndExclusive = weekStart.add(const Duration(days: 7));
+      final startKey = _dateKey(weekStart);
+      final endKey = _dateKey(weekEndExclusive);
+      final completed = completedDateKeys
+          .where(
+            (dateKey) =>
+                dateKey.compareTo(startKey) >= 0 &&
+                dateKey.compareTo(endKey) < 0 &&
+                dateKey.compareTo(observedThroughKey) <= 0,
+          )
+          .toSet();
+      final scheduled = scheduledDateKeys
+          .where(
+            (dateKey) =>
+                dateKey.compareTo(startKey) >= 0 &&
+                dateKey.compareTo(endKey) < 0 &&
+                dateKey.compareTo(observedThroughKey) <= 0,
+          )
+          .toSet();
+      buckets.add((
+        weekIndex: weekIndex,
+        completedDays: completed.length,
+        hasData: completed.isNotEmpty || scheduled.isNotEmpty,
+        allScheduledDaysCompleted: completed.containsAll(scheduled),
+      ));
+    }
+    return List.unmodifiable(buckets);
+  }
 
   factory WeeklyReportMetrics.current({
     required DateTime now,
