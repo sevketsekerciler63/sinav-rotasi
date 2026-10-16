@@ -2,7 +2,7 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: LUNA-01 ve LUNA-02 uygulandı, Sol incelemesi bekliyor; LUNA-03–04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Durum: LUNA-01–03 uygulandı, Sol incelemesi bekliyor; LUNA-04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
 
 ## 1. Devralırken kısa bağlam
 
@@ -10,7 +10,7 @@ Durum: LUNA-01 ve LUNA-02 uygulandı, Sol incelemesi bekliyor; LUNA-03–04 hen�
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
-- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
+- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
 - Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
@@ -70,12 +70,23 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-03 · Ortak görsel bileşenler
 
-- [ ] Durum: başlanmadı.
+- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `5a2eea4`).
 - Kapsam: benzer bölüm başlığı, boş durum, kısa bilgi satırı ve birincil/ikincil eylem bileşenlerini küçük parçalar halinde ortaklaştır.
 - Alanlar: lib/widgets ve lib/theme/app_theme.dart; yalnız bunları kullanan ekran sunumları.
 - Sınır: mevcut renk/typografi kimliği korunur. Kapsamlı dosya yeniden yazımı, yeni tasarım paketi, gereksiz bağımlılık veya sayfa başına farklı stil eklenmez. Kart sayısı ihtiyaç olan yerlerde azaltılır.
 - Kabul: açık/koyu tema, uzun Türkçe metin, dar ekran ve büyük yazı dikkate alınmış; bileşenler gerçek en az iki yerde kullanılmış; düğme anlamları aynı.
 - Sol incelemesi: tema renkleri yerine sabit renk kaçakları, taşma, okunabilirlik, anlamsız soyutlama ve callback davranışının değişmesi.
+
+#### LUNA-03 teslimi · 16 Ekim 2026
+
+- Başlangıç commit'i: `08ecd83`; teslim commit'i: `5a2eea4`.
+- Yeni ortak sunum parçaları: `lib/widgets/app_primitives.dart` içindeki `AppSectionHeader`, `AppEmptyState`, `AppInfoBanner`.
+- Gerçek kullanımlar: bölüm başlığı dashboard ve deneme ekranlarında; boş durum Zayıf Konular ve Deneme Takvimi ekranlarında; açıklama bandı günlük plan, deneme takibi ve takvim ekranlarında.
+- Açık/koyu renkler `ColorScheme`'den, başlık/gövde yazıları mevcut tema tipografisinden alınıyor. Birincil/ikincil düğme stilleri zaten `app_theme.dart` içinde ortak olduğundan yeni sarmalayıcı eklenmedi.
+- Kontrol: `dart format` yeni widget dosyasını biçimlendirdi; `git diff --check` temiz; `flutter analyze --no-pub` temiz.
+- Yapılmayan kontrol: ekran görüntüsü, dar cihaz, büyük yazı ve görsel koyu/açık tema kabulü yapılmadı. Deneme Takvimi boş durumu mevcut sabit deneme kataloğuyla her profilde erişilebilir olmayabilir; veri boşsa ortak bileşen orada kullanılır.
+- Sol uzun Türkçe metinlerde taşmayı, koyu/açık tema karşıtlığını, küçük ekran yerleşimini ve yeni bileşenlerin gereksiz soyutlama olup olmadığını kontrol etsin.
+- Sonraki bağımsız iş: LUNA-04.
 
 ### LUNA-04 · Ana ekranın bilgi sırası
 
@@ -189,7 +200,7 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 |---|---|---|---|
 | LUNA-01 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `475721c`; cihaz/ekran okuyucu kabulü açık |
 | LUNA-02 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `2cc8c7e`; cihaz/ekran okuyucu kabulü açık |
-| LUNA-03 | Başlanmadı | İncelenmedi | — |
+| LUNA-03 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `5a2eea4`; dar ekran/tema görünüm kabulü açık |
 | LUNA-04 | Başlanmadı | İncelenmedi | — |
 | LUNA-05 | Altyapı bekliyor | İncelenmedi | SOL-04/05 |
 | LUNA-06 | Sözleşme bekliyor | İncelenmedi | SOL-06 |
