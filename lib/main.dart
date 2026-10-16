@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +19,7 @@ import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/daily_reminder_service.dart';
 import 'services/backup_history_service.dart';
+import 'services/profile_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -132,7 +135,9 @@ class _AppGateState extends State<AppGate> {
   bool _showOnboarding = false;
   bool _loaded = false;
   bool _checkingFirstLaunch = false;
+  bool _recoveringFromBackup = false;
   String? _firstLaunchError;
+  String? _backupRecoveryError;
 
   @override
   void initState() {
@@ -168,6 +173,85 @@ class _AppGateState extends State<AppGate> {
     if (!saved) throw StateError('Kurulum tamamlandı bilgisi saklanamadı.');
     if (!mounted) return;
     setState(() => _showOnboarding = false);
+  }
+
+  Future<void> _recoverFromBackupFile() async {
+    if (_recoveringFromBackup) return;
+    setState(() {
+      _recoveringFromBackup = true;
+      _backupRecoveryError = null;
+    });
+    try {
+      final result = await FilePicker.pickFiles(
+        dialogTitle: 'Kurtarma yedeğini seç',
+        type: FileType.custom,
+        allowedExtensions: const ['json'],
+        allowMultiple: false,
+        withData: true,
+      );
+      if (!mounted || result == null) return;
+
+      final file = result.files.single;
+      if (file.size > 10 * 1024 * 1024) {
+        throw const FormatException('Yedek dosyası 10 MB sınırını aşıyor.');
+      }
+      final bytes = file.bytes;
+      if (bytes == null) {
+        throw const FormatException('Yedek dosyasının içeriği okunamadı.');
+      }
+      final rawBackup = utf8.decode(bytes).replaceFirst('\uFEFF', '').trim();
+      final decoded = jsonDecode(rawBackup);
+      if (decoded is! Map) {
+        throw const FormatException('Yedek JSON kökünde nesne bulunmalı.');
+      }
+      final backup = Map<String, dynamic>.from(decoded);
+      final preview = await ProfileStorage.instance.previewBackup(backup);
+      if (!mounted) return;
+
+      final details = preview.isLegacy
+          ? 'Eski biçimli yedek, etkin “${preview.profileNames.single}” '
+                'profilindeki ${preview.dataGroupCount} veri grubunu güncelleyecek; '
+                'yedekte olmayan kayıtlar korunacak.'
+          : '${preview.profileNames.length} profil ve '
+                '${preview.dataGroupCount} veri grubu yüklenecek:\n\n'
+                '${preview.profileNames.map((name) => '• $name').join('\n')}\n\n'
+                'Cihazdaki profil listesi ve çalışma verileri bu yedekle değişecek.';
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Kurtarma yedeği doğrulandı'),
+          content: Text(details),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Yedeği yükle'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+
+      final appState = context.read<AppState>();
+      await ProfileStorage.instance.importBackup(backup);
+      await appState.loadData();
+      if (mounted && appState.bootStatus == AppBootStatus.error) {
+        setState(() {
+          _backupRecoveryError =
+              'Yedek yazıldı ancak kayıtlar açılamadı: '
+              '${appState.loadErrorMessage ?? 'bilinmeyen yükleme hatası'}';
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() => _backupRecoveryError = 'Yedek yüklenemedi: $error');
+      }
+    } finally {
+      if (mounted) setState(() => _recoveringFromBackup = false);
+    }
   }
 
   @override
@@ -212,7 +296,7 @@ class _AppGateState extends State<AppGate> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Yerel kayıtlar silinmedi. Yeniden deneyebilir veya hata ayrıntılarını inceleyebilirsin.',
+                    'Yerel kayıtlar silinmedi. Yeniden deneyebilir veya daha önce aldığın JSON yedeğini seçerek kurtarmayı deneyebilirsin.',
                     textAlign: TextAlign.center,
                   ),
                   if (appState.loadErrorMessage != null) ...[
@@ -222,11 +306,42 @@ class _AppGateState extends State<AppGate> {
                       textAlign: TextAlign.center,
                     ),
                   ],
+                  if (_backupRecoveryError != null) ...[
+                    const SizedBox(height: 10),
+                    SelectableText(
+                      _backupRecoveryError!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
-                  FilledButton.icon(
-                    onPressed: appState.loadData,
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Yeniden dene'),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _recoveringFromBackup
+                            ? null
+                            : _recoverFromBackupFile,
+                        icon: _recoveringFromBackup
+                            ? const SizedBox.square(
+                                dimension: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.upload_file_rounded),
+                        label: const Text('Yedek dosyasıyla kurtar'),
+                      ),
+                      FilledButton.icon(
+                        onPressed: appState.loadData,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('Yeniden dene'),
+                      ),
+                    ],
                   ),
                 ],
               ),
