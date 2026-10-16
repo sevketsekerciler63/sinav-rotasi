@@ -586,29 +586,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final profileId = _activeProfile.id;
     final ids = changedLog.progressIds;
     if (ids.isEmpty || changedLog.isRestDay) return;
-    final each = changedLog.solvedQuestions ~/ ids.length;
-    final remainder = changedLog.solvedQuestions % ids.length;
-    for (var index = 0; index < ids.length; index++) {
-      final id = ids[index];
-      final previous = _dailyPlanEntries[id] is Map
-          ? Map<String, dynamic>.from(_dailyPlanEntries[id] as Map)
-          : <String, dynamic>{};
-      previous['solvedQuestions'] = each + (index < remainder ? 1 : 0);
-      previous['weakTopicNotes'] = index == 0 ? changedLog.weakTopicNotes : '';
-      previous['activityAt'] = changedLog.activityAt?.toIso8601String();
-      if (changedLog.reviewTopicId == null) {
-        previous.remove('reviewTopicId');
-      } else {
-        previous['reviewTopicId'] = changedLog.reviewTopicId;
-      }
-      if (completedOverride != null) {
-        previous['isCompleted'] = completedOverride;
-        previous['completedAt'] = completedOverride
-            ? changedLog.completedAt?.toIso8601String()
-            : null;
-      }
-      _dailyPlanEntries[id] = previous;
-    }
+    DailyPlanMetrics.saveLogProgress(
+      planEntries: _dailyPlanEntries,
+      changedLog: changedLog,
+      completedOverride: completedOverride,
+    );
     await _writeProfileData(profileId, {
       'daily_logs': jsonEncode({
         'schemaVersion': 2,
