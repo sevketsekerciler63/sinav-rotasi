@@ -2,7 +2,7 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: LUNA-01–03 uygulandı, Sol incelemesi bekliyor; LUNA-04 henüz uygulanmadı. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Durum: LUNA-01–04 uygulandı; dördü de Sol incelemesi bekliyor. LUNA-05/06 altyapı ve sözleşme bağımlılıkları nedeniyle sonraki sırada. Bu not model değiştirmez ve arka planda ajan başlatmaz.
 
 ## 1. Devralırken kısa bağlam
 
@@ -10,7 +10,7 @@ Durum: LUNA-01–03 uygulandı, Sol incelemesi bekliyor; LUNA-04 henüz uygulanm
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
-- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
+- İlk devir noktası `9878621`; Luna devrederken çalışma ağacı temizdi ve `8b7c4ff` iş bölümü notunu ekledi. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`, LUNA-04 teslimi `9c799d4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
 - Kayıt/yedek ilk kaynak düzeltmeleri uygulandı; schema 7, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
@@ -90,12 +90,23 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-04 · Ana ekranın bilgi sırası
 
-- [ ] Durum: başlanmadı.
+- [x] Durum: uygulandı; Sol incelemesi bekliyor (commit `9c799d4`).
 - Kapsam: mevcut bugünkü görev/plan kartını üst sıraya taşı; motivasyon sözünü ve büyük hedef/sayaç yoğunluğunu aşağı al; geçmiş hedef uyarısını kısa ama erişilebilir tut.
 - Alanlar: dashboard_screen.dart ve gerekirse LUNA-03 bileşenleri.
 - Sınır: mevcut plan verisi kullanılır. Gerçek kaynak/sayfa/test/süre altyapısı hazır değilse bu bilgiler uydurulmaz; “30 dakikaya uygun” gibi doğrulanmayan kapasite iddiası gösterilmez. Görev yoksa dürüst boş durum ve mevcut plan sayfasına yol gösterilir.
 - Kabul: öğrenci ilk görünümde sıradaki işi veya neden iş olmadığını anlayabiliyor; mevcut başlat/plan düğmesi çalışır akışa bağlı; hedef tarihi düzenleme yolu korunmuş; 0 ilerleme, geçmiş hedef ve boş gün durumları ele alınmış.
 - Sol incelemesi: doğru profil/gün gösterimi, geçmiş hedef davranışı, yanlış plan önerisi, kaybolan araçlar ve taslak/veri değişikliği.
+
+#### LUNA-04 teslimi · 16 Ekim 2026
+
+- Başlangıç commit'i: `49679f2`; teslim commit'i: `9c799d4`.
+- Değişen dosya: `lib/screens/dashboard_screen.dart`.
+- İlk görünümde sıra: başlık → gerekiyorsa geçmiş hedef uyarısı → bugünkü plan/görev → bildirim/başarı → gelecekteki hedef sayacı → istatistikler → motivasyon kartı.
+- Geçmiş hedefte büyük sayaç gizlendi; kısa uyarı ve Ayarlar içindeki hedef tarihi düzenleme yolu kaldı. Bugün kaydı yoksa görev uydurulmadan Günlük Plan bağlantısı gösteriliyor. Günlük kaydı varsa mevcut sıradaki görev başlatılıyor; eşleşen görev yok ve gün tamamlanmamışsa Pomodoro başlatılmıyor, Günlük Plan açılıyor. Tamamlanmış günde serbest odak seçeneği ve dinlenme gününde kapalı eylem korunuyor.
+- Kontrol: `dart format` uygulandı; `git diff --check` temiz; `flutter analyze --no-pub` temiz; `flutter build web --release --no-pub` başarılı.
+- Yapılmayan kontrol: görsel ekran görüntüsü, gerçek profilde 0 ilerleme/boş gün/geçmiş hedef akışı, dar cihaz, büyük yazı ve açık/koyu tema cihaz kabulü çalıştırılmadı.
+- Sol, `todayLog` null ve boş görev dallarını, hedef düzenleme bağlantısını, geçmiş hedefte sayaç/başlık tutarlılığını ve kalan alt araçlara erişimi incelesin. Özellikle dashboard ilk ekranının gerçek web/telefon görünümünü kontrol etsin.
+- Sonraki uygulama işi: LUNA-05 için SOL-04/05 API'leri bekleniyor; bu arada kullanıcı Sol'a geçerse SOL-01 ve LUNA-01–04 incelemesini yapabilir.
 
 ## 4. Luna 6 — Sol altyapısından sonra yapılacaklar
 
@@ -201,7 +212,7 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 | LUNA-01 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `475721c`; cihaz/ekran okuyucu kabulü açık |
 | LUNA-02 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `2cc8c7e`; cihaz/ekran okuyucu kabulü açık |
 | LUNA-03 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `5a2eea4`; dar ekran/tema görünüm kabulü açık |
-| LUNA-04 | Başlanmadı | İncelenmedi | — |
+| LUNA-04 | Uygulandı, Sol incelemesi bekliyor | İncelenmedi | Commit `9c799d4`; gerçek görünüm/boş ve geçmiş hedef kabulü açık |
 | LUNA-05 | Altyapı bekliyor | İncelenmedi | SOL-04/05 |
 | LUNA-06 | Sözleşme bekliyor | İncelenmedi | SOL-06 |
 | SOL-01/02 önceki veri dilimi | Kaynak uygulandı | Kabul açık | Otomatik regresyon/cihaz kurtarma |
