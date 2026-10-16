@@ -256,16 +256,28 @@ class _AppGateState extends State<AppGate> {
 
   Future<void> _exportRecoveryFile() async {
     if (_exportingRecovery || _recoveringFromBackup) return;
-    setState(() => _exportingRecovery = true);
+    setState(() {
+      _exportingRecovery = true;
+      _backupRecoveryError = null;
+    });
     try {
-      final backup = await ProfileStorage.instance.exportBackup();
+      Map<String, dynamic> backup;
+      var rawArchive = false;
+      try {
+        backup = await ProfileStorage.instance.exportBackup();
+      } catch (_) {
+        backup = await ProfileStorage.instance.exportEmergencyArchive();
+        rawArchive = true;
+      }
       final bytes = Uint8List.fromList(
         utf8.encode(const JsonEncoder.withIndent('  ').convert(backup)),
       );
       final path = await FilePicker.saveFile(
-        dialogTitle: 'Sağlam kayıtları ve ham kurtarma arşivini kaydet',
+        dialogTitle: rawArchive
+            ? 'Açılamayan verilerin ham arşivini cihaz dışında koru'
+            : 'Sağlam kayıtları ve ham kurtarma arşivini kaydet',
         fileName:
-            'sinav-rotasi-kurtarma-${DateTime.now().millisecondsSinceEpoch}.json',
+            'sinav-rotasi-${rawArchive ? 'ham-arsiv' : 'kurtarma'}-${DateTime.now().millisecondsSinceEpoch}.json',
         type: FileType.custom,
         allowedExtensions: const ['json'],
         bytes: bytes,
@@ -274,7 +286,9 @@ class _AppGateState extends State<AppGate> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            path == null
+            rawArchive
+                ? 'Ham veri arşivi ${path == null ? 'indirme isteği gönderildi; indirildiğini kontrol et' : 'dışa aktarıldı'}. Bu dosya doğrudan yüklenemez; verileri inceleyip kurtarmak için korunur.'
+                : path == null
                 ? 'Kurtarma dosyası indirme isteği gönderildi; indirildiğini kontrol et.'
                 : 'Kurtarma dosyası dışa aktarıldı. Ham sorunlu kayıtlar etkinleştirilmedi.',
           ),

@@ -11,7 +11,7 @@ class StudySchedulePreferences {
 
   Map<String, dynamic> toJson() => {
     'version': 1,
-    'availableWeekdays': availableWeekdays,
+    'availableWeekdays': List<int>.of(availableWeekdays),
     'dailyStudyMinutes': dailyStudyMinutes,
   };
 
@@ -31,7 +31,7 @@ class StudySchedulePreferences {
       throw const FormatException('Çalışma planı tercihleri geçersiz.');
     }
     return StudySchedulePreferences(
-      availableWeekdays: weekdays.cast<int>()..sort(),
+      availableWeekdays: List<int>.from(weekdays)..sort(),
       dailyStudyMinutes: minutes,
     );
   }

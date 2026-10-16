@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/subjects_data.dart';
@@ -45,10 +46,14 @@ class _PreparedBackup {
 class ProfileStorage {
   ProfileStorage._();
 
+  @visibleForTesting
+  ProfileStorage.forTesting();
+
   static final ProfileStorage instance = ProfileStorage._();
 
   static const int schemaVersion = 7;
   static const String backupFormat = 'sinav-rotasi-backup';
+  static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
     'topics_data',
     'daily_logs',
@@ -348,6 +353,28 @@ class ProfileStorage {
       _profiles = updatedProfiles;
     });
   }
+
+  /// Preserves raw managed preferences even if profile metadata or the journal
+  /// cannot be opened. This archive is inert and is not a restorable backup.
+  Future<Map<String, dynamic>> exportEmergencyArchive() =>
+      _enqueueMutation(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final keys =
+            prefs
+                .getKeys()
+                .where(
+                  (key) =>
+                      _isManagedPreferenceKey(key) || key == _transactionKey,
+                )
+                .toList()
+              ..sort();
+        return {
+          'format': emergencyArchiveFormat,
+          'archiveVersion': 1,
+          'createdAt': DateTime.now().toUtc().toIso8601String(),
+          'rawPreferences': {for (final key in keys) key: prefs.get(key)},
+        };
+      });
 
   Future<Map<String, dynamic>> exportBackup() async {
     await initialize();

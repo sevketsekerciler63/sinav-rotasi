@@ -38,7 +38,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<StudySession> studySessions = [];
   PomodoroTimerState? pomodoroTimerState;
   late List<Achievement> achievements;
-  final ProfileStorage _profileStorage = ProfileStorage.instance;
+  final ProfileStorage _profileStorage;
   ExamProfile _activeProfile = ExamProfile.defaultYks;
   Map<String, dynamic> _dailyPlanEntries = {};
   Map<String, dynamic> _dailyLogHistory = {};
@@ -229,7 +229,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  AppState() {
+  AppState({ProfileStorage? profileStorage})
+    : _profileStorage = profileStorage ?? ProfileStorage.instance {
     WidgetsBinding.instance.addObserver(this);
     subjects = getAllSubjects();
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
