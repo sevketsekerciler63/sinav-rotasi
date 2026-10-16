@@ -149,116 +149,139 @@ class _MockExamScreenState extends State<MockExamScreen> {
       }
     }
 
-    return Container(
-      height: 200,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: LineChart(
-        LineChartData(
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: 10,
-            getDrawingHorizontalLine: (value) =>
-                FlLine(color: colors.outlineVariant, strokeWidth: 1),
+    String describeTrend(String label, List<FlSpot> spots) {
+      if (spots.isEmpty) return '';
+      final firstSpot = spots.first;
+      final lastSpot = spots.last;
+      final firstExam = completedExams[firstSpot.x.toInt()];
+      final lastExam = completedExams[lastSpot.x.toInt()];
+      final change = lastSpot.y - firstSpot.y;
+      final changeLabel =
+          '${change >= 0 ? '+' : ''}${NetScore.format(change)} net';
+      return '$label, ${spots.length} ölçüm: ilk ${_formatDate(firstExam.displayDate)} ${NetScore.format(firstSpot.y)} net, '
+          'son ${_formatDate(lastExam.displayDate)} ${NetScore.format(lastSpot.y)} net, değişim $changeLabel';
+    }
+
+    final accessibleTrend = [
+      describeTrend('TYT', tytSpots),
+      describeTrend('AYT', aytSpots),
+    ].where((summary) => summary.isNotEmpty).join('. ');
+
+    return Semantics(
+      label: 'Deneme net trendi. $accessibleTrend.',
+      child: ExcludeSemantics(
+        child: Container(
+          height: 200,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.outlineVariant),
           ),
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                interval: 10,
-                reservedSize: 30,
-                getTitlesWidget: (value, meta) => Text(
-                  value.toInt().toString(),
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                interval: 1,
-                getTitlesWidget: (value, meta) => Text(
-                  'D${value.toInt() + 1}',
-                  style: TextStyle(
-                    color: colors.onSurfaceVariant,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ),
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [
-            LineChartBarData(
-              spots: tytSpots,
-              isCurved: true,
-              color: colors.primary,
-              barWidth: 3,
-              dotData: FlDotData(
+          child: LineChart(
+            LineChartData(
+              gridData: FlGridData(
                 show: true,
-                getDotPainter: (spot, percent, bar, index) =>
-                    FlDotCirclePainter(
-                      radius: 4,
-                      color: colors.primary,
-                      strokeWidth: 2,
-                      strokeColor: colors.surface,
-                    ),
+                drawVerticalLine: false,
+                horizontalInterval: 10,
+                getDrawingHorizontalLine: (value) =>
+                    FlLine(color: colors.outlineVariant, strokeWidth: 1),
               ),
-              belowBarData: BarAreaData(
-                show: true,
-                color: colors.primary.withValues(alpha: 0.1),
-              ),
-            ),
-            if (aytSpots.isNotEmpty)
-              LineChartBarData(
-                spots: aytSpots,
-                isCurved: true,
-                color: colors.secondary,
-                barWidth: 3,
-                dotData: FlDotData(
-                  show: true,
-                  getDotPainter: (spot, percent, bar, index) =>
-                      FlDotCirclePainter(
-                        radius: 4,
-                        color: colors.secondary,
-                        strokeWidth: 2,
-                        strokeColor: colors.surface,
-                      ),
-                ),
-                belowBarData: BarAreaData(
-                  show: true,
-                  color: colors.secondary.withValues(alpha: 0.1),
-                ),
-              ),
-          ],
-          lineTouchData: LineTouchData(
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (spots) => spots
-                  .map(
-                    (s) => LineTooltipItem(
-                      '${NetScore.format(s.y)} net',
-                      TextStyle(
-                        color: s.bar.color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 10,
+                    reservedSize: 30,
+                    getTitlesWidget: (value, meta) => Text(
+                      value.toInt().toString(),
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 10,
                       ),
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 1,
+                    getTitlesWidget: (value, meta) => Text(
+                      'D${value.toInt() + 1}',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: tytSpots,
+                  isCurved: true,
+                  color: colors.primary,
+                  barWidth: 3,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, bar, index) =>
+                        FlDotCirclePainter(
+                          radius: 4,
+                          color: colors.primary,
+                          strokeWidth: 2,
+                          strokeColor: colors.surface,
+                        ),
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: colors.primary.withValues(alpha: 0.1),
+                  ),
+                ),
+                if (aytSpots.isNotEmpty)
+                  LineChartBarData(
+                    spots: aytSpots,
+                    isCurved: true,
+                    color: colors.secondary,
+                    barWidth: 3,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, bar, index) =>
+                          FlDotCirclePainter(
+                            radius: 4,
+                            color: colors.secondary,
+                            strokeWidth: 2,
+                            strokeColor: colors.surface,
+                          ),
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: colors.secondary.withValues(alpha: 0.1),
+                    ),
+                  ),
+              ],
+              lineTouchData: LineTouchData(
+                touchTooltipData: LineTouchTooltipData(
+                  getTooltipItems: (spots) => spots
+                      .map(
+                        (s) => LineTooltipItem(
+                          '${NetScore.format(s.y)} net',
+                          TextStyle(
+                            color: s.bar.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
             ),
           ),
         ),

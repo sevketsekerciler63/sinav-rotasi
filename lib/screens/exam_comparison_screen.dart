@@ -90,6 +90,18 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
               .toDouble();
         }
 
+        final radarAccessibleSummary = comparisonSubjects
+            .map((subject) {
+              final exam1Net = exam1.netForSubject(subject.type, subject.name);
+              final exam2Net = exam2.netForSubject(subject.type, subject.name);
+              final difference = exam2Net - exam1Net;
+              final differenceLabel =
+                  '${difference >= 0 ? '+' : ''}${NetScore.format(difference)} net';
+              return '${subject.name}: ${_examLegendLabel(exam1)} ${NetScore.format(exam1Net)} net, '
+                  '${_examLegendLabel(exam2)} ${NetScore.format(exam2Net)} net, fark $differenceLabel';
+            })
+            .join('; ');
+
         return Scaffold(
           appBar: AppBar(title: const Text('Deneme Karşılaştırma')),
           body: SingleChildScrollView(
@@ -206,73 +218,85 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                           ),
                         )
                       else
-                        SizedBox(
-                          height: 280,
-                          child: RadarChart(
-                            RadarChartData(
-                              dataSets: [
-                                RadarDataSet(
-                                  dataEntries: comparisonSubjects
-                                      .map(
-                                        (subject) => RadarEntry(
-                                          value: radarValue(exam1, subject),
-                                        ),
-                                      )
-                                      .toList(),
-                                  fillColor: colors.primary.withValues(
-                                    alpha: 0.2,
+                        Semantics(
+                          label:
+                              'Ortak derslerde iki denemenin radar karşılaştırması. '
+                              'Özet netler ve farklar: $radarAccessibleSummary.',
+                          child: ExcludeSemantics(
+                            child: SizedBox(
+                              height: 280,
+                              child: RadarChart(
+                                RadarChartData(
+                                  dataSets: [
+                                    RadarDataSet(
+                                      dataEntries: comparisonSubjects
+                                          .map(
+                                            (subject) => RadarEntry(
+                                              value: radarValue(exam1, subject),
+                                            ),
+                                          )
+                                          .toList(),
+                                      fillColor: colors.primary.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderColor: colors.primary,
+                                      borderWidth: 2,
+                                    ),
+                                    RadarDataSet(
+                                      dataEntries: comparisonSubjects
+                                          .map(
+                                            (subject) => RadarEntry(
+                                              value: radarValue(exam2, subject),
+                                            ),
+                                          )
+                                          .toList(),
+                                      fillColor: colors.secondary.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderColor: colors.secondary,
+                                      borderWidth: 2,
+                                    ),
+                                  ],
+                                  radarBackgroundColor: Colors.transparent,
+                                  borderData: FlBorderData(show: false),
+                                  radarBorderData: BorderSide(
+                                    color: colors.outlineVariant,
+                                    width: 1,
                                   ),
-                                  borderColor: colors.primary,
-                                  borderWidth: 2,
-                                ),
-                                RadarDataSet(
-                                  dataEntries: comparisonSubjects
-                                      .map(
-                                        (subject) => RadarEntry(
-                                          value: radarValue(exam2, subject),
-                                        ),
-                                      )
-                                      .toList(),
-                                  fillColor: colors.secondary.withValues(
-                                    alpha: 0.2,
+                                  titlePositionPercentageOffset: 0.2,
+                                  titleTextStyle: textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: colors.onSurfaceVariant,
+                                        fontSize: 10,
+                                      ),
+                                  tickCount: 4,
+                                  ticksTextStyle: const TextStyle(
+                                    color: Colors.transparent,
                                   ),
-                                  borderColor: colors.secondary,
-                                  borderWidth: 2,
-                                ),
-                              ],
-                              radarBackgroundColor: Colors.transparent,
-                              borderData: FlBorderData(show: false),
-                              radarBorderData: BorderSide(
-                                color: colors.outlineVariant,
-                                width: 1,
-                              ),
-                              titlePositionPercentageOffset: 0.2,
-                              titleTextStyle: textTheme.labelSmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                fontSize: 10,
-                              ),
-                              tickCount: 4,
-                              ticksTextStyle: const TextStyle(
-                                color: Colors.transparent,
-                              ),
-                              tickBorderData: BorderSide(
-                                color: colors.outlineVariant.withValues(
-                                  alpha: 0.3,
-                                ),
-                              ),
-                              gridBorderData: BorderSide(
-                                color: colors.outlineVariant.withValues(
-                                  alpha: 0.5,
+                                  tickBorderData: BorderSide(
+                                    color: colors.outlineVariant.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                  ),
+                                  gridBorderData: BorderSide(
+                                    color: colors.outlineVariant.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                  ),
+                                  getTitle: (index, _) {
+                                    final shortName = comparisonSubjects[index]
+                                        .name
+                                        .replaceFirst(
+                                          RegExp(r'^(TYT|AYT) '),
+                                          '',
+                                        );
+                                    final label = shortName.length > 10
+                                        ? '${shortName.substring(0, 9)}…'
+                                        : shortName;
+                                    return RadarChartTitle(text: label);
+                                  },
                                 ),
                               ),
-                              getTitle: (index, _) {
-                                final shortName = comparisonSubjects[index].name
-                                    .replaceFirst(RegExp(r'^(TYT|AYT) '), '');
-                                final label = shortName.length > 10
-                                    ? '${shortName.substring(0, 9)}…'
-                                    : shortName;
-                                return RadarChartTitle(text: label);
-                              },
                             ),
                           ),
                         ),
