@@ -129,6 +129,9 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         'pOH Hesabi',
         'pOH = -log[OH-]',
         '25 °C\'de sulu çözeltilerde pH + pOH = pKw ≈ 14',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page121.html',
       ),
       FormulaItem(
         'Denge Sabiti',
@@ -145,9 +148,12 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         'Sabit sıcaklık ve basınçta; T mutlak sıcaklıktır.',
       ),
       FormulaItem(
-        'Hessin Yasasi',
-        '\u0394Hrxn = \u03A3\u0394Hf(urun) - \u03A3\u0394Hf(girent)',
-        'Reaksiyon entalpisi',
+        'Tepkime Entalpisi',
+        'ΔH°tepkime = ΣνΔH°f(ürün) − ΣνΔH°f(giren)',
+        '25 °C ve 1 atm standart hâllerindeki molar oluşum entalpileri kullanılır; her terim tepkime katsayısıyla çarpılır.',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page89.html',
       ),
     ],
     'Biyoloji': [

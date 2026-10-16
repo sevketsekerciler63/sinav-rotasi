@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/subject.dart';
 import '../models/topic.dart';
 import '../providers/app_state.dart';
@@ -983,6 +984,18 @@ class SubjectDetailScreen extends StatelessWidget {
                     _infoChip(context, '~${topic.estimatedDays} gün'),
                   ],
                 ),
+                if (topic.sourceLabel != null && topic.sourceUrl != null) ...[
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () =>
+                          _openTopicSource(context, topic.sourceUrl!),
+                      icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                      label: Text('Kaynak: ${topic.sourceLabel}'),
+                    ),
+                  ),
+                ],
                 if (topic.isCustom && onEditTopic != null) ...[
                   const SizedBox(height: 10),
                   Row(
@@ -1064,6 +1077,24 @@ class SubjectDetailScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openTopicSource(BuildContext context, String rawUrl) async {
+    final uri = Uri.tryParse(rawUrl);
+    var opened = false;
+    try {
+      opened =
+          uri != null &&
+          (uri.scheme == 'https' || uri.scheme == 'http') &&
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kaynak açılamadı.')),
+      );
+    }
   }
 
   Future<void> _confirmRemoveSubject(

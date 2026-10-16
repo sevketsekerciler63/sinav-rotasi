@@ -545,7 +545,7 @@ class SettingsScreen extends StatelessWidget {
             _privacyDetail(
               dialogContext,
               'Ne zaman dış bağlantı kurulur?',
-              '“YouTube’da ara” seçildiğinde arama ifadesi YouTube’a açılır. Uygulamanın Inter ve Space Grotesk yazı tipleri uygulama dosyasına gömülüdür; yazı görünümü için Google font sunucusuna istek gönderilmez. Diğer ders ve plan içeriği de uygulamanın içinde bulunur.',
+              '“YouTube’da ara” seçildiğinde arama ifadesi YouTube’a açılır. Konu, bilgi ve formül kartlarındaki “Kaynak” düğmesi seçilen MEB OGM veya TDK sayfasını dış tarayıcıda açar; profil ve plan verisi kaynak bağlantısına eklenmez. Inter ve Space Grotesk yazı tipleri uygulamaya gömülüdür; görünüm için Google font sunucusuna istek gönderilmez. Ders ve plan içeriği uygulamanın içindedir.',
             ),
             _privacyDetail(
               dialogContext,

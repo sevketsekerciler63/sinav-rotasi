@@ -6,6 +6,8 @@ class Topic {
   final String difficulty; // 🟢 Kolay, 🟡 Orta, 🔴 Zor
   final String priority; // 🔴 ÇOK KRİTİK, 🟠 ÖNEMLİ, 🟡 ORTA, 🔵 DÜŞÜK
   final int estimatedDays;
+  final String? sourceLabel;
+  final String? sourceUrl;
   bool isCompleted;
   String notes;
   bool isCustom;
@@ -18,6 +20,8 @@ class Topic {
     required this.difficulty,
     required this.priority,
     required this.estimatedDays,
+    this.sourceLabel,
+    this.sourceUrl,
     this.isCompleted = false,
     this.notes = '',
     this.isCustom = false,

@@ -34,7 +34,10 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'mat_2',
         'Diskriminant nedir?',
-        '\u0394 = b\u00B2 - 4ac\n\u0394 > 0: 2 farkli gercek kok\n\u0394 = 0: 1 cakisik gercek kok\n\u0394 < 0: Gercek sayilarda kok yok',
+        'a ≠ 0 ve a, b, c gerçek sayılar olmak üzere ax² + bx + c = 0 için:\nΔ = b² − 4ac\nΔ > 0: İki farklı gerçek kök\nΔ = 0: Çakışık iki gerçek kök\nΔ < 0: Gerçek sayılarda kök yok',
+        sourceLabel: 'MEB OGM Materyal · Matematik 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/10/matematik.pdf',
       ),
       Flashcard(
         'mat_3',
@@ -82,6 +85,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
         'fiz_3',
         'Enerji korunumu?',
         'Yalitilmis sistemin toplam enerjisi korunur. Mekanik enerji Ek + Ep, yalnizca korunumlu kuvvetler is yaptiginda sabit kalir; surtunme varsa mekanik enerji isi ve isiya donusebilir.',
+        sourceLabel: 'MEB OGM Materyal · Fizik 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/fizik/files/basic-html/page112.html',
       ),
       Flashcard(
         'fiz_4',
@@ -113,7 +119,10 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_3',
         'pH nedir?',
-        'pH = -log[H+]\npH < 7: Asit\npH = 7: Notr\npH > 7: Baz',
+        'Seyreltik sulu çözeltiler için yaklaşık:\npH = −log[H⁺]\n25 °C sıcaklıkta:\npH < 7: Asidik\npH = 7: Nötr\npH > 7: Bazik',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page121.html',
       ),
       Flashcard(
         'kim_4',
@@ -144,6 +153,9 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
         'bio_2',
         'Mitoz bolunme safhalari?',
         'Hucresel dongu: interfaz, ardindan mitoz ve sitokinez.\nMitoz evreleri: Profaz -> Metafaz -> Anafaz -> Telofaz.\nBolunme sonunda kromozom sayisi korunur (2n -> 2n).',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Biyoloji 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/10/unite1/files/basic-html/page7.html',
       ),
       Flashcard(
         'bio_3',

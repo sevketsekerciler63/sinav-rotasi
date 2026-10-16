@@ -39,6 +39,9 @@ List<Subject> getAllSubjects() {
           name: 'Kesirler',
           description:
               'Pay/payda. 3/4, dört eş parçaya bölünmüş bir bütünün üç parçasını gösterir. Ortak payda: sadeleştir veya genişlet. Toplama/çıkarma: ortak payda bul. Çarpma: payları çarp, paydaları çarp. Bölme: ikinci kesri ters çevirip çarp.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/9y/matematik/files/basic-html/page57.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -49,6 +52,9 @@ List<Subject> getAllSubjects() {
           name: 'Üslü Sayılar',
           description:
               'a²=a×a. a≠0 için a⁰=1; 0⁰ bu kuralın dışındadır. a≠0 için a⁻¹=1/a. Kurallar: aᵐ×aⁿ=aᵐ⁺ⁿ. a≠0 için aᵐ÷aⁿ=aᵐ⁻ⁿ. (aᵐ)ⁿ=aᵐˣⁿ. Örnek: 2³=8, 3²=9, 5²=25, 10³=1000.',
+          sourceLabel: 'MEB OGM Materyal · Matematik 9',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/fasikul/55qeme0jn1g.pdf',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -413,6 +419,9 @@ List<Subject> getAllSubjects() {
           name: 'Yazım Kuralları',
           description:
               'Büyük harf: cümle başı ve özel isim. Bağlaç olan de/da ayrı yazılır; bulunma hâl eki -de/-da bitişiktir (evde, okulda). Bağlaç olan ki ayrı, -ki eki bitişik yazılır (evdeki).',
+          sourceLabel: 'Türk Dil Kurumu · Yazım Kılavuzu',
+          sourceUrl:
+              'https://yazim.tdk.gov.tr/content/03-bazi-kelime-ve-eklerin-yazilisi.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -634,6 +643,9 @@ List<Subject> getAllSubjects() {
           name: 'Hücre — Sıfırdan',
           description:
               'Hücre = yaşamın temel birimi. Hücre zarı: kontrollü geçiş. Sitoplazma: organeller burada. Çekirdek: DNA var. Mitokondri: ATP üretir. Ribozom: protein üretir. Kloroplast, bitkilerde ve algler gibi fotosentez yapan bazı ökaryotlarda bulunur.',
+          sourceLabel: 'MEB OGM Materyal · Defterim Biyoloji 9',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/9/biyoloji/files/basic-html/page100.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
