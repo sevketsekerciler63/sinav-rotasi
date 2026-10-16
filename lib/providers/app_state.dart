@@ -22,6 +22,7 @@ import '../services/profile_storage.dart';
 import '../services/daily_reminder_service.dart';
 import '../services/study_history_metrics.dart';
 import '../services/daily_plan_metrics.dart';
+import '../services/daily_plan_migration.dart';
 
 enum AppBootStatus { loading, ready, error }
 
@@ -801,54 +802,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _restoreDailyPlanProgress(String logsJson) {
-    final decoded = jsonDecode(logsJson);
-    if (decoded is! Map) {
-      throw const FormatException('Günlük plan kayıtları geçersiz.');
-    }
-
-    if (decoded['schemaVersion'] == 2 && decoded['entries'] is Map) {
-      _dailyPlanEntries = Map<String, dynamic>.from(decoded['entries'] as Map);
-      final history = decoded['history'];
-      _dailyLogHistory = history is Map
-          ? Map<String, dynamic>.from(history)
-          : {};
-    } else {
-      // Convert the original date-keyed format into stable day positions.
-      // Keep every original key in history so no old value is discarded.
-      final legacy = Map<String, dynamic>.from(decoded);
-      final templateLogs = getDailySchedule();
-      final templateKeys = templateLogs.map((log) => log.dateKey).toSet();
-      _dailyPlanEntries = {};
-      _dailyLogHistory = Map<String, dynamic>.of(legacy);
-
-      for (final originalLog in templateLogs) {
-        final saved = legacy[originalLog.dateKey];
-        if (saved is! Map) continue;
-
-        final progress = Map<String, dynamic>.from(saved);
-        final hasActivity =
-            progress['isCompleted'] == true ||
-            (progress['solvedQuestions'] is num &&
-                (progress['solvedQuestions'] as num) > 0) ||
-            (progress['weakTopicNotes'] is String &&
-                (progress['weakTopicNotes'] as String).isNotEmpty);
-        if (progress['completedAt'] == null &&
-            progress['isCompleted'] == true) {
-          progress['completedAt'] = originalLog.date.toIso8601String();
-        }
-        if (progress['activityAt'] == null && hasActivity) {
-          progress['activityAt'] = originalLog.date.toIso8601String();
-        }
-        final progressId = originalLog.progressIds.first;
-        _dailyPlanEntries[progressId] = progress;
-      }
-
-      // Retain any non-template records in the preserved legacy map as well.
-      _dailyLogHistory.addEntries(
-        legacy.entries.where((entry) => !templateKeys.contains(entry.key)),
-      );
-    }
-
+    final snapshot = DailyPlanMigration.restore(
+      logsJson,
+      templateLogs: getDailySchedule(),
+    );
+    _dailyPlanEntries = snapshot.entries;
+    _dailyLogHistory = snapshot.history;
     _applyDailyPlanProgress();
   }
 
