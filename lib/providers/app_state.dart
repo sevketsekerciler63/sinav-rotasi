@@ -23,6 +23,7 @@ import '../services/daily_reminder_service.dart';
 import '../services/study_history_metrics.dart';
 import '../services/daily_plan_metrics.dart';
 import '../services/daily_plan_migration.dart';
+import '../services/achievement_progress_metrics.dart';
 
 enum AppBootStatus { loading, ready, error }
 
@@ -1616,81 +1617,19 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   // ─── Achievement Checker ───────────────────────
   void checkAchievements() {
-    final now = DateTime.now();
-    final dateStr = DateTime(now.year, now.month, now.day).toIso8601String();
-    bool anyNew = false;
-
-    void unlock(String id) {
-      final a = achievements.firstWhere((a) => a.id == id);
-      if (!a.isUnlocked) {
-        a.isUnlocked = true;
-        a.unlockedDate = dateStr;
-        lastUnlockedAchievement = a.title;
-        anyNew = true;
-      }
-    }
-
-    // Streak
-    if (streak >= 3) unlock('streak_3');
-    if (streak >= 7) unlock('streak_7');
-    if (streak >= 14) unlock('streak_14');
-    if (streak >= 30) unlock('streak_30');
-    if (streak >= 60) unlock('streak_60');
-
-    // Topics
-    if (completedTopics >= 1) unlock('topic_1');
-    if (completedTopics >= 10) unlock('topic_10');
-    if (completedTopics >= 25) unlock('topic_25');
-    if (completedTopics >= 50) unlock('topic_50');
-    if (completedTopics >= 75) unlock('topic_75');
-    if (completedTopics >= totalTopics && totalTopics > 0) unlock('topic_all');
-
-    // Subject-specific
-    final tytMat = subjects.firstWhere((s) => s.name == 'TYT Matematik');
-    if (tytMat.progress >= 0.5) unlock('tyt_mat_50');
-    if (tytMat.progress >= 1.0) unlock('tyt_mat_100');
-
-    final tytTur = subjects.firstWhere((s) => s.name == 'TYT Türkçe');
-    if (tytTur.progress >= 0.5) unlock('tyt_tur_50');
-    if (tytTur.progress >= 1.0) unlock('tyt_tur_100');
-
-    final officialTytSubjects = tytSubjects.where((s) => !s.isCustom).toList();
-    final officialAytSubjects = aytSubjects.where((s) => !s.isCustom).toList();
-    final allTytDone = officialTytSubjects.every((s) => s.progress >= 1.0);
-    if (allTytDone && officialTytSubjects.isNotEmpty) unlock('all_tyt');
-
-    final allAytDone = officialAytSubjects.every((s) => s.progress >= 1.0);
-    if (allAytDone && officialAytSubjects.isNotEmpty) unlock('all_ayt');
-
-    // Exams
-    if (completedExams >= 1) unlock('exam_1');
-    if (completedExams >= 5) unlock('exam_5');
-    if (completedExams >= 10) unlock('exam_10');
-    if (mockExams.isNotEmpty && completedExams >= mockExams.length) {
-      unlock('exam_all');
-    }
-
-    for (var exam in mockExams.where((e) => e.isCompleted)) {
-      final officialTyt = tytSubjects.where((subject) => !subject.isCustom);
-      if (exam.hasScoresForSubjects(officialTyt)) {
-        final officialTytNet = exam.totalForSubjects(officialTyt);
-        if (officialTytNet >= 40) unlock('tyt_40');
-        if (officialTytNet >= 50) unlock('tyt_50');
-        if (officialTytNet >= 60) unlock('tyt_60');
-      }
-    }
-
-    // Study days
-    if (completedDays >= 1) unlock('day_first');
-    if (completedDays >= 7) unlock('day_7');
-    if (completedDays >= 30) unlock('day_30');
-    if (completedDays >= 60) unlock('day_60');
-    if (completedDays >= 90) unlock('day_90');
-
-    // Weak topics
-    if (weakTopics.where((t) => t.isStudied).length >= 5) unlock('weak_5');
-
-    if (anyNew) {
+    final newlyUnlocked = AchievementProgressMetrics.unlockEligibleAchievements(
+      achievements: achievements,
+      subjects: subjects,
+      mockExams: mockExams,
+      weakTopics: weakTopics,
+      streak: streak,
+      completedTopics: completedTopics,
+      totalTopics: totalTopics,
+      completedDays: completedDays,
+      now: DateTime.now(),
+    );
+    if (newlyUnlocked != null) {
+      lastUnlockedAchievement = newlyUnlocked;
       _saveAchievements();
     }
   }
