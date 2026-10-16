@@ -351,13 +351,16 @@ List<Subject> getAllSubjects() {
       type: 'TYT',
       totalQuestions: 40,
       tip:
-          'Ana Fikir+Sözcük Anlamı+Sözcük Türleri = en çok soru! Her gün 5 paragraf çöz.',
+          'Paragraf, anlam ve dil bilgisi çalışmalarını birlikte sürdür; konu önceliğini deneme sonuçlarına göre ayarla. Her gün düzenli paragraf sorusu çöz.',
       topics: [
         Topic(
           id: 'tyt_tur_1',
           name: 'Ana Fikir / Başlık Bulma',
           description:
-              'Parçanın tamamını oku. "Yazar ne anlatmak istiyor?" diye sor. En genel, en kapsayıcı ifade ana fikirdir.',
+              'Ana düşünce, metnin bütünüyle ilettiği temel yargıdır; başlık metnin konusunu veya ana düşüncesini kısa ve kapsayıcı biçimde yansıtır. Seçeneğin metnin tamamıyla uyumunu kontrol et.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 4,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -367,7 +370,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_2',
           name: 'Boşluğa Uygun Cümle',
           description:
-              'Önceki cümle ne diyor? Sonraki ne? İkisini bağlayan cümle. Bağlaçlara dikkat.',
+              'Boşluğun öncesi ve sonrasındaki düşünce akışını birlikte değerlendir. Bağlaçlar, zamirler ve tekrar edilen kavramlar ilişkiyi gösterebilir; uygun cümle paragrafın anlam ve bütünlüğünü sürdürür.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -377,7 +383,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_3',
           name: 'Paragraftan Çıkarılacak Sonuç',
           description:
-              'Parçada YAZILMAYAN ama ANLAŞILAN şeyi bul. Seçenekleri dene.',
+              'Çıkarım, metinde doğrudan söylenmeyen ancak verilen bilgilerden desteklenen sonuçtur. Metin dışı varsayım ekleme; seçeneğin bütün dayanaklarını paragrafta ara.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -387,7 +396,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_4',
           name: 'Paragrafın Açıklama Yöntemi',
           description:
-              'Tanımlama: "X şudur". Örnekleme: "örneğin, mesela" var. Karşılaştırma: iki şey yan yana.',
+              'Paragrafta düşünce tanımlama, örnekleme, karşılaştırma, tanık gösterme, sayısal verilerden yararlanma veya betimleme gibi yollarla açıklanabilir. Yalnızca anahtar sözcüğe değil, cümlelerin paragraftaki işlevine bak.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -397,7 +409,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_5',
           name: 'Anlam Bütünlüğünü Bozan Cümle',
           description:
-              '5 cümle var, biri konudan sapıyor. Her cümleyi ana fikre bağla, bağlanmayanı bul.',
+              'Paragrafın konusu ve ana düşüncesiyle doğrudan ilişkisi kurulamayan, düşünce akışını başka yöne çeviren cümleyi bul. Cümle sayısı değişebilir; ortak sözcük bulunması tek başına anlam bütünlüğü sağlamaz.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -407,7 +422,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_6',
           name: 'Paragrafın Planı (Sıralama)',
           description:
-              'Karışık cümleler verilir, sırala. "Bu/şu/o" zamiri önceki cümleye bağlar.',
+              'Cümleleri giriş, gelişme ve sonuç ilişkilerine göre sırala. Bağlaçlar ve gönderim sözleri (bu, şu, o gibi) önceki bağlama işaret edebilir; ilişkiyi cümle anlamıyla doğrula.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Paragrafta Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -417,7 +435,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_7',
           name: 'Sözcükte Anlam (Gerçek-Mecaz-Terim)',
           description:
-              'Gerçek: ilk ve temel anlam. Mecaz: başka anlamda kullanma ("göz" = kapı gözü). Terim: bilim dalı anlamı.',
+              'Gerçek anlam sözcüğün temel anlamıdır; mecaz anlam, sözcüğün gerçek anlamından uzaklaşarak kazandığı anlamdır. Terim anlam belirli bir bilim, sanat, spor veya meslek alanına özgüdür. Anlamı cümle bağlamında belirle.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 3,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -427,7 +448,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_8',
           name: 'Eş Anlamlı Sözcükler',
           description:
-              'Cümledeki sözcüğü çıkar, yerine seçenekleri koy. En az anlam kaybıyla değiştireni bul.',
+              'Eş anlamlı sözcükler bazı bağlamlarda aynı veya yakın anlamı karşılayabilir; her kullanımda birbirinin yerine geçmeyebilir. Seçimi cümledeki anlam ve kullanıma göre yap.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 2,
           difficulty: '🟢 Kolay',
           priority: '🔴 ÇOK KRİTİK',
@@ -437,7 +461,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_9',
           name: 'Cümlede Anlam (İlgi-Koşul-Amaç)',
           description:
-              'Koşul: -se/-sa. Amaç: için/diye. Neden-sonuç: çünkü/bu yüzden.',
+              'Koşul, bir yargının gerçekleşmesini başka bir duruma bağlar; amaç, eylemin hedefini; neden-sonuç ise eylemin gerekçesini bildirir. “-se/-sa”, “için” veya “çünkü” ipucu olabilir ama ilişkiyi cümlenin anlamından belirle.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümlede Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page21.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -447,7 +474,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_10',
           name: 'Atasözü ve Deyim',
           description:
-              'Atasözü: kalıp, ders içerir, tümcedir. Deyim: fiil var, kalıp, bir durumu anlatır.',
+              'Atasözü, deneyim ve gözleme dayalı, genellikle öğüt veya genel yargı bildiren kalıplaşmış sözdür. Deyim, çoğunlukla gerçek anlamından uzaklaşmış, kalıplaşmış söz öbeğidir; mutlaka fiil biçiminde veya tam cümle olmak zorunda değildir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Sözcükte Anlam',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -457,7 +487,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_11',
           name: 'Sözcük Türleri — Sıfırdan',
           description:
-              'İsim: varlık adı. Sıfat: ismi niteler (kırmızı elma). Zamir: ismin yerini tutar. Zarf: fiili/sıfatı niteler.',
+              'Sözcük türünü cümledeki görevine göre belirle: isim varlık/kavramı adlandırır; sıfat ismi niteler veya belirtir; zamir ismin yerini tutar; zarf fiil, sıfat ya da başka bir zarfı etkiler. Edat, bağlaç ve ünlem de ayrı türlerdir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, İsim Soylu Sözcükler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page109.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -467,7 +500,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_12',
           name: 'Fiil ve Fiilimsi — Sıfırdan',
           description:
-              'Fiil: kişi eki alır (gidiyorum). Fiilimsi: kişi eki almaz. İsim-fiil: -mak,-ma,-ış. Sıfat-fiil: -an,-en,-dik,-acak.',
+              'Fiiller iş, oluş veya durum bildirir; çekimli fiiller kip/zaman ve kişi özellikleriyle yüklem olabilir. Fiilimsiler fiil kök veya gövdelerinden türeyip isim, sıfat ya da zarf görevinde kullanılır; isim-fiil, sıfat-fiil ve zarf-fiil olarak incelenir. Eklerin görevini sözcüğün bağlamında belirle.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Fiiller ve Fiilimsiler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page123.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -477,7 +513,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_13',
           name: 'Cümle Türleri',
           description:
-              'Yüklemine göre: fiil cümlesi, isim cümlesi. Anlamına göre: olumlu, olumsuz, soru.',
+              'Cümleler yüklemin türüne göre fiil/isim; yüklemin yerine göre kurallı/devrik; anlamına göre olumlu/olumsuz, soru, ünlem veya emir; yapısına göre basit, birleşik, sıralı ya da bağlı olarak sınıflandırılabilir.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Cümle Türleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page159.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -487,7 +526,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_14',
           name: 'Yazım Kuralları',
           description:
-              'Büyük harf: cümle başı ve özel isim. Bağlaç olan de/da ayrı yazılır; bulunma hâl eki -de/-da bitişiktir (evde, okulda). Bağlaç olan ki ayrı, -ki eki bitişik yazılır (evdeki).',
+              'Yazım kuralları büyük harf kullanımı, birleşik sözcükler ve eklerin yazımını kapsar. Bağlaç olan de/da ayrı; bulunma hâli eki -de/-da bitişik yazılır. Bağlaç olan ki ayrı, ek olan -ki bitişik yazılır. Bu örnekler kuralların tamamı değildir; tereddütte TDK Yazım Kılavuzu’na bak.',
           sourceLabel: 'Türk Dil Kurumu · Yazım Kılavuzu',
           sourceUrl:
               'https://yazim.tdk.gov.tr/content/03-bazi-kelime-ve-eklerin-yazilisi.html',
@@ -500,7 +539,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_15',
           name: 'Noktalama',
           description:
-              'Virgül: sıralama, hitap, yan cümle. Noktalı virgül: bağımsız cümleleri bağlar. İki nokta: açıklama getirir.',
+              'Virgül eş görevli sözcük ve söz öbeklerini ayırabilir; noktalı virgül, içinde virgül bulunan grupları veya sıralı cümleleri ayırmada kullanılabilir. İki nokta açıklama/örnekten önce gelebilir. İşaret seçimini cümlenin yapısına ve TDK kurallarına göre yap.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Noktalama İşaretleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page87.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟠 ÖNEMLİ',
@@ -510,7 +552,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_16',
           name: 'Anlatım Bozuklukları',
           description:
-              'Özne-yüklem uyumsuzluğu, gereksiz kelime, anlam belirsizliği, sıralama hatası.',
+              'Anlatım bozukluklarında özne-yüklem uyumsuzluğu, öge eksikliği, gereksiz/yanlış sözcük kullanımı, anlamca çelişen ifadeler ve tamlama/çatı uyumsuzluğu gibi sorunları ara. Düzeltmenin cümledeki anlamı koruduğunu kontrol et.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Anlatım Bozuklukları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page169.html',
           questionCount: 2,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
@@ -520,7 +565,10 @@ List<Subject> getAllSubjects() {
           id: 'tyt_tur_17',
           name: 'Ses Bilgisi',
           description:
-              'Ünsüz yumuşaması: p/ç/t/k → b/c/d/g (kitap→kitabı). Ünlü düşmesi: ağız→ağzı.',
+              'Ses olayları arasında ünsüz yumuşaması (kitap→kitabı) ve bazı sözcüklerde ünlü düşmesi (ağız→ağzı) bulunur. Ses değişimleri ekin/sözcüğün yapısına ve kullanımına bağlıdır; her p/ç/t/k ile biten sözcük yumuşamaz ve istisnalar vardır.',
+          sourceLabel: 'MEB OGM Materyal · Dört Dörtlük TYT Türkçe, Ses Bilgisi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page45.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🔵 DÜŞÜK',

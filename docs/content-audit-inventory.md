@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 27 | TYT Matematik 25/25 kayıt kaynaklı; diğer 82 konuda kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 43 | TYT Matematik 25/25 ve TYT Türkçe 17/17 kayıt kaynaklı; diğer 65 konuda kaynak bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 27 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik dışındaki 82 kayıt için kaynak bağı eksik.
+- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. 43 kaynak etiketi de bütün kataloğun veya YKS kapsamının doğrulandığı anlamına gelmez; TYT Matematik ve TYT Türkçe dışındaki 65 kayıt için kaynak bağı eksik.
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -67,6 +67,27 @@ TYT Matematik kataloğundaki 25/25 kayda MEB OGM Materyal kaynak etiketi ve URL 
 Bu turda ifadeler özellikle şu durumlarda daraltıldı/koşullandırıldı: sayı doğrusunda 0'ın konumu; aynı öncelikli işlemlerin soldan sağa yapılması; kesir ve köklerde payda/işlem koşulları; doğru/ters orantı tanımları; art arda yüzde değişimi; sabit iş ve hız varsayımları; karışımda derişim ve birim uyumu; üçgen alanında dik yükseklik; özel üçgen oranları; daire çevresi/alanı ve derece cinsinden merkez açı; sonlu kümelerde birleşim sayımı; bağımsız olay koşulu ve çift sayıda veride medyan.
 
 **Açık takip:** güncel hedef sınav yılı/kohortunun resmi kapsam belgesiyle 25 başlığın tek tek eşleştirilmesi; TYT'de yer alıp almadığı belirsiz ayrıntıların (özellikle fonksiyon/mantık/kümeler alt kazanımları ve özel üçgen oranları) işaretlenmesi; kaynakların içerik sürüm/tarihinin kaydı; örnek çözümlerin alan uzmanı kontrolü.
+
+## TYT Türkçe konu kaynak turu — 2026-10-16
+
+TYT Türkçe kataloğundaki 17/17 kaydın tamamına kaynak eklendi veya mevcut TDK yazım kaynağı korundu. Paragraf/sözcük/cümle anlamı, sözcük türleri, fiil-fiilimsi, cümle türleri, noktalama, anlatım bozukluğu ve ses bilgisi açıklamaları MEB OGM'nin Dört Dörtlük TYT Türkçe konu-pekiştirme materyalinin ilgili bölümüne bağlandı. Yazım kuralları TDK Yazım Kılavuzu'na bağlı.
+
+| Topic ID | Konu | Kaynak |
+| --- | --- | --- |
+| `tyt_tur_1`–`tyt_tur_6` | Ana düşünce/başlık, cümle tamamlama, çıkarım, anlatım yolu, bütünlüğü bozan cümle, sıralama | [MEB OGM · Paragrafta Anlam, s. 33'ten başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page33.html) |
+| `tyt_tur_7`, `tyt_tur_8`, `tyt_tur_10` | Sözcükte anlam, eş anlam, atasözü/deyim | [MEB OGM · Sözcükte Anlam, s. 9'dan başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page9.html) |
+| `tyt_tur_9` | Cümlede anlam | [MEB OGM · Cümlede Anlam, s. 21'den başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page21.html) |
+| `tyt_tur_11` | Sözcük türleri | [MEB OGM · İsim Soylu Sözcükler, s. 109'dan başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page109.html) |
+| `tyt_tur_12` | Fiil ve fiilimsi | [MEB OGM · Fiiller, s. 123'ten başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page123.html) |
+| `tyt_tur_13` | Cümle türleri | [MEB OGM · Cümle Türleri, s. 159'dan başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page159.html) |
+| `tyt_tur_14` | Yazım kuralları | [Türk Dil Kurumu · Yazım Kılavuzu](https://yazim.tdk.gov.tr/content/03-bazi-kelime-ve-eklerin-yazilisi.html) |
+| `tyt_tur_15` | Noktalama | [MEB OGM · Noktalama İşaretleri, s. 87'den başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page87.html) |
+| `tyt_tur_16` | Anlatım bozuklukları | [MEB OGM · Anlatım Bozuklukları, s. 169'dan başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page169.html) |
+| `tyt_tur_17` | Ses bilgisi | [MEB OGM · Ses Bilgisi, s. 45'ten başlayan bölüm](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/tde/files/basic-html/page45.html) |
+
+Bu turda genelleme oluşturan sorunlu ipuçları kaldırıldı: başlık için “en genel cümle”, deyimde mutlaka fiil bulunması, tüm cümle tamamlama sorularının yalnız iki komşu cümleye dayanması ve p/ç/t/k sonlarının her durumda yumuşaması gibi katı kurallar kullanılmıyor. Çekimli fiil/fiilimsi ayrımı, sözcük türünde bağlam, atasözü/deyim tanımı, cümle türlerinin sınıflandırma ölçütleri ve noktalama işaretlerinin işlevleri kapsamlılaştırıldı.
+
+**Açık takip:** 17 başlığın hedef YKS yılı/kohortuna göre resmi kapsam eşlemesi; gramer terimlerinin güncel program sürümü; konu örneklerinin satır bazlı doğrulanması ve Türkçe alan uzmanı kabulü. OGM materyalinin bölüm başı URL'leri konu kaynağını gösterir; her kısa açıklamadaki her alt kural için sayfa/soru denetimi değildir.
 
 ## Kaynaklı düzeltmeler — 2026-10-16
 
