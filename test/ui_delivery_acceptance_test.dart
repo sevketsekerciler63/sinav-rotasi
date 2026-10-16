@@ -9,7 +9,7 @@ import 'package:yks_study_app/models/mock_exam.dart';
 import 'package:yks_study_app/models/subject.dart';
 import 'package:yks_study_app/providers/app_state.dart';
 import 'package:yks_study_app/screens/dashboard_screen.dart';
-import 'package:yks_study_app/screens/daily_plan_screen.dart';
+import 'package:yks_study_app/screens/study_resources_screen.dart';
 import 'package:yks_study_app/screens/mock_exam_screen.dart';
 import 'package:yks_study_app/screens/weak_topics_screen.dart';
 import 'package:yks_study_app/theme/app_theme.dart';
@@ -186,13 +186,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     try {
       await pumpScreen(tester, state, const DashboardScreen());
-      expect(find.text('Bugün için plan görünmüyor'), findsOneWidget);
+      expect(find.text('BUGÜNÜN KAYNAK PLANI'), findsOneWidget);
+      expect(find.text('Göreve başla'), findsNothing);
+      expect(find.text('📅 Yaklaşan Deneme'), findsNothing);
       expect(find.text('Hedef tarihini düzenle'), findsOneWidget);
       expect(find.text('KİŞİSEL HEDEF ROTASI'), findsNothing);
-      expect(tester.getTopLeft(find.text('Günlük planı aç')).dy, lessThan(700));
-      await tester.tap(find.text('Günlük planı aç'));
+      expect(
+        tester.getTopLeft(find.text('İlk kaynağını ekle')).dy,
+        lessThan(700),
+      );
+      await tester.tap(find.text('İlk kaynağını ekle'));
       await tester.pumpAndSettle();
-      expect(find.byType(DailyPlanScreen), findsOneWidget);
+      expect(find.byType(StudyResourcesScreen), findsOneWidget);
       expect(tester.takeException(), isNull);
     } finally {
       await tester.pumpWidget(const SizedBox.shrink());
@@ -226,8 +231,12 @@ void main() {
         scale: 2,
       );
       expect(tester.takeException(), isNull);
-      expect(find.text('Göreve başla'), findsOneWidget);
-      expect(tester.getTopLeft(find.text('Göreve başla')).dy, lessThan(844));
+      expect(find.text('İlk kaynağını ekle'), findsOneWidget);
+      expect(find.text('Göreve başla'), findsNothing);
+      expect(
+        tester.getTopLeft(find.text('İlk kaynağını ekle')).dy,
+        lessThan(844),
+      );
     } finally {
       await tester.pumpWidget(const SizedBox.shrink());
       state.dispose();

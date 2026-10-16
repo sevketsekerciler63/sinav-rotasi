@@ -1,10 +1,9 @@
-import '../widgets/profile_save_form.dart';
+import '../models/daily_log.dart' show turkishWeekdayName;
 import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../models/subject.dart';
-import '../models/daily_log.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_primitives.dart';
@@ -34,7 +33,6 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
-        final today = state.todayLog;
         final quote = getDailyQuote();
         return Scaffold(
           body: SafeArea(
@@ -51,13 +49,7 @@ class DashboardScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
 
-                  if (state.learningWorkspace.resources.isNotEmpty ||
-                      state.activeProfile.scoreType != 'unspecified')
-                    const ResourceTodayCard()
-                  else if (today != null)
-                    _buildTodayCard(context, state, today)
-                  else
-                    _buildNoTodayPlanCard(context),
+                  const ResourceTodayCard(),
                   const SizedBox(height: 16),
 
                   // Achievement notification
@@ -88,11 +80,6 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildQuickAccess(context),
                   const SizedBox(height: 20),
-                  if (state.nextUpcomingMockExam != null) ...[
-                    const AppSectionHeader(title: '📅 Yaklaşan Deneme'),
-                    const SizedBox(height: 12),
-                    _buildNextExam(context, state),
-                  ],
                   const SizedBox(height: 40),
                 ],
               ),
@@ -572,65 +559,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNoTodayPlanCard(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.event_note_outlined, color: colors.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Bugün için plan görünmüyor',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Günlük planını açıp sıradaki çalışma adımını gözden geçir.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                AppPageRoute(builder: (_) => const DailyPlanScreen()),
-              ),
-              icon: const Icon(Icons.route_outlined),
-              label: const Text('Günlük planı aç'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildStatsRow(BuildContext context, AppState state) {
     final today = DateTime.now();
     return Column(
@@ -646,15 +574,15 @@ class DashboardScreen extends StatelessWidget {
             const SizedBox(width: 10),
             _statCard(
               context,
-              '📅 Günler',
-              '${state.completedDays}/${state.totalDays}',
+              '📚 Kaynaklar',
+              '${state.learningWorkspace.resources.where((resource) => !resource.archived).length}',
               AppTheme.accentGreen,
             ),
             const SizedBox(width: 10),
             _statCard(
               context,
               '📝 Denemeler',
-              '${state.completedExams}/${state.mockExams.length}',
+              '${state.completedExams}',
               AppTheme.accentOrange,
             ),
           ],
@@ -736,331 +664,6 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildTodayCard(BuildContext context, AppState state, DailyLog today) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final focusTask = state.nextIncompleteTaskFor(today);
-    final focusTaskId = focusTask != null && focusTask.progressIds.length == 1
-        ? focusTask.progressIds.single
-        : null;
-    String? reviewTopicName;
-    if (focusTaskId?.startsWith('review_') == true &&
-        today.reviewTopicId != null) {
-      for (final topic in state.weakTopics) {
-        if (topic.id == today.reviewTopicId) {
-          reviewTopicName = topic.topic;
-          break;
-        }
-      }
-    }
-    final focusTitle = focusTask == null
-        ? today.isCompleted
-              ? 'Bugünkü plan tamamlandı'
-              : 'Günlük planını gözden geçir'
-        : _focusTaskTitle(focusTask);
-    final focusReason = focusTask == null
-        ? today.isCompleted
-              ? 'Plan görevleri tamamlandı; istersen serbest odak çalışması başlat.'
-              : 'Bugün için eşleştirilebilir bir plan görevi bulunamadı.'
-        : focusTaskId?.startsWith('review_') == true
-        ? reviewTopicName == null
-              ? 'Plan tekrar öneriyor; belirli bir zayıf konu kaydı yok.'
-              : 'Tekrar zamanı gelen zayıf konu: $reviewTopicName.'
-        : 'Planın sıradaki tamamlanmamış görevi.';
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: today.isCompleted
-              ? colors.secondary.withValues(alpha: 0.5)
-              : colors.outlineVariant,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.cyanGradient,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      '📅 Bugün',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    today.dayName,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                today.studyHours,
-                style: TextStyle(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (today.isExamDay)
-            Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.accentOrange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.accentOrange.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Text('🏆', style: TextStyle(fontSize: 20)),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'DENEME GÜNÜ!',
-                      style: textTheme.titleSmall?.copyWith(
-                        color: colors.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          Text(
-            today.isRestDay
-                ? 'Bugün dinlenme günü'
-                : focusTask == null
-                ? today.isCompleted
-                      ? 'Bugünkü plan tamamlandı'
-                      : 'Sıradaki görev bulunamadı'
-                : 'Şimdi odaklan',
-            style: textTheme.labelMedium?.copyWith(
-              color: colors.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          if (!today.isRestDay) ...[
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colors.tertiaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    focusTitle,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colors.onTertiaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    focusReason,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.onTertiaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: today.isRestDay
-                      ? null
-                      : focusTask == null && !today.isCompleted
-                      ? () => Navigator.push(
-                          context,
-                          AppPageRoute(builder: (_) => const DailyPlanScreen()),
-                        )
-                      : () => Navigator.push(
-                          context,
-                          AppPageRoute(
-                            builder: (_) => PomodoroScreen(
-                              autoStart: true,
-                              taskTitle: focusTask == null
-                                  ? 'Serbest odak çalışması'
-                                  : focusTitle,
-                              taskId: focusTaskId,
-                            ),
-                          ),
-                        ),
-                  icon: Icon(
-                    today.isRestDay
-                        ? Icons.self_improvement_outlined
-                        : focusTask == null && !today.isCompleted
-                        ? Icons.route_outlined
-                        : Icons.play_arrow_rounded,
-                    size: 21,
-                  ),
-                  label: Text(
-                    today.isRestDay
-                        ? 'Dinlenme günü'
-                        : focusTask == null && !today.isCompleted
-                        ? 'Günlük planı aç'
-                        : focusTask == null
-                        ? 'Serbest odak başlat'
-                        : 'Göreve başla',
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    minimumSize: const Size(0, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 9),
-              Tooltip(
-                message: today.isRestDay
-                    ? 'Bugün dinlenme günü'
-                    : today.isCompleted
-                    ? 'Tamamlandı işaretini kaldır'
-                    : 'Günü tamamla',
-                child: IconButton.filledTonal(
-                  onPressed: today.isRestDay
-                      ? null
-                      : state.isSavingRecord('daily_logs', today.dateKey)
-                      ? null
-                      : () => showRecordResult(
-                          context,
-                          state.toggleDayCompleted(today.dateKey),
-                        ),
-                  icon: Icon(
-                    today.isCompleted
-                        ? Icons.check_circle_rounded
-                        : Icons.check_rounded,
-                  ),
-                  style: IconButton.styleFrom(
-                    minimumSize: const Size(50, 50),
-                    foregroundColor: today.isCompleted
-                        ? colors.secondary
-                        : colors.onSurface,
-                    backgroundColor: today.isCompleted
-                        ? colors.secondary.withValues(alpha: 0.14)
-                        : colors.surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            '📐 TYT',
-            style: TextStyle(
-              color: colors.primary,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            today.tytContent,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-          if (today.aytContent != '—' && today.aytContent.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(
-              '🔢 AYT',
-              style: TextStyle(
-                color: colors.primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              today.aytContent,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontSize: 13,
-                height: 1.4,
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colors.secondary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const Text('💡', style: TextStyle(fontSize: 16)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    today.motivationNote,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.secondary,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _focusTaskTitle(DailyLog today) {
-    final firstLine = today.tytContent
-        .split('\n')
-        .map((line) => line.trim())
-        .firstWhere((line) => line.isNotEmpty, orElse: () => 'Bugünün planı');
-    return firstLine.replaceFirst(RegExp(r'^\d+\.\s*'), '');
   }
 
   Widget _buildSubjectProgress(BuildContext context, AppState state) {
@@ -1387,77 +990,6 @@ class DashboardScreen extends StatelessWidget {
       ),
       builder: (context) => _QuickToolsSheet(items: items),
     ).then((selectedItem) => selectedItem?.onTap());
-  }
-
-  Widget _buildNextExam(BuildContext context, AppState state) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final next = state.nextUpcomingMockExam!;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final examDate = DateTime(next.date.year, next.date.month, next.date.day);
-    final daysUntil = examDate.difference(today).inDays;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accentOrange.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                next.type,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: daysUntil <= 3
-                      ? colors.errorContainer
-                      : colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  daysUntil <= 0 ? 'Bugün!' : '$daysUntil gün sonra',
-                  style: TextStyle(
-                    color: daysUntil <= 3
-                        ? colors.onErrorContainer
-                        : colors.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Hedef: ${next.targetNet}',
-            style: textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-          Text(
-            'Süre: ${next.duration}',
-            style: textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

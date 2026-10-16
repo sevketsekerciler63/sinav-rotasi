@@ -182,3 +182,10 @@ Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son
 - Yeni profil ve profil düzenleme formu artık kalıcı kayıt bitmeden kapanmıyor. Yazma hatasında tüm alanlar korunuyor, aynı formdan tekrar deneniyor. Kaydetme sırasında düzenleme/geri çıkış engelleniyor; dışarıdan profil değiştiyse yanlış profile yazılmıyor.
 - Yeni profil listesi + başlangıç programı + aktif profil seçimi aynı depolama işlemi. Aktifleştirme öncesi yarım profil bırakıp yeniden denemede kopya üretme yolu kaldırıldı.
 - Denetim: depolama hatasında oluşturma/etkinleştirme birlikte geri alınıyor, tekrar deneyince tek profil oluşuyor; widget testi başarısız profil düzenleme taslağının korunmasını ve başarı sonrası kapanmasını doğruluyor.
+
+
+## 17 Ekim · Tarayıcıda bulunan varsayılan eski plan hatası
+- Kontrollü, ayrı kök adreste kurulumu atlayınca puan türü belirtilmediği için ana ekranın eski sabit programı “bugünün görevi” sunduğu görüldü. Varsayılan Plan sekmesi de aynı koşula bağlıydı.
+- Koşul kaldırıldı: her profil ana ekran ve Plan sekmesinde kişisel kaynak akışına girer. Kaynak yoksa ilk kaynak ekleme eylemi görünür. Eski kayıtlar Plan içindeki açık arşiv yolunda korunur.
+- Ana ekrandan otomatik eski “yaklaşan deneme” kartı ve yapay 13 deneme paydası kaldırıldı; kaynak sayısı ve gerçek tamamlanmış deneme sayısı gösterilir. Öğrencinin kendi denemesine hedef kota atanmaz.
+- 320px / %200 yazıda boş kaynak yönlendirmesi ve ilk kaynak formuna geçiş testi geçti. Eski günlük plan/deneme verileri silinmedi.
