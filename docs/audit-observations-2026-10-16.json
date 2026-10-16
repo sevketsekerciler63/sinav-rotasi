@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-16",
+  "sourceCommit": "cd33aee",
+  "environment": "Flutter test binding and in-memory SharedPreferences; no real user storage",
+  "customAliasOfficialTotal": 20.0,
+  "conflictingAliasNetAccepted": true,
+  "conflictingAliasOfficialTotal": 100.0,
+  "parallelSessionResults": [true, true],
+  "parallelSessionPersistedCount": 1,
+  "reviewToggleIntervals": [1, 3],
+  "oneDay30MinuteTaskCount": 95,
+  "missedDaysAfterReplan": {
+    "earlierScheduledDays": 4,
+    "preservedEarlierDays": 0,
+    "reportMissedDays": 0,
+    "reportTotalDays": 1
+  },
+  "failedWrite": {
+    "returnedNormally": true,
+    "errorReported": true,
+    "memoryMinutes": 30,
+    "storedMinutes": 180
+  },
+  "ownBackupPreviewAccepted": false,
+  "ownBackupPreviewError": "FormatException: Yedekte mock_exams.D1.nets.TYT Türkçe alanı soru sayısıyla uyumlu, çeyrek adımlı net biçiminde değil.",
+  "corruptGroupBlocksWholeExport": true,
+  "baselineAnalyzer": "No issues found"
+}
