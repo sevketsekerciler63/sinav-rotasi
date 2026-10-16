@@ -46,6 +46,33 @@ class WeeklyReportScreen extends StatelessWidget {
         );
         final daysCompleted = completedDaysThisWeek.length;
         final totalDaysThisWeek = scheduledDateKeys.length;
+        final todayKey =
+            '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+        final completedDateKeys = completedDaysThisWeek
+            .map(
+              (date) =>
+                  '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+            )
+            .toSet();
+        final missedScheduledDays = scheduledDateKeys
+            .where(
+              (dateKey) =>
+                  dateKey.compareTo(todayKey) < 0 &&
+                  !completedDateKeys.contains(dateKey),
+            )
+            .length;
+        final todayPlanIsOngoing =
+            scheduledDateKeys.contains(todayKey) &&
+            !completedDateKeys.contains(todayKey);
+        final motivationMessage = totalDaysThisWeek == 0
+            ? 'Hedef tarihine göre yeni bir plan dönemi bekleniyor.'
+            : todayPlanIsOngoing && missedScheduledDays == 0
+            ? 'Bugünün planı gün içinde tamamlanabilir; haftalık durum gün sonunda güncellenecek.'
+            : daysCompleted >= totalDaysThisWeek
+            ? 'Şu ana kadarki planlı günleri tamamladın; haftanın kalan planına devam et.'
+            : daysCompleted >= totalDaysThisWeek / 2
+            ? 'İyi gidiyorsun! Kalan günlerde planına devam et.'
+            : 'Önceki plan günlerinden biri eksik kaldı; bugün bir sonraki adıma odaklan.';
         final legacyActivities = state.legacyDailyActivities;
         final dailyBreakdown =
             <
@@ -479,13 +506,7 @@ class WeeklyReportScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          totalDaysThisWeek == 0
-                              ? 'Hedef tarihine göre yeni bir plan dönemi bekleniyor.'
-                              : daysCompleted >= totalDaysThisWeek
-                              ? 'Harika! Bu haftaki planlanan günleri tamamladın! 🎉'
-                              : daysCompleted >= totalDaysThisWeek / 2
-                              ? 'İyi gidiyorsun! Kalan günleri de tamamla!'
-                              : 'Bu hafta biraz geride kaldın, hızlanmalısın!',
+                          motivationMessage,
                           style: TextStyle(
                             color: colors.onPrimary,
                             fontWeight: FontWeight.w600,
