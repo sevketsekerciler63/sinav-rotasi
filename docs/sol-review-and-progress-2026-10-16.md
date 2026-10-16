@@ -82,3 +82,15 @@ Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel prof
 - Ekran kabulünde bulunan çıkış animasyonunda erken controller dispose hatası düzeltildi: dialog rotasının tamamen kapanması beklenir.
 - `resource_screen_acceptance_test.dart`: gerçek depo hatası → taslağı koru → yeniden dene → görev ekle → 4/10 ilerleme → geri al → yeniden yükle akışı geçti. Önceki 28 test de bu dilim öncesinde geçti. Analiz sonucu ayrıca kaydedilecek.
 - **Açık:** kaynak görevlerini kapasiteye göre günlük plana yerleştirme, geçmiş plan beklentileri, rapor toplamları; serbest deneme ekranı/API'si, hareket sözleşmesi ve cihaz/yedek sağlayıcısı kabulü. Hedef günü şu anda yalnız kayıttır; ekranda otomatik plana eklenmediği açıkça yazılıdır.
+
+
+## SOL-03/04 · Kapasite, korunmuş gün beklentisi ve rapor entegrasyonu
+
+- `learning_workspace` v2 / uygulama şeması 10. v1 kaynak kayıtları boş plan geçmişiyle açılır; geçmiş günlere beklenti uydurulmaz.
+- Kaynak görevleri birim başına kullanıcı süre tahminine göre tam birimlerle bölünür. Günlük kapasite aşılmaz; tek birim daha uzunsa sığmamış iş olarak kalır. Çalışılmayan hafta günleri ve görevin en erken hedef günü dikkate alınır.
+- Plan oluşturma/güncelleme kalıcıdır. Bugün ve geçmiş korunur; yalnız gelecek yeniden dağıtılır. Bugünü tamamlayınca aynı güne yeni yük atanmaz. Önceki günde yetişmeyen aralık gelecek dağıtımına dönerken eski günün beklentisi kalır.
+- Gününde tamamlanma, olayın yerel takvim günüyle hesaplanır. Sonraki günkü çalışma geçmiş eksik günü başarıya dönüştürmez. Geri alma kaynak, günlük aralık, soru toplamı ve seri görünümünü aynı olaydan düzeltir.
+- Kaynak kullanan profilde ana sayfa ve günlük plan kişisel kaynak planını açar. Önceki şablon ve kayıtlar ayrı bağlantıyla korunur.
+- İlk kaynak planı gününden sonraki rapor/seri beklentileri kaydedilmiş kaynak planından alınır; önceki tarihli eski başarılar korunur. Soru birimindeki ilerleme soru toplamlarına türetilmiş olay olarak katılır, ayrıca kalıcı sayaç kopyalanmaz. Sayfa/test/video sayısı soru sayısı varsayılmaz. Aynı çalışma ayrıca elle girilmemeli.
+- 4 kapasite/geçmiş model kontrolü ve depo hata/yeniden deneme/export-import kabulü eklendi. 34 test geçti; ardından 320 px / yüzde 200 yazıda gerçek plan tamamlama ve kaynak formu kontrolü de geçti (toplam 35). Son analiz yeniden çalıştırılacak.
+- **Açık/sınır:** eski hazır şablonun sıkıştırma motoru kişisel kapasite kabulü sayılmıyor; eski kayıtlar için korunuyor. Otomatik gece yeniden dağıtımı yok, kullanıcı geleceği günceller. Önceden tutulan beklentisi olmayan eski sürüm günleri için kaçırılan görev geçmişi geriye dönük hesaplanamaz. Serbest denemeler, hareket ve gerçek cihaz/provider kabulü sırada.

@@ -15,6 +15,7 @@ import 'score_calculator_screen.dart';
 import 'exam_calendar_screen.dart';
 import 'weak_topics_screen.dart';
 import 'study_resources_screen.dart';
+import 'resource_plan_screen.dart';
 import 'stats_screen.dart';
 import 'pomodoro_screen.dart';
 import 'achievements_screen.dart';
@@ -56,7 +57,9 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                       ],
 
-                      if (today != null)
+                      if (state.learningWorkspace.resources.isNotEmpty)
+                        const ResourceTodayCard()
+                      else if (today != null)
                         _buildTodayCard(context, state, today)
                       else
                         _buildNoTodayPlanCard(context),

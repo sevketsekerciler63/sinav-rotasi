@@ -1,3 +1,6 @@
+import 'resource_plan.dart';
+import 'study_schedule_preferences.dart';
+
 enum StudyResourceUnit { page, test, question, video }
 
 extension StudyResourceUnitLabel on StudyResourceUnit {
@@ -204,21 +207,25 @@ class LearningWorkspace {
   final Map<String, StudyResource> _resources;
   final Map<String, ResourceTask> _tasks;
   final Map<String, ResourceProgressEvent> _events;
+  final Map<String, ResourcePlanDay> _plans;
 
   LearningWorkspace.empty(this.profileId)
     : _resources = {},
       _tasks = {},
-      _events = {};
+      _events = {},
+      _plans = {};
   LearningWorkspace._(
     this.profileId,
     this._resources,
     this._tasks,
     this._events,
+    this._plans,
   );
 
   List<StudyResource> get resources => List.unmodifiable(_resources.values);
   List<ResourceTask> get tasks => List.unmodifiable(_tasks.values);
   List<ResourceProgressEvent> get events => List.unmodifiable(_events.values);
+  List<ResourcePlanDay> get plans => List.unmodifiable(_plans.values);
 
   int taskProgress(String id) => _events.values
       .where((event) => event.active && event.taskId == id)
@@ -281,7 +288,10 @@ class LearningWorkspace {
       throw const FormatException('Önce kaynağı arşivden çıkar.');
     }
     if (previous != null &&
-        _events.values.any((event) => event.taskId == task.id) &&
+        (_events.values.any((event) => event.taskId == task.id) ||
+            _plans.values.any(
+              (day) => day.blocks.any((block) => block.taskId == task.id),
+            )) &&
         (previous.resourceId != task.resourceId ||
             previous.startUnit != task.startUnit ||
             previous.endUnit != task.endUnit)) {
@@ -325,16 +335,166 @@ class LearningWorkspace {
     return _checked(events: {..._events, id: event.withActive(false)});
   }
 
+  int blockProgress(ResourcePlanDay day, ResourcePlanBlock block) {
+    var units = 0;
+    for (final event in events) {
+      if (!event.active ||
+          event.taskId != block.taskId ||
+          resourceDayKey(event.occurredAt.toLocal()).compareTo(day.date) > 0) {
+        continue;
+      }
+      final start = event.startUnit > block.startUnit
+          ? event.startUnit
+          : block.startUnit;
+      final end = event.endUnit < block.endUnit ? event.endUnit : block.endUnit;
+      if (end >= start) units += end - start + 1;
+    }
+    return units;
+  }
+
+  /// Rebuild only the future. Today remains frozen even after all its work is done.
+  LearningWorkspace planResources(
+    DateTime now,
+    DateTime target,
+    StudySchedulePreferences preferences,
+  ) {
+    final today = resourceDayKey(now);
+    final first = DateTime(now.year, now.month, now.day);
+    final last = DateTime(target.year, target.month, target.day);
+    if (last.isBefore(first) || last.difference(first).inDays > 3660) {
+      throw const FormatException(
+        'Geçerli bir gelecek hedef tarihi seç (en fazla 10 yıl).',
+      );
+    }
+    final prefs = StudySchedulePreferences.fromJson(preferences.toJson());
+    final kept = {
+      for (final day in plans.where((day) => day.date.compareTo(today) <= 0))
+        day.date: day,
+    };
+    final queue =
+        tasks
+            .where(
+              (task) =>
+                  !task.archived && !_resources[task.resourceId]!.archived,
+            )
+            .toList()
+          ..sort((a, b) {
+            final date = (a.plannedDate ?? today).compareTo(
+              b.plannedDate ?? today,
+            );
+            return date == 0 ? a.id.compareTo(b.id) : date;
+          });
+    final open = <String, List<(int, int)>>{};
+    for (final task in queue) {
+      var ranges = remainingRanges(task.id);
+      // Reserve all of today's expected work, including any holes from an undo.
+      for (final block in kept[today]?.blocks ?? <ResourcePlanBlock>[]) {
+        if (block.taskId != task.id) continue;
+        final next = <(int, int)>[];
+        for (final range in ranges) {
+          if (range.$2 < block.startUnit || range.$1 > block.endUnit) {
+            next.add(range);
+            continue;
+          }
+          if (range.$1 < block.startUnit) {
+            next.add((range.$1, block.startUnit - 1));
+          }
+          if (range.$2 > block.endUnit) next.add((block.endUnit + 1, range.$2));
+        }
+        ranges = next;
+      }
+      open[task.id] = List.of(ranges);
+    }
+    for (
+      var date = first;
+      !date.isAfter(last);
+      date = DateTime(date.year, date.month, date.day + 1)
+    ) {
+      final key = resourceDayKey(date);
+      if (kept.containsKey(key)) continue;
+      final capacity = prefs.availableWeekdays.contains(date.weekday)
+          ? prefs.dailyStudyMinutes
+          : 0;
+      var remaining = capacity;
+      final blocks = <ResourcePlanBlock>[];
+      for (final task in queue) {
+        if (task.plannedDate != null && task.plannedDate!.compareTo(key) > 0) {
+          continue;
+        }
+        final ranges = open[task.id]!;
+        while (ranges.isNotEmpty) {
+          final maxUnits = remaining * task.unitCount ~/ task.estimatedMinutes;
+          if (maxUnits < 1) break;
+          final range = ranges.removeAt(0);
+          final units = maxUnits < range.$2 - range.$1 + 1
+              ? maxUnits
+              : range.$2 - range.$1 + 1;
+          final minutes = (units * task.estimatedMinutes / task.unitCount)
+              .ceil();
+          final resource = _resources[task.resourceId]!;
+          blocks.add(
+            ResourcePlanBlock(
+              taskId: task.id,
+              title: task.title,
+              resourceName: resource.name,
+              unitLabel: resource.unit.label,
+              startUnit: range.$1,
+              endUnit: range.$1 + units - 1,
+              estimatedMinutes: minutes,
+            ),
+          );
+          remaining -= minutes;
+          if (range.$1 + units <= range.$2) {
+            ranges.insert(0, (range.$1 + units, range.$2));
+          }
+        }
+      }
+      if (blocks.isNotEmpty || key == today) {
+        kept[key] = ResourcePlanDay(
+          date: key,
+          capacityMinutes: capacity,
+          blocks: blocks,
+        );
+      }
+    }
+    return _checked(plans: kept);
+  }
+
+  int get unplannedUnits {
+    var remaining = 0;
+    final today = resourceDayKey(DateTime.now());
+    for (final task in tasks.where(
+      (task) => !task.archived && !_resources[task.resourceId]!.archived,
+    )) {
+      final reserved = plans
+          .where((day) => day.date.compareTo(today) >= 0)
+          .expand((day) => day.blocks)
+          .where((block) => block.taskId == task.id);
+      for (final range in remainingRanges(task.id)) {
+        var covered = 0;
+        for (final block in reserved) {
+          final start = range.$1 > block.startUnit ? range.$1 : block.startUnit;
+          final end = range.$2 < block.endUnit ? range.$2 : block.endUnit;
+          if (end >= start) covered += end - start + 1;
+        }
+        remaining += range.$2 - range.$1 + 1 - covered;
+      }
+    }
+    return remaining;
+  }
+
   LearningWorkspace _checked({
     Map<String, StudyResource>? resources,
     Map<String, ResourceTask>? tasks,
     Map<String, ResourceProgressEvent>? events,
+    Map<String, ResourcePlanDay>? plans,
   }) {
     final result = LearningWorkspace._(
       profileId,
       resources ?? _resources,
       tasks ?? _tasks,
       events ?? _events,
+      plans ?? _plans,
     );
     result._validate();
     return result;
@@ -343,6 +503,32 @@ class LearningWorkspace {
   void _validate() {
     if (profileId.trim().isEmpty) {
       throw const FormatException('Çalışma profili boş.');
+    }
+    for (final day in plans) {
+      ResourcePlanDay.fromJson(day.toJson());
+      final planned = <String, List<(int, int)>>{};
+      for (final block in day.blocks) {
+        final task = _tasks[block.taskId];
+        if (task == null ||
+            block.startUnit < task.startUnit ||
+            block.endUnit > task.endUnit) {
+          throw const FormatException('Plan görevi veya aralığı geçersiz.');
+        }
+        planned.putIfAbsent(block.taskId, () => []).add((
+          block.startUnit,
+          block.endUnit,
+        ));
+      }
+      for (final list in planned.values) {
+        list.sort((a, b) => a.$1.compareTo(b.$1));
+        for (var i = 1; i < list.length; i++) {
+          if (list[i].$1 <= list[i - 1].$2) {
+            throw const FormatException(
+              'Aynı günün plan aralıkları çakışıyor.',
+            );
+          }
+        }
+      }
     }
     final ranges = <String, List<(int, int)>>{};
     final byTask = <String, List<ResourceProgressEvent>>{};
@@ -401,15 +587,16 @@ class LearningWorkspace {
   }
 
   Map<String, dynamic> toJson() => {
-    'version': 1,
+    'version': 2,
     'profileId': profileId,
     'resources': resources.map((resource) => resource.toJson()).toList(),
     'tasks': tasks.map((task) => task.toJson()).toList(),
     'events': events.map((event) => event.toJson()).toList(),
+    'plans': plans.map((day) => day.toJson()).toList(),
   };
 
   factory LearningWorkspace.fromJson(Map<String, dynamic> json) {
-    if (json['version'] != 1) {
+    if (json['version'] != 1 && json['version'] != 2) {
       throw const FormatException('Çalışma alanı sürümü geçersiz.');
     }
     final result = LearningWorkspace._(
@@ -422,6 +609,14 @@ class LearningWorkspace {
         ResourceProgressEvent.fromJson,
         (item) => item.id,
       ),
+      json['version'] == 1
+          ? {}
+          : _records(
+              json,
+              'plans',
+              ResourcePlanDay.fromJson,
+              (item) => item.date,
+            ),
     );
     result._validate();
     return result;

@@ -53,7 +53,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 9;
+  static const int schemaVersion = 10;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [

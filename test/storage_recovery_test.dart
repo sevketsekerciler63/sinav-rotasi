@@ -483,4 +483,95 @@ void main() {
       );
     },
   );
+  test(
+    'resource plan and completion persist atomically with failed write and backup roundtrip',
+    () async {
+      await state.createYksProfile(
+        name: 'Plan',
+        scoreType: 'say',
+        startingLevel: 'basic',
+        targetDate: DateTime.now().add(const Duration(days: 10)),
+        schedulePreferences: const StudySchedulePreferences(
+          dailyStudyMinutes: 30,
+        ),
+      );
+      await state.saveStudyResource(studyResource('one'));
+      await state.saveResourceTask(
+        const ResourceTask(
+          id: 'task',
+          resourceId: 'one',
+          title: 'Çalış',
+          startUnit: 1,
+          endUnit: 20,
+          estimatedMinutes: 40,
+        ),
+      );
+      expect(await state.rebuildResourcePlan(), isTrue);
+      final day = state.learningWorkspace.plans.first;
+      final block = day.blocks.single;
+      expect(block.units, 15);
+      store.failSuffix = '__learning_workspace';
+      expect(
+        await state.completeResourcePlanBlock(
+          day.date,
+          block.taskId,
+          block.startUnit,
+          block.endUnit,
+        ),
+        isFalse,
+      );
+      expect(state.learningWorkspace.taskProgress('task'), 0);
+      expect(
+        await state.completeResourcePlanBlock(
+          day.date,
+          block.taskId,
+          block.startUnit,
+          block.endUnit,
+        ),
+        isTrue,
+      );
+      expect(
+        await state.completeResourcePlanBlock(
+          day.date,
+          block.taskId,
+          block.startUnit,
+          block.endUnit,
+        ),
+        isTrue,
+      );
+      expect(state.learningWorkspace.events.length, 1);
+      await state.rebuildResourcePlan();
+      expect(state.learningWorkspace.plans.first.toJson(), day.toJson());
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(
+        state.learningWorkspace.blockProgress(
+          state.learningWorkspace.plans.first,
+          block,
+        ),
+        15,
+      );
+      expect(state.learningWorkspace.taskProgress('task'), 15);
+      expect(state.totalSolvedQuestions, 15);
+      expect(state.completedStudyDateKeys, contains(day.date));
+      expect(
+        state.reportDailyLogs
+            .firstWhere((log) => log.dateKey == day.date)
+            .isCompleted,
+        isTrue,
+      );
+      await state.undoResourceProgress(
+        state.learningWorkspace.events.single.id,
+      );
+      expect(state.totalSolvedQuestions, 0);
+      expect(state.completedStudyDateKeys, isNot(contains(day.date)));
+      expect(
+        state.reportDailyLogs
+            .firstWhere((log) => log.dateKey == day.date)
+            .isCompleted,
+        isFalse,
+      );
+    },
+  );
 }

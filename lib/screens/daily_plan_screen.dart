@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import '../models/weak_topic.dart';
 import '../providers/app_state.dart';
 import 'settings_screen.dart';
+import 'resource_plan_screen.dart';
 import 'weak_topics_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_primitives.dart';
 
 class DailyPlanScreen extends StatefulWidget {
-  const DailyPlanScreen({super.key});
+  final bool showLegacy;
+  const DailyPlanScreen({super.key, this.showLegacy = false});
 
   @override
   State<DailyPlanScreen> createState() => _DailyPlanScreenState();
@@ -45,6 +47,9 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        if (!widget.showLegacy && state.learningWorkspace.resources.isNotEmpty) {
+          return const ResourcePlanScreen();
+        }
         final colors = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
         final scheduleStartKey = state.dailyLogs.isEmpty

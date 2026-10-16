@@ -18,3 +18,7 @@ UI profil kimliğini form açıldığında tutmalı; gönderirken profil değiş
 Kaynak içeriği/soru metni yüklenmez. Bu API otomatik bulut yüklemesi veya dakika kapasitesine uygun plan ürettiği anlamına gelmez. Sonraki plan dilimi, görev birimleri ve süre tahminini kullanacak.
 
 Kontrol: 7 model testi + 12 depolama testi birlikte geçti. Kısmi ilerleme, eski olayı geri alma, çakışma, arşiv, başarısız yazım, eşzamanlı değişiklik, profil izolasyonu ve yedek turu kapsanıyor. Statik analiz temiz.
+
+
+## v2 ek sözleşme
+Şema 10 ile `plans` eklendi. `rebuildResourcePlan()` bugün/geçmişi koruyup geleceği dakika kapasitesine göre dağıtır. `completeResourcePlanBlock(day, taskId, start, end)` yalnız bugünün gerçek açık aralıklarını tek işlemde kaydeder. Planlanmış görevin kaynak/aralığı sabittir; ad, süre tahmini ve hedef gün gelecek üretime etki edebilir. `reportDailyLogs` ve `reportQuestionEvents` raporların birleşik görünümüdür; bunlar ayrı depolanmaz.

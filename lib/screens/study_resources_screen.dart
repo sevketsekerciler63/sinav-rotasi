@@ -4,6 +4,7 @@ import '../models/learning_workspace.dart';
 import '../providers/app_state.dart';
 import 'resources_screen.dart';
 import 'pomodoro_screen.dart';
+import 'resource_plan_screen.dart';
 
 int _sequence = 0;
 String _id(String kind) =>
@@ -257,7 +258,10 @@ Future<void> _taskEditor(
   final day = TextEditingController(text: task?.plannedDate ?? '');
   final locked =
       task != null &&
-      state.learningWorkspace.events.any((event) => event.taskId == task.id);
+      (state.learningWorkspace.events.any((event) => event.taskId == task.id) ||
+          state.learningWorkspace.plans.any(
+            (day) => day.blocks.any((block) => block.taskId == task.id),
+          ));
   final id = task?.id ?? _id('task');
   try {
     await _editor(
@@ -282,9 +286,7 @@ Future<void> _taskEditor(
           ),
           _field(minutes, 'Tahmini toplam dakika', busy, number: true),
           _field(day, 'Çalışma günü: YYYY-AA-GG (isteğe bağlı)', busy),
-          const Text(
-            'Gün seçimi bir hedef kaydıdır. Otomatik günlük plana henüz eklenmez.',
-          ),
+          const Text('Plan oluşturduğunda bu tarihten önceye yerleştirilmez.'),
         ],
       ),
       () => state.saveResourceTask(
@@ -399,6 +401,14 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
           const Text(
             'Kitabını, soru bankanı veya video serini ekle. Tamamladığın aralıkları kaydet.',
           ),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ResourcePlanScreen()),
+            ),
+            icon: const Icon(Icons.route_outlined),
+            label: const Text('Kaynaklardan günlük plan'),
+          ),
           SwitchListTile(
             title: const Text('Arşivdekileri göster'),
             value: archived,
@@ -425,7 +435,7 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => _ResourceDetail(
+                    builder: (_) => StudyResourceDetail(
                       resourceId: resource.id,
                       profileId: state.activeProfile.id,
                     ),
@@ -439,14 +449,18 @@ class _StudyResourcesScreenState extends State<StudyResourcesScreen> {
   }
 }
 
-class _ResourceDetail extends StatefulWidget {
+class StudyResourceDetail extends StatefulWidget {
   final String resourceId, profileId;
-  const _ResourceDetail({required this.resourceId, required this.profileId});
+  const StudyResourceDetail({
+    super.key,
+    required this.resourceId,
+    required this.profileId,
+  });
   @override
-  State<_ResourceDetail> createState() => _ResourceDetailState();
+  State<StudyResourceDetail> createState() => _ResourceDetailState();
 }
 
-class _ResourceDetailState extends State<_ResourceDetail> {
+class _ResourceDetailState extends State<StudyResourceDetail> {
   bool busy = false;
   Future<void> _change(Future<bool> Function(AppState) operation) async {
     final state = context.read<AppState>();

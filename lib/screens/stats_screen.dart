@@ -389,7 +389,7 @@ class StatsScreen extends StatelessWidget {
     final buckets = WeeklyReportMetrics.trailingCompletionBuckets(
       today: today,
       completedStudyDates: state.completedStudyDates,
-      logs: state.dailyLogs,
+      logs: state.reportDailyLogs,
     );
     final barGroups = buckets
         .map(

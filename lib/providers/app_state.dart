@@ -1652,6 +1652,62 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  Future<bool> rebuildResourcePlan() {
+    final target = activeProfile.targetDate;
+    final preferences = schedulePreferences;
+    final now = DateTime.now();
+    return _changeLearningWorkspace(
+      'plan',
+      (workspace) => workspace.planResources(now, target, preferences),
+    );
+  }
+
+  Future<bool> completeResourcePlanBlock(
+    String dayKey,
+    String taskId,
+    int start,
+    int end,
+  ) {
+    final now = DateTime.now();
+    final today =
+        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    return _changeLearningWorkspace('plan:$dayKey:$taskId:$start', (workspace) {
+      if (dayKey != today) {
+        throw const FormatException(
+          'Yalnız bugünün planı buradan tamamlanabilir. Diğer çalışmalar için kaynak ekranını kullan.',
+        );
+      }
+      final day = workspace.plans
+          .where((day) => day.date == dayKey)
+          .firstOrNull;
+      if (day == null ||
+          !day.blocks.any(
+            (block) =>
+                block.taskId == taskId &&
+                block.startUnit == start &&
+                block.endUnit == end,
+          )) {
+        throw const FormatException('Plan değişti. Ekranı yeniden aç.');
+      }
+      var result = workspace;
+      for (final range in workspace.remainingRanges(taskId)) {
+        final first = range.$1 > start ? range.$1 : start;
+        final last = range.$2 < end ? range.$2 : end;
+        if (last < first) continue;
+        result = result.record(
+          ResourceProgressEvent(
+            id: 'plan-$dayKey-$taskId-$first-$last-${now.microsecondsSinceEpoch}',
+            taskId: taskId,
+            startUnit: first,
+            units: last - first + 1,
+            occurredAt: now.toUtc(),
+          ),
+        );
+      }
+      return result;
+    });
+  }
+
   Future<bool> saveStudyResource(StudyResource resource) {
     final catalog = {
       for (final subject in subjects) subject.storageId: subject.type,
@@ -1875,14 +1931,84 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   int get completedDays => completedStudyDates.length;
   int get totalDays => DailyPlanMetrics.totalStudyDays(
     completedDateKeys: completedStudyDateKeys,
-    logs: dailyLogs,
+    logs: reportDailyLogs,
   );
 
-  Set<String> get completedStudyDateKeys =>
-      StudyHistoryMetrics.completedStudyDateKeys(
-        _dailyPlanEntries,
-        getDailySchedule(),
-      );
+  /// Resource planning starts a new expectation timeline; earlier history stays.
+  List<DailyLog> get reportDailyLogs {
+    final plans = learningWorkspace.plans.toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    if (plans.isEmpty) return dailyLogs;
+    final first = plans.first.date;
+    return [
+      ...dailyLogs.where((log) => log.dateKey.compareTo(first) < 0),
+      for (final day in plans)
+        DailyLog(
+          date: DateTime.parse(day.date),
+          dayName: turkishWeekdayName(DateTime.parse(day.date)),
+          tytContent: day.blocks
+              .map(
+                (block) =>
+                    '${block.resourceName} · ${block.title} (${block.startUnit}–${block.endUnit} ${block.unitLabel})',
+              )
+              .join('\n'),
+          aytContent: '',
+          studyHours: '${day.plannedMinutes} dakika',
+          motivationNote: '',
+          isRestDay: day.blocks.isEmpty,
+          isCompleted:
+              day.blocks.isNotEmpty &&
+              day.blocks.every(
+                (block) =>
+                    learningWorkspace.blockProgress(day, block) == block.units,
+              ),
+        ),
+    ];
+  }
+
+  Set<String> get completedStudyDateKeys {
+    final legacy = StudyHistoryMetrics.completedStudyDateKeys(
+      _dailyPlanEntries,
+      getDailySchedule(),
+    );
+    final plans = learningWorkspace.plans.toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    if (plans.isEmpty) return legacy;
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    return {
+      ...legacy.where((date) => date.compareTo(plans.first.date) < 0),
+      for (final day in plans.where((day) => day.date.compareTo(today) <= 0))
+        if (day.blocks.isNotEmpty &&
+            day.blocks.every(
+              (block) =>
+                  learningWorkspace.blockProgress(day, block) == block.units,
+            ))
+          day.date,
+    };
+  }
+
+  /// Derived views avoid duplicating resource progress in another persisted log.
+  List<QuestionEvent> get reportQuestionEvents {
+    final byTask = {for (final task in learningWorkspace.tasks) task.id: task};
+    final byResource = {
+      for (final resource in learningWorkspace.resources) resource.id: resource,
+    };
+    return [
+      ...questionEvents,
+      for (final event in learningWorkspace.events)
+        if (event.active &&
+            byResource[byTask[event.taskId]?.resourceId]?.unit ==
+                StudyResourceUnit.question)
+          QuestionEvent(
+            id: 'resource:${event.id}',
+            profileId: activeProfile.id,
+            progressId: 'resource:${event.taskId}',
+            topicId: null,
+            occurredAt: event.occurredAt.toLocal(),
+            questionCount: event.units,
+          ),
+    ];
+  }
 
   Set<DateTime> get completedStudyDates => completedStudyDateKeys
       .map(DateTime.parse)
@@ -1890,7 +2016,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       .toSet();
 
   int solvedQuestionsOn(DateTime date) {
-    return StudyHistoryMetrics.solvedQuestionsOn(questionEvents, date);
+    return StudyHistoryMetrics.solvedQuestionsOn(reportQuestionEvents, date);
   }
 
   int get legacyUnattributedQuestionCount =>
@@ -1952,7 +2078,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       subjects.where((s) => s.type == 'AYT').toList();
 
   int get totalSolvedQuestions =>
-      StudyHistoryMetrics.totalSolvedQuestions(questionEvents);
+      StudyHistoryMetrics.totalSolvedQuestions(reportQuestionEvents);
   int get completedExams => MockExamMetrics.completedCount(mockExams);
   MockExam? get nextUpcomingMockExam =>
       MockExamMetrics.nextUpcoming(mockExams, now: DateTime.now());

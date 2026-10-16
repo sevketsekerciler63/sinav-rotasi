@@ -19,9 +19,9 @@ class WeeklyReportScreen extends StatelessWidget {
         final now = DateTime.now();
         final report = WeeklyReportMetrics.current(
           now: now,
-          logs: state.dailyLogs,
+          logs: state.reportDailyLogs,
           completedStudyDates: state.completedStudyDates,
-          questionEvents: state.questionEvents,
+          questionEvents: state.reportQuestionEvents,
           studySessions: state.studySessions,
           mockExams: state.mockExams,
         );
@@ -81,6 +81,13 @@ class WeeklyReportScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
+                if (state.learningWorkspace.plans.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      'Kaynak planına geçişten sonraki günler kaydedilmiş beklentiye göre değerlendirilir. Soru birimindeki kaynak ilerlemesi soru toplamına katılır; aynı çalışmayı ayrıca elle girme.',
+                    ),
+                  ),
                 // Stats grid
                 Row(
                   children: [
