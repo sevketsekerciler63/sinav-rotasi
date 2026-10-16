@@ -35,6 +35,21 @@ Future<T?> showRetainedBottomSheet<T>({
   return value;
 }
 
+Future<T?> showRetainedDialog<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+}) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final route = DialogRoute<T>(
+    context: context,
+    builder: builder,
+    barrierDismissible: false,
+  );
+  final value = await navigator.push(route);
+  await route.completed;
+  return value;
+}
+
 class ProfileSaveForm extends StatefulWidget {
   final Widget Function(
     BuildContext,

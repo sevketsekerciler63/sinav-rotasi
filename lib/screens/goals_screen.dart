@@ -510,8 +510,9 @@ class GoalsScreen extends StatelessWidget {
                       final parsed = int.tryParse(value?.trim() ?? '');
                       if (parsed == null ||
                           parsed < 1 ||
-                          parsed > Goal.maxTargetCount)
+                          parsed > Goal.maxTargetCount) {
                         return '1 ile ${Goal.maxTargetCount} arasında tam sayı gir.';
+                      }
                       return null;
                     },
                   ),

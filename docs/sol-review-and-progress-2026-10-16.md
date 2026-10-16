@@ -129,3 +129,11 @@ Android yedek kuralları ve ayrı cihaz tercihi deposu uygulandı; hatırlatıc�
 - Sil/geri al bildirimi gerçek yazım sonucundan sonra; kaydırma başarısız kaydı görünümden gizlemez. Korunan bozuk eski hedefler diğer hedef kaydında ham arşiv olarak kalır.
 - 3 yeni depo kabulü geçti; 320px yüzde 200 yazıda gerçek hedef formu → disk hatası → açık taslak → yeniden kaydet kontrolü geçti. Bu kontrolde bulunan miktar/birim satırı taşması dikey düzenle düzeltildi.
 - **Açık:** eski hazır günlük şablon işlemleri, özel müfredat ekle/düzenle/sil işlemleri ve rozet/flashcard kayıtlarının aynı kalıcı sonuç sözleşmesine tamamlanması. Bunlar bu teslimde bitmiş işaretlenmedi.
+
+
+## SOL-02 · Özel müfredat değişiklikleri
+
+- Özel ders/konu ekleme, düzenleme ve silme ayrı katalog taslağında hazırlanır. Başarılı kalıcı yazımdan önce etkin katalog değişmez. Konu silme ile ilgili ilerleme anahtarının temizliği tek işlemdir; son diğer konu notları üzerine eski snapshot yazılmaz.
+- Kaynak geçmişi veya hata/tekrar kaydı bağlı dersi/konuyu silmek engellenir; ilgili geçmiş kendiliğinden kaldırılmaz. Form hata metni gösterir, kalıcı kayıt bekler ve eski profil formu yeni profile yazmaz. Controller ömrü çıkış animasyonunu kapsar.
+- 2 yeni depo kabulü geçti: başarısız ekle/düzenle eski tanım/notu korur, bağlı kaynak dersi silinmez; silmede ikinci grup hatası hem müfredatı hem ilerlemeyi geri alır, sonraki başarılı silme yeniden yüklenir.
+- Açık kalan bu veri dilimi: eski günlük şablon tamamla/soru, rozet ve flashcard kalıcı başarı sırası. Son ortak test sayısı önceki 49'a ek 2 = 51; tam çalışma yeniden yapılacak.

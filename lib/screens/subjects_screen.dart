@@ -173,68 +173,92 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     final nameController = TextEditingController();
     final questionController = TextEditingController(text: '40');
     String? error;
-    await showDialog<void>(
+    final profileId = state.activeProfile.id;
+    bool saving = false;
+    await showRetainedDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('$examType dersi ekle'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                autofocus: true,
-                maxLength: 50,
-                decoration: const InputDecoration(labelText: 'Ders adı'),
-              ),
-              TextField(
-                controller: questionController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Soru sayısı',
-                  helperText: 'Bu sınav bölümündeki toplam soru sayısı',
-                ),
-              ),
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+        builder: (context, setDialogState) => PopScope(
+          canPop: !saving,
+          child: AbsorbPointer(
+            absorbing: saving,
+            child: AlertDialog(
+              title: Text('$examType dersi ekle'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    autofocus: true,
+                    maxLength: 50,
+                    decoration: const InputDecoration(labelText: 'Ders adı'),
+                  ),
+                  TextField(
+                    controller: questionController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Soru sayısı',
+                      helperText: 'Bu sınav bölümündeki toplam soru sayısı',
                     ),
                   ),
+                  if (error != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Vazgeç'),
                 ),
-            ],
+                FilledButton(
+                  onPressed: () async {
+                    final count = int.tryParse(questionController.text);
+                    if (nameController.text.trim().isEmpty || count == null) {
+                      setDialogState(
+                        () => error = 'Ders adını ve soru sayısını kontrol et.',
+                      );
+                      return;
+                    }
+                    if (saving) return;
+                    if (state.activeProfile.id != profileId ||
+                        state.isProfileTransitioning) {
+                      setDialogState(
+                        () =>
+                            error = 'Profil değişti. Formu kapatıp yeniden aç.',
+                      );
+                      return;
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    setDialogState(() => saving = true);
+                    try {
+                      await state.addCustomSubject(
+                        name: nameController.text,
+                        type: examType,
+                        totalQuestions: count,
+                      );
+                      if (dialogContext.mounted) Navigator.pop(dialogContext);
+                    } catch (exception) {
+                      if (dialogContext.mounted) {
+                        setDialogState(() {
+                          error = _friendlyError(exception);
+                          saving = false;
+                        });
+                      }
+                    }
+                  },
+                  child: const Text('Dersi ekle'),
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final count = int.tryParse(questionController.text);
-                if (nameController.text.trim().isEmpty || count == null) {
-                  setDialogState(
-                    () => error = 'Ders adını ve soru sayısını kontrol et.',
-                  );
-                  return;
-                }
-                try {
-                  await state.addCustomSubject(
-                    name: nameController.text,
-                    type: examType,
-                    totalQuestions: count,
-                  );
-                  if (dialogContext.mounted) Navigator.pop(dialogContext);
-                } catch (exception) {
-                  setDialogState(() => error = _friendlyError(exception));
-                }
-              },
-              child: const Text('Dersi ekle'),
-            ),
-          ],
         ),
       ),
     );
@@ -304,71 +328,63 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     String priority = topic?.priority ?? '🟡 ORTA';
     String? error;
 
-    await showDialog<void>(
+    final profileId = state.activeProfile.id;
+    bool saving = false;
+    await showRetainedDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(topic == null ? 'Konu ekle' : 'Konuyu düzenle'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('${subject.emoji} ${subject.name}'),
-                ),
-                TextField(
-                  controller: nameController,
-                  autofocus: true,
-                  maxLength: 70,
-                  decoration: const InputDecoration(labelText: 'Konu adı'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(labelText: 'Kısa açıklama'),
-                ),
-                Row(
+        builder: (context, setDialogState) => PopScope(
+          canPop: !saving,
+          child: AbsorbPointer(
+            absorbing: saving,
+            child: AlertDialog(
+              title: Text(topic == null ? 'Konu ekle' : 'Konuyu düzenle'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: questionController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Soru'),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('${subject.emoji} ${subject.name}'),
+                    ),
+                    TextField(
+                      controller: nameController,
+                      autofocus: true,
+                      maxLength: 70,
+                      decoration: const InputDecoration(labelText: 'Konu adı'),
+                    ),
+                    TextField(
+                      controller: descriptionController,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Kısa açıklama',
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: daysController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Gün'),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: questionController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Soru',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: daysController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(labelText: 'Gün'),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: difficulty,
-                  decoration: const InputDecoration(labelText: 'Zorluk'),
-                  items: const ['🟢 Kolay', '🟡 Orta', '🔴 Zor']
-                      .map(
-                        (value) =>
-                            DropdownMenuItem(value: value, child: Text(value)),
-                      )
-                      .toList(),
-                  onChanged: (value) =>
-                      setDialogState(() => difficulty = value!),
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: priority,
-                  decoration: const InputDecoration(labelText: 'Öncelik'),
-                  items:
-                      const [
-                            '🔴 ÇOK KRİTİK',
-                            '🟠 ÖNEMLİ',
-                            '🟡 ORTA',
-                            '🔵 DÜŞÜK',
-                          ]
+                    DropdownButtonFormField<String>(
+                      initialValue: difficulty,
+                      decoration: const InputDecoration(labelText: 'Zorluk'),
+                      items: const ['🟢 Kolay', '🟡 Orta', '🔴 Zor']
                           .map(
                             (value) => DropdownMenuItem(
                               value: value,
@@ -376,72 +392,111 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                             ),
                           )
                           .toList(),
-                  onChanged: (value) => setDialogState(() => priority = value!),
-                ),
-                if (error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      error!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                      onChanged: (value) =>
+                          setDialogState(() => difficulty = value!),
                     ),
-                  ),
+                    DropdownButtonFormField<String>(
+                      initialValue: priority,
+                      decoration: const InputDecoration(labelText: 'Öncelik'),
+                      items:
+                          const [
+                                '🔴 ÇOK KRİTİK',
+                                '🟠 ÖNEMLİ',
+                                '🟡 ORTA',
+                                '🔵 DÜŞÜK',
+                              ]
+                              .map(
+                                (value) => DropdownMenuItem(
+                                  value: value,
+                                  child: Text(value),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) =>
+                          setDialogState(() => priority = value!),
+                    ),
+                    if (error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          error!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Vazgeç'),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    final questionCount = int.tryParse(questionController.text);
+                    final estimatedDays = int.tryParse(daysController.text);
+                    if (nameController.text.trim().isEmpty ||
+                        questionCount == null ||
+                        questionCount < 0 ||
+                        estimatedDays == null ||
+                        estimatedDays < 1) {
+                      setDialogState(
+                        () => error =
+                            'Konu adını, soru sayısını ve gün değerini kontrol et.',
+                      );
+                      return;
+                    }
+                    if (saving) return;
+                    if (state.activeProfile.id != profileId ||
+                        state.isProfileTransitioning) {
+                      setDialogState(
+                        () =>
+                            error = 'Profil değişti. Formu kapatıp yeniden aç.',
+                      );
+                      return;
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    setDialogState(() => saving = true);
+                    try {
+                      if (topic == null) {
+                        await state.addCustomTopic(
+                          subjectId: subject.storageId,
+                          name: nameController.text,
+                          description: descriptionController.text,
+                          questionCount: questionCount,
+                          difficulty: difficulty,
+                          priority: priority,
+                          estimatedDays: estimatedDays,
+                        );
+                      } else {
+                        await state.updateCustomTopic(
+                          subjectId: subject.storageId,
+                          topicId: topic.id,
+                          name: nameController.text,
+                          description: descriptionController.text,
+                          questionCount: questionCount,
+                          difficulty: difficulty,
+                          priority: priority,
+                          estimatedDays: estimatedDays,
+                        );
+                      }
+                      if (dialogContext.mounted) Navigator.pop(dialogContext);
+                    } catch (exception) {
+                      if (dialogContext.mounted) {
+                        setDialogState(() {
+                          error = _friendlyError(exception);
+                          saving = false;
+                        });
+                      }
+                    }
+                  },
+                  child: Text(topic == null ? 'Konuyu ekle' : 'Kaydet'),
+                ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final questionCount = int.tryParse(questionController.text);
-                final estimatedDays = int.tryParse(daysController.text);
-                if (nameController.text.trim().isEmpty ||
-                    questionCount == null ||
-                    questionCount < 0 ||
-                    estimatedDays == null ||
-                    estimatedDays < 1) {
-                  setDialogState(
-                    () => error =
-                        'Konu adını, soru sayısını ve gün değerini kontrol et.',
-                  );
-                  return;
-                }
-                try {
-                  if (topic == null) {
-                    await state.addCustomTopic(
-                      subjectId: subject.storageId,
-                      name: nameController.text,
-                      description: descriptionController.text,
-                      questionCount: questionCount,
-                      difficulty: difficulty,
-                      priority: priority,
-                      estimatedDays: estimatedDays,
-                    );
-                  } else {
-                    await state.updateCustomTopic(
-                      subjectId: subject.storageId,
-                      topicId: topic.id,
-                      name: nameController.text,
-                      description: descriptionController.text,
-                      questionCount: questionCount,
-                      difficulty: difficulty,
-                      priority: priority,
-                      estimatedDays: estimatedDays,
-                    );
-                  }
-                  if (dialogContext.mounted) Navigator.pop(dialogContext);
-                } catch (exception) {
-                  setDialogState(() => error = _friendlyError(exception));
-                }
-              },
-              child: Text(topic == null ? 'Konuyu ekle' : 'Kaydet'),
-            ),
-          ],
         ),
       ),
     );
@@ -452,6 +507,8 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   }
 
   String _friendlyError(Object exception) {
+    if (exception is StateError) return exception.message;
+    if (exception is FormatException) return exception.message.toString();
     final message = exception.toString();
     return message.startsWith('ArgumentError: ')
         ? message.substring('ArgumentError: '.length)
@@ -1131,8 +1188,20 @@ class SubjectDetailScreen extends StatelessWidget {
       ),
     );
     if (confirmed != true) return;
-    await state.removeCustomSubject(subject.storageId);
-    if (context.mounted) Navigator.of(context).pop();
+    try {
+      await state.removeCustomSubject(subject.storageId);
+      if (context.mounted) Navigator.of(context).pop();
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              state.recordSaveError ?? 'Ders silinemedi. Yeniden dene.',
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _confirmRemoveTopic(
@@ -1164,10 +1233,22 @@ class SubjectDetailScreen extends StatelessWidget {
       ),
     );
     if (confirmed == true) {
-      await state.removeCustomTopic(
-        subjectId: subject.storageId,
-        topicId: topic.id,
-      );
+      try {
+        await state.removeCustomTopic(
+          subjectId: subject.storageId,
+          topicId: topic.id,
+        );
+      } catch (error) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.recordSaveError ?? 'Konu silinemedi. Yeniden dene.',
+              ),
+            ),
+          );
+        }
+      }
     }
   }
 

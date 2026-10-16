@@ -723,4 +723,136 @@ void main() {
       expect(state.weakTopics.single.reviewRepetitions, 1);
     },
   );
+  test(
+    'custom curriculum stages edits and deletion keeps related history safe',
+    () async {
+      store.failSuffix = '__custom_curriculum';
+      await expectLater(
+        state.addCustomSubject(
+          name: 'Ek ders',
+          type: 'TYT',
+          totalQuestions: 20,
+        ),
+        throwsStateError,
+      );
+      expect(
+        state.subjects.any((subject) => subject.name == 'Ek ders'),
+        isFalse,
+      );
+      await state.addCustomSubject(
+        name: 'Ek ders',
+        type: 'TYT',
+        totalQuestions: 20,
+      );
+      final subject = state.subjects.firstWhere(
+        (subject) => subject.name == 'Ek ders',
+      );
+      await state.addCustomTopic(
+        subjectId: subject.storageId,
+        name: 'Özel konu',
+        description: 'Açıklama',
+        questionCount: 5,
+        difficulty: '🟢 Kolay',
+        priority: '🟡 ORTA',
+        estimatedDays: 1,
+      );
+      final topic = state.subjects
+          .firstWhere((item) => item.storageId == subject.storageId)
+          .topics
+          .single;
+      await state.updateTopicNotes(topic.id, 'Korunan not');
+      store.failSuffix = '__custom_curriculum';
+      await expectLater(
+        state.updateCustomTopic(
+          subjectId: subject.storageId,
+          topicId: topic.id,
+          name: 'Yeni ad',
+          description: 'Yeni',
+          questionCount: 5,
+          difficulty: '🟢 Kolay',
+          priority: '🟡 ORTA',
+          estimatedDays: 2,
+        ),
+        throwsStateError,
+      );
+      expect(
+        state.subjects
+            .firstWhere((item) => item.storageId == subject.storageId)
+            .topics
+            .single
+            .name,
+        'Özel konu',
+      );
+      expect(
+        state.subjects
+            .firstWhere((item) => item.storageId == subject.storageId)
+            .topics
+            .single
+            .notes,
+        'Korunan not',
+      );
+      await state.saveStudyResource(
+        StudyResource(
+          id: 'linked',
+          name: 'Kaynak',
+          subjectId: subject.storageId,
+          subjectName: subject.name,
+          session: subject.type,
+          unit: StudyResourceUnit.page,
+          totalUnits: 20,
+        ),
+      );
+      await expectLater(
+        state.removeCustomSubject(subject.storageId),
+        throwsStateError,
+      );
+      expect(
+        state.subjects.any((item) => item.storageId == subject.storageId),
+        isTrue,
+      );
+      await state.loadData();
+      expect(
+        state.subjects
+            .firstWhere((item) => item.storageId == subject.storageId)
+            .topics
+            .single
+            .notes,
+        'Korunan not',
+      );
+    },
+  );
+  test(
+    'custom topic deletion rolls back curriculum and progress in one transaction',
+    () async {
+      final subjectId = state.subjects.first.storageId;
+      await state.addCustomTopic(
+        subjectId: subjectId,
+        name: 'Ek konu',
+        description: '',
+        questionCount: 5,
+        difficulty: '🟢 Kolay',
+        priority: '🟡 ORTA',
+        estimatedDays: 1,
+      );
+      final topic = state.subjects.first.topics.last;
+      await state.updateTopicNotes(topic.id, 'Not');
+      store.failSuffix = '__topics_data';
+      await expectLater(
+        state.removeCustomTopic(subjectId: subjectId, topicId: topic.id),
+        throwsStateError,
+      );
+      expect(
+        state.subjects.first.topics.any((item) => item.id == topic.id),
+        isTrue,
+      );
+      await state.loadData();
+      expect(state.subjects.first.topics.last.notes, 'Not');
+      await state.removeCustomTopic(subjectId: subjectId, topicId: topic.id);
+      await state.loadData();
+      expect(
+        state.subjects.first.topics.any((item) => item.id == topic.id),
+        isFalse,
+      );
+    },
+  );
 }

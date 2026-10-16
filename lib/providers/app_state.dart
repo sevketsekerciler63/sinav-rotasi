@@ -1036,11 +1036,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     'estimatedDays': topic.estimatedDays,
   };
 
-  Future<void> _saveCustomCurriculumForProfile(String profileId) async {
-    final curriculumJson = _customCurriculumJson();
-    await _writeProfileData(profileId, {'custom_curriculum': curriculumJson});
-  }
-
   String _customCurriculumJson() {
     final customSubjects = subjects
         .where((subject) => subject.isCustom)
@@ -1075,16 +1070,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     });
   }
 
-  String _topicsProgressJson() {
-    final data = <String, dynamic>{};
-    for (final subject in subjects) {
-      for (final topic in subject.topics) {
-        data[topic.id] = topic.toJson();
-      }
-    }
-    return jsonEncode(data);
-  }
-
   void _validateCustomTopicFields({
     required int questionCount,
     required String difficulty,
@@ -1106,15 +1091,140 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _saveCurriculumAndTopics(String profileId) async {
-    // Serialize both values before either async write so a profile switch
-    // cannot cause the second save to capture the next profile's in-memory list.
-    final curriculumJson = _customCurriculumJson();
-    final topicsJson = _topicsProgressJson();
-    await _writeProfileData(profileId, {
-      'custom_curriculum': curriculumJson,
-      'topics_data': topicsJson,
-    });
+  Future<void> _editCurriculum(void Function() change) async {
+    if (isProfileTransitioning) {
+      throw StateError('Profil değişimi bitince yeniden dene.');
+    }
+    final profile = activeProfile.id;
+    final pending = '$profile:custom_curriculum:catalog';
+    if (!_pendingRecordWrites.add(pending)) {
+      throw StateError('Müfredat kaydı sürüyor.');
+    }
+    final original = subjects;
+    final originalWeak = weakTopics;
+    late List<Subject> staged;
+    late String curriculum;
+    late Set<String> removedTopics;
+    try {
+      try {
+        subjects = [
+          for (final subject in original)
+            Subject(
+              id: subject.id,
+              isCustom: subject.isCustom,
+              name: subject.name,
+              emoji: subject.emoji,
+              type: subject.type,
+              totalQuestions: subject.totalQuestions,
+              tip: subject.tip,
+              topics: [
+                for (final topic in subject.topics)
+                  Topic(
+                    id: topic.id,
+                    name: topic.name,
+                    description: topic.description,
+                    questionCount: topic.questionCount,
+                    difficulty: topic.difficulty,
+                    priority: topic.priority,
+                    estimatedDays: topic.estimatedDays,
+                    sourceLabel: topic.sourceLabel,
+                    sourceUrl: topic.sourceUrl,
+                    isCompleted: topic.isCompleted,
+                    notes: topic.notes,
+                    isCustom: topic.isCustom,
+                  ),
+              ],
+            ),
+        ];
+        weakTopics = originalWeak
+            .map((topic) => WeakTopic.fromJson(topic.toJson()))
+            .toList();
+        change();
+        if (weakTopics.length != originalWeak.length) {
+          throw const FormatException(
+            'Hata/tekrar kaydı bağlı olan ders veya konu silinemez. Önce ilgili kayıtları gözden geçir.',
+          );
+        }
+        final remainingSubjects = subjects
+            .map((subject) => subject.storageId)
+            .toSet();
+        if (learningWorkspace.resources.any(
+          (resource) =>
+              !remainingSubjects.contains(resource.subjectId) &&
+              original.any(
+                (subject) => subject.storageId == resource.subjectId,
+              ),
+        )) {
+          throw const FormatException(
+            'Kaynak geçmişi bağlı olan ders silinemez.',
+          );
+        }
+        final remainingTopics = subjects
+            .expand((subject) => subject.topics)
+            .map((topic) => topic.id)
+            .toSet();
+        removedTopics = original
+            .expand((subject) => subject.topics)
+            .map((topic) => topic.id)
+            .where((id) => !remainingTopics.contains(id))
+            .toSet();
+        if (removedTopics.any((id) => isSavingRecord('topics_data', id))) {
+          throw const FormatException(
+            'Konu kaydı sürüyor; bitince yeniden dene.',
+          );
+        }
+        staged = subjects;
+        curriculum = _customCurriculumJson();
+      } finally {
+        subjects = original;
+        weakTopics = originalWeak;
+      }
+      notifyListeners();
+      await _profileStorage.mutateStringsForProfile(
+        profile,
+        {'custom_curriculum', if (removedTopics.isNotEmpty) 'topics_data'},
+        (values) {
+          final updates = {'custom_curriculum': curriculum};
+          if (removedTopics.isNotEmpty) {
+            final raw = values['topics_data'];
+            final progress = raw == null
+                ? <String, dynamic>{}
+                : Map<String, dynamic>.from(jsonDecode(raw) as Map);
+            for (final id in removedTopics) {
+              progress.remove(id);
+            }
+            updates['topics_data'] = jsonEncode(progress);
+          }
+          return updates;
+        },
+      );
+      _clearWriteErrors(profile, {'custom_curriculum'});
+      if (profile == activeProfile.id && !isProfileTransitioning) {
+        final progress = {
+          for (final topic in subjects.expand((subject) => subject.topics))
+            topic.id: topic.toJson(),
+        };
+        for (final topic in staged.expand((subject) => subject.topics)) {
+          if (progress.containsKey(topic.id)) {
+            topic.fromJson(progress[topic.id]!);
+          }
+        }
+        subjects = staged;
+        recordSaveError = null;
+        notifyListeners();
+      }
+    } catch (error) {
+      _recordWriteError(profile, {'custom_curriculum'}, error);
+      if (profile == activeProfile.id) {
+        recordSaveError = error is FormatException
+            ? error.message.toString()
+            : 'Müfredat kaydedilemedi. Yeniden dene.';
+      }
+      throw StateError(recordSaveError ?? 'Müfredat kaydedilemedi.');
+    } finally {
+      _pendingRecordWrites.remove(pending);
+      notifyListeners();
+    }
   }
 
   Future<void> addCustomSubject({
@@ -1122,40 +1232,38 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     required String type,
     required int totalQuestions,
   }) async {
-    if (_isProfileTransitioning) return;
-    final profileId = _activeProfile.id;
-    final normalizedName = name.trim();
-    if (normalizedName.isEmpty || (type != 'TYT' && type != 'AYT')) {
-      throw ArgumentError('Ders adı veya sınav türü geçersiz.');
-    }
-    if (totalQuestions < 1 || totalQuestions > 200) {
-      throw ArgumentError.value(totalQuestions, 'totalQuestions');
-    }
-    final netLabel = normalizedName.startsWith('$type ')
-        ? normalizedName
-        : '$type $normalizedName';
-    if (subjects.any((subject) {
-      if (subject.type != type) return false;
-      final existingNetLabel = subject.name.startsWith('$type ')
-          ? subject.name
-          : '$type ${subject.name}';
-      return existingNetLabel.toLowerCase() == netLabel.toLowerCase();
-    })) {
-      throw ArgumentError('Bu ders zaten listede var.');
-    }
-    subjects.add(
-      Subject(
-        id: 'custom_subject_${DateTime.now().microsecondsSinceEpoch}',
-        isCustom: true,
-        name: normalizedName,
-        emoji: type == 'TYT' ? '📘' : '📙',
-        type: type,
-        totalQuestions: totalQuestions,
-        topics: [],
-      ),
-    );
-    await _saveCustomCurriculumForProfile(profileId);
-    notifyListeners();
+    await _editCurriculum(() {
+      final normalizedName = name.trim();
+      if (normalizedName.isEmpty || (type != 'TYT' && type != 'AYT')) {
+        throw ArgumentError('Ders adı veya sınav türü geçersiz.');
+      }
+      if (totalQuestions < 1 || totalQuestions > 200) {
+        throw ArgumentError.value(totalQuestions, 'totalQuestions');
+      }
+      final netLabel = normalizedName.startsWith('$type ')
+          ? normalizedName
+          : '$type $normalizedName';
+      if (subjects.any((subject) {
+        if (subject.type != type) return false;
+        final existingNetLabel = subject.name.startsWith('$type ')
+            ? subject.name
+            : '$type ${subject.name}';
+        return existingNetLabel.toLowerCase() == netLabel.toLowerCase();
+      })) {
+        throw ArgumentError('Bu ders zaten listede var.');
+      }
+      subjects.add(
+        Subject(
+          id: 'custom_subject_${DateTime.now().microsecondsSinceEpoch}',
+          isCustom: true,
+          name: normalizedName,
+          emoji: type == 'TYT' ? '📘' : '📙',
+          type: type,
+          totalQuestions: totalQuestions,
+          topics: [],
+        ),
+      );
+    });
   }
 
   Future<void> addCustomTopic({
@@ -1167,38 +1275,36 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     required String priority,
     required int estimatedDays,
   }) async {
-    if (_isProfileTransitioning) return;
-    final profileId = _activeProfile.id;
-    _validateCustomTopicFields(
-      questionCount: questionCount,
-      difficulty: difficulty,
-      priority: priority,
-      estimatedDays: estimatedDays,
-    );
-    final subject = subjects.firstWhere(
-      (item) => item.storageId == subjectId,
-      orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
-    );
-    final normalizedName = name.trim();
-    if (normalizedName.isEmpty ||
-        subject.topics.any(
-          (topic) => topic.name.toLowerCase() == normalizedName.toLowerCase(),
-        )) {
-      throw ArgumentError('Konu adı boş veya bu derste zaten kullanılıyor.');
-    }
-    final topic = Topic(
-      id: 'custom_topic_${DateTime.now().microsecondsSinceEpoch}',
-      name: normalizedName,
-      description: description.trim(),
-      questionCount: questionCount,
-      difficulty: difficulty,
-      priority: priority,
-      estimatedDays: estimatedDays,
-      isCustom: true,
-    );
-    subject.topics.add(topic);
-    await _saveCurriculumAndTopics(profileId);
-    notifyListeners();
+    await _editCurriculum(() {
+      _validateCustomTopicFields(
+        questionCount: questionCount,
+        difficulty: difficulty,
+        priority: priority,
+        estimatedDays: estimatedDays,
+      );
+      final subject = subjects.firstWhere(
+        (item) => item.storageId == subjectId,
+        orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
+      );
+      final normalizedName = name.trim();
+      if (normalizedName.isEmpty ||
+          subject.topics.any(
+            (topic) => topic.name.toLowerCase() == normalizedName.toLowerCase(),
+          )) {
+        throw ArgumentError('Konu adı boş veya bu derste zaten kullanılıyor.');
+      }
+      final topic = Topic(
+        id: 'custom_topic_${DateTime.now().microsecondsSinceEpoch}',
+        name: normalizedName,
+        description: description.trim(),
+        questionCount: questionCount,
+        difficulty: difficulty,
+        priority: priority,
+        estimatedDays: estimatedDays,
+        isCustom: true,
+      );
+      subject.topics.add(topic);
+    });
   }
 
   Future<void> updateCustomTopic({
@@ -1211,100 +1317,88 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     required String priority,
     required int estimatedDays,
   }) async {
-    if (_isProfileTransitioning) return;
-    final profileId = _activeProfile.id;
-    _validateCustomTopicFields(
-      questionCount: questionCount,
-      difficulty: difficulty,
-      priority: priority,
-      estimatedDays: estimatedDays,
-    );
-    final subject = subjects.firstWhere(
-      (item) => item.storageId == subjectId,
-      orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
-    );
-    final index = subject.topics.indexWhere((topic) => topic.id == topicId);
-    if (index == -1 || !subject.topics[index].isCustom) {
-      throw ArgumentError.value(topicId, 'topicId', 'Özel konu bulunamadı.');
-    }
-    final normalizedName = name.trim();
-    if (normalizedName.isEmpty ||
-        subject.topics.asMap().entries.any(
-          (entry) =>
-              entry.key != index &&
-              entry.value.name.toLowerCase() == normalizedName.toLowerCase(),
-        )) {
-      throw ArgumentError('Konu adı boş veya bu derste zaten kullanılıyor.');
-    }
-    final previous = subject.topics[index];
-    subject.topics[index] = Topic(
-      id: previous.id,
-      name: normalizedName,
-      description: description.trim(),
-      questionCount: questionCount,
-      difficulty: difficulty,
-      priority: priority,
-      estimatedDays: estimatedDays,
-      isCompleted: previous.isCompleted,
-      notes: previous.notes,
-      isCustom: true,
-    );
-    await _saveCurriculumAndTopics(profileId);
-    notifyListeners();
+    await _editCurriculum(() {
+      _validateCustomTopicFields(
+        questionCount: questionCount,
+        difficulty: difficulty,
+        priority: priority,
+        estimatedDays: estimatedDays,
+      );
+      final subject = subjects.firstWhere(
+        (item) => item.storageId == subjectId,
+        orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
+      );
+      final index = subject.topics.indexWhere((topic) => topic.id == topicId);
+      if (index == -1 || !subject.topics[index].isCustom) {
+        throw ArgumentError.value(topicId, 'topicId', 'Özel konu bulunamadı.');
+      }
+      final normalizedName = name.trim();
+      if (normalizedName.isEmpty ||
+          subject.topics.asMap().entries.any(
+            (entry) =>
+                entry.key != index &&
+                entry.value.name.toLowerCase() == normalizedName.toLowerCase(),
+          )) {
+        throw ArgumentError('Konu adı boş veya bu derste zaten kullanılıyor.');
+      }
+      final previous = subject.topics[index];
+      subject.topics[index] = Topic(
+        id: previous.id,
+        name: normalizedName,
+        description: description.trim(),
+        questionCount: questionCount,
+        difficulty: difficulty,
+        priority: priority,
+        estimatedDays: estimatedDays,
+        isCompleted: previous.isCompleted,
+        notes: previous.notes,
+        isCustom: true,
+      );
+    });
   }
 
   Future<void> removeCustomTopic({
     required String subjectId,
     required String topicId,
   }) async {
-    if (_isProfileTransitioning) return;
-    final profileId = _activeProfile.id;
-    final subject = subjects.firstWhere(
-      (item) => item.storageId == subjectId,
-      orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
-    );
-    final removedTopic = subject.topics.where((topic) => topic.id == topicId);
-    if (removedTopic.isEmpty || !removedTopic.first.isCustom) return;
-    final removedTopicName = removedTopic.first.name;
-    subject.topics.removeWhere(
-      (topic) => topic.id == topicId && topic.isCustom,
-    );
-    _removeWeakTopicReferences(
-      subject: subject,
-      topicId: topicId,
-      topicName: removedTopicName,
-    );
-    _applyWeakTopicReviews();
-    final weakTopicsJson = _weakTopicsJson();
-    await _saveCurriculumAndTopics(profileId);
-    await _saveWeakTopicsForProfile(profileId, weakTopicsJson);
-    notifyListeners();
+    await _editCurriculum(() {
+      final subject = subjects.firstWhere(
+        (item) => item.storageId == subjectId,
+        orElse: () => throw ArgumentError.value(subjectId, 'subjectId'),
+      );
+      final removedTopic = subject.topics.where((topic) => topic.id == topicId);
+      if (removedTopic.isEmpty || !removedTopic.first.isCustom) return;
+      final removedTopicName = removedTopic.first.name;
+      subject.topics.removeWhere(
+        (topic) => topic.id == topicId && topic.isCustom,
+      );
+      _removeWeakTopicReferences(
+        subject: subject,
+        topicId: topicId,
+        topicName: removedTopicName,
+      );
+    });
   }
 
   Future<void> removeCustomSubject(String subjectId) async {
-    if (_isProfileTransitioning) return;
-    final profileId = _activeProfile.id;
-    final subject = subjects.where((item) => item.storageId == subjectId);
-    if (subject.isEmpty || !subject.first.isCustom) return;
-    final removedSubject = subject.first;
-    final topicIds = removedSubject.topics.map((topic) => topic.id).toSet();
-    subjects.removeWhere((item) => item.storageId == subjectId);
-    for (final item in subjects) {
-      item.topics.removeWhere(
-        (topic) => topic.isCustom && topicIds.contains(topic.id),
+    await _editCurriculum(() {
+      final subject = subjects.where((item) => item.storageId == subjectId);
+      if (subject.isEmpty || !subject.first.isCustom) return;
+      final removedSubject = subject.first;
+      final topicIds = removedSubject.topics.map((topic) => topic.id).toSet();
+      subjects.removeWhere((item) => item.storageId == subjectId);
+      for (final item in subjects) {
+        item.topics.removeWhere(
+          (topic) => topic.isCustom && topicIds.contains(topic.id),
+        );
+      }
+      weakTopics.removeWhere(
+        (weakTopic) =>
+            weakTopic.subjectId == subjectId ||
+            (weakTopic.subjectId == null &&
+                weakTopic.subject == removedSubject.name),
       );
-    }
-    weakTopics.removeWhere(
-      (weakTopic) =>
-          weakTopic.subjectId == subjectId ||
-          (weakTopic.subjectId == null &&
-              weakTopic.subject == removedSubject.name),
-    );
-    _applyWeakTopicReviews();
-    final weakTopicsJson = _weakTopicsJson();
-    await _saveCurriculumAndTopics(profileId);
-    await _saveWeakTopicsForProfile(profileId, weakTopicsJson);
-    notifyListeners();
+    });
   }
 
   String _weakTopicsJson() =>
@@ -1483,6 +1577,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     String id,
     Map<String, dynamic> Function(Map<String, dynamic>) change,
   ) async {
+    if (isSavingRecord('custom_curriculum', 'catalog')) return false;
     final topic = subjects
         .expand((subject) => subject.topics)
         .where((topic) => topic.id == id)
