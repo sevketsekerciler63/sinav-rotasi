@@ -521,6 +521,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (isCurrentRequest()) {
       _bootStatus = AppBootStatus.ready;
       _loadError = null;
+      _persistenceError = null;
       _syncDailyReminder();
       notifyListeners();
     }

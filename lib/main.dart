@@ -334,6 +334,31 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  Future<void> _confirmReloadSavedData() async {
+    final shouldReload = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Kaydedilmiş veriyi yükle?'),
+        content: const Text(
+          'Son değişiklik kaydedilememiş olabilir. Devam edersen ekrandaki '
+          'kaydedilmemiş değişiklikler yerine cihazda saklanan son kayıt yüklenir.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Kaydedilmiş veriyi yükle'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || shouldReload != true) return;
+    await context.read<AppState>().loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
@@ -402,37 +427,57 @@ class _MainScreenState extends State<MainScreen> {
                     borderRadius: BorderRadius.circular(12),
                     elevation: 4,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 4),
-                      child: Row(
+                      padding: const EdgeInsets.fromLTRB(12, 6, 4, 4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.save_outlined,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Değişiklik kaydedilemedi: ${appState.persistenceError}',
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.save_outlined,
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.onErrorContainer,
-                                fontSize: 12,
                               ),
-                            ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Değişiklik kaydedilemedi: ${appState.persistenceError}',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onErrorContainer,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: 'Bildirimi kapat',
+                                onPressed: appState.dismissPersistenceError,
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onErrorContainer,
+                                ),
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            tooltip: 'Bildirimi kapat',
-                            onPressed: appState.dismissPersistenceError,
-                            icon: Icon(
-                              Icons.close_rounded,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onErrorContainer,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: _confirmReloadSavedData,
+                              icon: const Icon(Icons.history_rounded, size: 18),
+                              label: const Text('Kaydedilmiş veriyi yükle'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                                minimumSize: const Size(48, 44),
+                              ),
                             ),
                           ),
                         ],
