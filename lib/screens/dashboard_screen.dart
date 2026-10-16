@@ -709,6 +709,34 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildTodayCard(BuildContext context, AppState state, DailyLog today) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final focusTask = state.nextIncompleteTaskFor(today);
+    final focusTaskId = focusTask != null && focusTask.progressIds.length == 1
+        ? focusTask.progressIds.single
+        : null;
+    String? reviewTopicName;
+    if (focusTaskId?.startsWith('review_') == true &&
+        today.reviewTopicId != null) {
+      for (final topic in state.weakTopics) {
+        if (topic.id == today.reviewTopicId) {
+          reviewTopicName = topic.topic;
+          break;
+        }
+      }
+    }
+    final focusTitle = focusTask == null
+        ? today.isCompleted
+              ? 'Bugünkü plan tamamlandı'
+              : 'Bugünün planı'
+        : _focusTaskTitle(focusTask);
+    final focusReason = focusTask == null
+        ? today.isCompleted
+              ? 'Plan görevleri tamamlandı; istersen serbest odak çalışması başlat.'
+              : 'Bugün için eşleştirilebilir bir plan görevi bulunamadı.'
+        : focusTaskId?.startsWith('review_') == true
+        ? reviewTopicName == null
+              ? 'Plan tekrar öneriyor; belirli bir zayıf konu kaydı yok.'
+              : 'Tekrar zamanı gelen zayıf konu: $reviewTopicName.'
+        : 'Planın sıradaki tamamlanmamış görevi.';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -854,6 +882,44 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
           ),
+          if (!today.isRestDay) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    focusTask == null ? 'Odak önerisi' : 'Şimdi odaklan',
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colors.onTertiaryContainer,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    focusTitle,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colors.onTertiaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    focusReason,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.onTertiaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           Row(
             children: [
@@ -866,10 +932,10 @@ class DashboardScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => PomodoroScreen(
                               autoStart: true,
-                              taskTitle: _focusTaskTitle(today),
-                              taskId: today.progressIds.isEmpty
-                                  ? null
-                                  : today.progressIds.first,
+                              taskTitle: today.isCompleted && focusTask == null
+                                  ? 'Serbest odak çalışması'
+                                  : focusTitle,
+                              taskId: focusTaskId,
                             ),
                           ),
                         ),
