@@ -13,6 +13,7 @@ import '../models/net_score.dart';
 import '../models/mock_exam.dart';
 import '../models/flashcard_review.dart';
 import '../models/weak_topic.dart';
+import '../models/learning_workspace.dart';
 
 class BackupImportPreview {
   final bool isLegacy;
@@ -52,7 +53,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 8;
+  static const int schemaVersion = 9;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
@@ -71,6 +72,7 @@ class ProfileStorage {
     'custom_curriculum',
     'schedule_preferences',
     'pomodoro_state',
+    'learning_workspace',
   ];
 
   static const String _schemaKey = 'profile_schema_version';
@@ -276,7 +278,9 @@ class ProfileStorage {
       }
       final updates = <String, Object?>{};
       for (final entry in values.entries) {
-        _validateDataPayload(entry.key, jsonDecode(entry.value));
+        final decoded = jsonDecode(entry.value);
+        _validateDataPayload(entry.key, decoded);
+        _validateProfileRecordIds(profile.id, entry.key, decoded);
         updates[_scopedKey(profile.id, entry.key)] = entry.value;
         if (_isLegacyCompatible(profile)) updates[entry.key] = entry.value;
       }
@@ -474,7 +478,8 @@ class ProfileStorage {
         records.any((record) => record['profileId'] != profileId)) {
       _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
     }
-    if (key == 'pomodoro_state' && payload['profileId'] != profileId) {
+    if ((key == 'pomodoro_state' || key == 'learning_workspace') &&
+        payload['profileId'] != profileId) {
       _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
     }
   }
@@ -558,6 +563,7 @@ class ProfileStorage {
       if (prepared.isLegacy) {
         final profile = activeProfile;
         for (final entry in prepared.legacyData.entries) {
+          _validateProfileRecordIds(profile.id, entry.key, entry.value);
           final value = jsonEncode(entry.value);
           updates[_scopedKey(profile.id, entry.key)] = value;
           if (_isLegacyCompatible(profile)) updates[entry.key] = value;
@@ -682,6 +688,7 @@ class ProfileStorage {
       }
       for (final value in profileValues.entries) {
         _validateDataPayload(value.key, value.value);
+        _validateProfileRecordIds(entry.key as String, value.key, value.value);
       }
       final questionHistory = profileValues['question_history'];
       if (questionHistory is Map && questionHistory['events'] is List) {
@@ -924,6 +931,8 @@ class ProfileStorage {
 
   void _validateDataPayload(String key, dynamic value) {
     switch (key) {
+      case 'learning_workspace':
+        LearningWorkspace.fromJson(_record(value, key));
       case 'topics_data':
         final topics = _record(value, key);
         for (final entry in topics.entries) {

@@ -8,6 +8,7 @@ import '../models/question_event.dart';
 import '../models/study_session.dart';
 import '../models/pomodoro_timer_state.dart';
 import '../models/legacy_daily_activity.dart';
+import '../models/learning_workspace.dart';
 import '../models/mock_exam.dart';
 import '../models/weak_topic.dart';
 import '../models/goal.dart';
@@ -58,6 +59,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   final Map<String, String> _failedWriteErrors = {};
   final Set<String> _savingMockExams = {};
   List<String> _recoveryDataKeys = [];
+  late LearningWorkspace _learningWorkspace;
+
+  LearningWorkspace get learningWorkspace => _learningWorkspace;
 
   ExamProfile get activeProfile => _activeProfile;
   bool get isProfileTransitioning => _isProfileTransitioning;
@@ -231,6 +235,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   AppState({ProfileStorage? profileStorage})
     : _profileStorage = profileStorage ?? ProfileStorage.instance {
+    _learningWorkspace = LearningWorkspace.empty(_activeProfile.id);
     WidgetsBinding.instance.addObserver(this);
     subjects = getAllSubjects();
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
@@ -321,6 +326,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // Rebuild defaults before applying persisted values so reset and restore
     // do not retain objects left over from the previous in-memory state.
     subjects = getAllSubjects();
+    _learningWorkspace = LearningWorkspace.empty(profileId);
     _schedulePreferences = StudySchedulePreferences.defaults;
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
     mockExams = getExamCalendar(targetDate: _activeProfile.targetDate);
@@ -364,6 +370,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
     if (!isCurrentRequest()) return;
     if (curriculumJson != null) _restoreCustomCurriculum(curriculumJson);
+
+    final workspaceJson = await _profileStorage.readStringForProfile(
+      profileId,
+      'learning_workspace',
+    );
+    if (!isCurrentRequest()) return;
+    if (workspaceJson != null) {
+      _learningWorkspace = LearningWorkspace.fromJson(
+        Map<String, dynamic>.from(jsonDecode(workspaceJson) as Map),
+      );
+      if (_learningWorkspace.profileId != profileId) {
+        throw const FormatException(
+          'Kaynak çalışma alanı başka bir profile bağlı.',
+        );
+      }
+    }
 
     final schedulePreferencesJson = await _profileStorage.readStringForProfile(
       profileId,
@@ -1578,6 +1600,93 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       _savingMockExams.remove(saveKey);
     }
   }
+
+  Future<bool> _changeLearningWorkspace(
+    String identity,
+    LearningWorkspace Function(LearningWorkspace) change,
+  ) async {
+    if (_isProfileTransitioning) return false;
+    final profileId = _activeProfile.id;
+    final errorKey = 'learning_workspace:$identity';
+    try {
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profileId,
+        {'learning_workspace'},
+        (values) {
+          final raw = values['learning_workspace'];
+          final current = raw == null
+              ? LearningWorkspace.empty(profileId)
+              : LearningWorkspace.fromJson(
+                  Map<String, dynamic>.from(jsonDecode(raw) as Map),
+                );
+          if (current.profileId != profileId) {
+            throw const FormatException(
+              'Kaynak çalışma alanı başka bir profile bağlı.',
+            );
+          }
+          return {'learning_workspace': jsonEncode(change(current).toJson())};
+        },
+      );
+      _clearWriteErrors(profileId, {errorKey});
+      if (profileId == _activeProfile.id && !_isProfileTransitioning) {
+        _learningWorkspace = LearningWorkspace.fromJson(
+          Map<String, dynamic>.from(
+            jsonDecode(saved['learning_workspace']!) as Map,
+          ),
+        );
+        notifyListeners();
+      }
+      return true;
+    } catch (error) {
+      _recordWriteError(profileId, {errorKey}, error);
+      return false;
+    }
+  }
+
+  Future<bool> saveStudyResource(StudyResource resource) {
+    final catalog = {
+      for (final subject in subjects) subject.storageId: subject.type,
+    };
+    return _changeLearningWorkspace('resource:${resource.id}', (workspace) {
+      final existing = workspace.resources
+          .where((item) => item.id == resource.id)
+          .firstOrNull;
+      if (existing == null && catalog[resource.subjectId] != resource.session) {
+        throw const FormatException('Kaynak için mevcut bir ders seç.');
+      }
+      return workspace.saveResource(resource);
+    });
+  }
+
+  Future<bool> saveResourceTask(ResourceTask task) => _changeLearningWorkspace(
+    'task:${task.id}',
+    (workspace) => workspace.saveTask(task),
+  );
+
+  Future<bool> recordResourceProgress(ResourceProgressEvent event) =>
+      _changeLearningWorkspace(
+        'event:${event.id}',
+        (workspace) => workspace.record(event),
+      );
+
+  Future<bool> undoResourceProgress(String id) =>
+      _changeLearningWorkspace('undo:$id', (workspace) => workspace.undo(id));
+
+  Future<bool> archiveStudyResource(String id, bool archived) =>
+      _changeLearningWorkspace('resource:$id', (workspace) {
+        final resource = workspace.resources
+            .where((resource) => resource.id == id)
+            .firstOrNull;
+        if (resource == null) throw const FormatException('Kaynak bulunamadı.');
+        return workspace.saveResource(resource.withArchived(archived));
+      });
+
+  Future<bool> archiveResourceTask(String id, bool archived) =>
+      _changeLearningWorkspace('task:$id', (workspace) {
+        final task = workspace.tasks.where((task) => task.id == id).firstOrNull;
+        if (task == null) throw const FormatException('Görev bulunamadı.');
+        return workspace.saveTask(task.withArchived(archived));
+      });
 
   // ─── Weak Topics Actions ───────────────────────
   void addWeakTopic(WeakTopic topic) {

@@ -10,6 +10,7 @@ import 'package:yks_study_app/models/study_schedule_preferences.dart';
 import 'package:yks_study_app/models/study_session.dart';
 import 'package:yks_study_app/models/daily_log.dart';
 import 'package:yks_study_app/models/weak_topic.dart';
+import 'package:yks_study_app/models/learning_workspace.dart';
 import 'package:yks_study_app/providers/app_state.dart';
 import 'package:yks_study_app/services/profile_storage.dart';
 
@@ -385,4 +386,101 @@ void main() {
     expect(state.weakTopics.single.reviewRepetitions, 1);
     expect(state.weakTopics.single.reviewIntervalDays, 1);
   });
+
+  StudyResource studyResource(String id) {
+    final subject = state.subjects.first;
+    return StudyResource(
+      id: id,
+      name: 'Kaynak $id',
+      subjectId: subject.storageId,
+      subjectName: subject.name,
+      session: subject.type,
+      unit: StudyResourceUnit.question,
+      totalUnits: 100,
+    );
+  }
+
+  test(
+    'resource graph writes merge, failed saves keep memory and retries stay idempotent',
+    () async {
+      expect(
+        await Future.wait([
+          state.saveStudyResource(studyResource('one')),
+          state.saveStudyResource(studyResource('two')),
+        ]),
+        [true, true],
+      );
+      final task = ResourceTask(
+        id: 'task',
+        resourceId: 'one',
+        title: 'Soru çöz',
+        startUnit: 1,
+        endUnit: 20,
+        estimatedMinutes: 40,
+      );
+      expect(await state.saveResourceTask(task), isTrue);
+      final at = DateTime.now();
+      final first = ResourceProgressEvent(
+        id: 'a',
+        taskId: 'task',
+        startUnit: 1,
+        units: 5,
+        occurredAt: at,
+      );
+      final second = ResourceProgressEvent(
+        id: 'b',
+        taskId: 'task',
+        startUnit: 6,
+        units: 5,
+        occurredAt: at,
+      );
+      expect(
+        await Future.wait([
+          state.recordResourceProgress(first),
+          state.recordResourceProgress(second),
+        ]),
+        [true, true],
+      );
+      expect(await state.recordResourceProgress(first), isTrue);
+      expect(state.learningWorkspace.taskProgress('task'), 10);
+      store.failSuffix = '__learning_workspace';
+      expect(await state.saveStudyResource(studyResource('three')), isFalse);
+      expect(state.learningWorkspace.resources.length, 2);
+      expect(await state.saveStudyResource(studyResource('unrelated')), isTrue);
+      expect(state.persistenceError, isNotNull);
+      expect(await state.saveStudyResource(studyResource('three')), isTrue);
+      expect(state.persistenceError, isNull);
+      await state.loadData();
+      expect(state.learningWorkspace.resources.length, 4);
+      expect(state.learningWorkspace.taskProgress('task'), 10);
+    },
+  );
+
+  test(
+    'resource graph is profile isolated and survives backup round trip',
+    () async {
+      final oldId = state.activeProfile.id;
+      expect(await state.saveStudyResource(studyResource('one')), isTrue);
+      await state.createYksProfile(
+        name: 'Yeni',
+        scoreType: 'say',
+        startingLevel: 'basic',
+        targetDate: DateTime.now().add(const Duration(days: 100)),
+        schedulePreferences: StudySchedulePreferences.defaults,
+      );
+      expect(state.learningWorkspace.resources, isEmpty);
+      await state.switchActiveProfile(oldId);
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.learningWorkspace.resources.single.id, 'one');
+      final corrupted = jsonDecode(jsonEncode(backup)) as Map<String, dynamic>;
+      corrupted['data'][oldId]['learning_workspace']['profileId'] =
+          'another-profile';
+      await expectLater(
+        storage.previewBackup(corrupted),
+        throwsFormatException,
+      );
+    },
+  );
 }
