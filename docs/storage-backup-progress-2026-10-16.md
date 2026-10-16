@@ -1,5 +1,7 @@
 # Sınav Rotası — kayıt ve yedek düzeltmeleri, ilk uygulama dilimi
 
+Güncel iş dağılımı ve devralma sırası: [Luna ve Sol iş bölümü](luna-sol-work-plan-2026-10-16.md). Bu kayıttaki açık veri kabulü Sol'a, bağımsız sunum işleri Luna'ya atanmıştır.
+
 Tarih: 16 Ekim 2026.
 Temel: ürün/tasarım/veri koruma araştırmasındaki ilk öncelik.
 Durum: kaynak değişiklikleri uygulandı; otomatik regresyon ve gerçek cihaz kurtarma kabulü açık.
