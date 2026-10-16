@@ -215,14 +215,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     try {
       await _profileStorage.addProfile(
         profile,
+        activate: true,
         initialData: {
           'schedule_preferences': jsonEncode(
             validatedSchedulePreferences.toJson(),
           ),
         },
       );
-      if (transitionRequest != _profileTransitionRequest) return;
-      await _profileStorage.setActiveProfile(profile.id);
       if (transitionRequest != _profileTransitionRequest) return;
       await loadData();
     } finally {

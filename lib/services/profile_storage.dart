@@ -295,6 +295,7 @@ class ProfileStorage {
 
   Future<void> addProfile(
     ExamProfile profile, {
+    bool activate = false,
     Map<String, String> initialData = const {},
   }) async {
     await initialize();
@@ -314,6 +315,7 @@ class ProfileStorage {
 
       final updatedProfiles = [..._profiles, validatedProfile];
       final updates = <String, Object?>{
+        if (activate) _activeProfileKey: validatedProfile.id,
         _profilesKey: jsonEncode(
           updatedProfiles.map((item) => item.toJson()).toList(),
         ),
@@ -322,6 +324,7 @@ class ProfileStorage {
       };
       await _applyPreferenceUpdates(updates);
       _profiles = updatedProfiles;
+      if (activate) _activeProfileId = validatedProfile.id;
     });
   }
 

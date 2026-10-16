@@ -1148,4 +1148,31 @@ void main() {
       );
     },
   );
+  test(
+    'profile creation and activation roll back together and retry creates once',
+    () async {
+      final previousId = state.activeProfile.id;
+      final previousCount = state.profiles.length;
+      store.failSuffix = 'exam_profiles';
+      Future<void> create() => state.createYksProfile(
+        name: 'Yeni dönem',
+        examYear: 2027,
+        scoreType: 'ea',
+        startingLevel: 'basic',
+        targetDate: DateTime.now().add(const Duration(days: 180)),
+        schedulePreferences: StudySchedulePreferences.defaults,
+      );
+      await expectLater(create(), throwsA(anything));
+      expect(state.activeProfile.id, previousId);
+      expect(storage.activeProfile.id, previousId);
+      expect(state.profiles.length, previousCount);
+      await create();
+      expect(state.profiles.length, previousCount + 1);
+      expect(state.activeProfile.name, 'Yeni dönem');
+      final reloaded = ProfileStorage.forTesting();
+      await reloaded.initialize();
+      expect(reloaded.activeProfile.id, state.activeProfile.id);
+      expect(reloaded.activeProfile.examYear, 2027);
+    },
+  );
 }

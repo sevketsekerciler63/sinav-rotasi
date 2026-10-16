@@ -176,3 +176,9 @@ Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son
 - Kurulum ve profil formlarında yıl seçimi; ayarlarda içerik kapsamı var. Eski “YDT yok” metni düzeltildi: YDT kaynak/deneme takibi var, tam hazır konu rehberi yok.
 - Tam paket: 58 test geçti; `flutter analyze --no-pub` temiz. Yıl değişimi + eski metadata + yedek geri yükleme testi dahil.
 - Açık: 2027 resmi kapsamının ve bütün akademik içeriğin editoryal doğrulaması; EA/SÖZ/YDT tam hazır konu rehberi. Yıl seçimi güncellik garantisi değildir.
+
+
+## 17 Ekim · Profil formu kayıt kaybı
+- Yeni profil ve profil düzenleme formu artık kalıcı kayıt bitmeden kapanmıyor. Yazma hatasında tüm alanlar korunuyor, aynı formdan tekrar deneniyor. Kaydetme sırasında düzenleme/geri çıkış engelleniyor; dışarıdan profil değiştiyse yanlış profile yazılmıyor.
+- Yeni profil listesi + başlangıç programı + aktif profil seçimi aynı depolama işlemi. Aktifleştirme öncesi yarım profil bırakıp yeniden denemede kopya üretme yolu kaldırıldı.
+- Denetim: depolama hatasında oluşturma/etkinleştirme birlikte geri alınıyor, tekrar deneyince tek profil oluşuyor; widget testi başarısız profil düzenleme taslağının korunmasını ve başarı sonrası kapanmasını doğruluyor.

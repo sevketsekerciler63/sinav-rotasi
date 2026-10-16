@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import '../widgets/exam_year_field.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -777,253 +778,308 @@ class SettingsScreen extends StatelessWidget {
     final lastDate = DateTime(now.year + 10, 12, 31);
     final fallbackDate = today.add(const Duration(days: 180));
 
-    final saved = await showDialog<bool>(
+    var saving = false;
+    String? saveError;
+    final openedProfileId = state.activeProfile.id;
+    final saved = await showRetainedDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
-          backgroundColor: Theme.of(dialogContext).colorScheme.surface,
-          scrollable: true,
-          title: const Text('Yeni YKS profili'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Tarih kişisel plan hedefidir; resmî YKS tarihi değildir.',
-                style: Theme.of(
-                  dialogContext,
-                ).textTheme.bodySmall?.copyWith(fontSize: 12),
-                textAlign: TextAlign.left,
-              ),
-              TextField(
-                controller: nameController,
-                maxLength: 40,
-                decoration: InputDecoration(
-                  labelText: 'Profil adı',
-                  hintText: 'Örn. 2027 YKS hazırlığı',
-                  errorText: showNameError ? 'Profil adı boş olamaz.' : null,
-                ),
-                onChanged: (value) {
-                  if (showNameError && value.trim().isNotEmpty) {
-                    setDialogState(() => showNameError = false);
-                  }
-                },
-              ),
-              ExamYearField(
-                value: examYear,
-                onChanged: (value) => setDialogState(() => examYear = value),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: scoreType,
-                decoration: InputDecoration(
-                  labelText: 'Puan türü',
-                  errorText: showScoreTypeError ? 'Bir puan türü seç.' : null,
-                ),
-                items: ExamProfile.scoreTypeLabels.entries
-                    .map(
-                      (entry) => DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) => setDialogState(() {
-                  scoreType = value ?? ExamProfile.unspecified;
-                  showScoreTypeError = false;
-                }),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: startingLevel,
-                decoration: InputDecoration(
-                  labelText: 'Başlangıç seviyen (öz değerlendirme)',
-                  errorText: showStartingLevelError
-                      ? 'Bir başlangıç seviyesi seç.'
-                      : null,
-                ),
-                items: ExamProfile.startingLevelLabels.entries
-                    .map(
-                      (entry) => DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) => setDialogState(() {
-                  startingLevel = value ?? ExamProfile.unspecified;
-                  showStartingLevelError = false;
-                }),
-              ),
-              const SizedBox(height: 8),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Kişisel hedef tarihi'),
-                subtitle: Text(
-                  targetDate == null
-                      ? 'Bir tarih seç'
-                      : _formatDate(targetDate!),
-                ),
-                trailing: IconButton(
-                  tooltip: 'Kişisel hedef tarihini seç',
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: () async {
-                    final initialDate =
-                        targetDate == null ||
-                            targetDate!.isBefore(today) ||
-                            targetDate!.isAfter(lastDate)
-                        ? fallbackDate
-                        : targetDate!;
-                    final picked = await showDatePicker(
-                      context: dialogContext,
-                      initialDate: initialDate,
-                      firstDate: today,
-                      lastDate: lastDate,
-                    );
-                    if (picked != null) {
-                      setDialogState(() {
-                        targetDate = picked;
-                        showDateError = false;
-                      });
-                    }
-                  },
-                ),
-              ),
-              if (showDateError)
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Devam etmek için bugün veya sonrası için bir tarih seç.',
-                    style: TextStyle(color: AppTheme.accentRed, fontSize: 12),
-                  ),
-                ),
-              const SizedBox(height: 12),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Çalışabileceğin günler',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 5,
-                runSpacing: 0,
-                children: List.generate(7, (index) {
-                  final weekday = index + 1;
-                  return FilterChip(
-                    visualDensity: VisualDensity.compact,
-                    label: Text(dayNames[index]),
-                    selected: availableDays.contains(weekday),
-                    onSelected: (selected) {
-                      setDialogState(() {
-                        if (selected) {
-                          availableDays.add(weekday);
-                        } else if (availableDays.length > 1) {
-                          availableDays.remove(weekday);
-                        } else {
-                          showDayError = true;
-                          return;
-                        }
-                        showDayError = false;
-                      });
-                    },
-                  );
-                }),
-              ),
-              if (showDayError)
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'En az bir çalışma günü seçili kalmalı.',
-                    style: TextStyle(color: AppTheme.accentRed, fontSize: 12),
-                  ),
-                ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Günlük süre hedefi: ${minutes.toInt()} dakika',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-              Slider(
-                value: minutes,
-                min: 30,
-                max: 480,
-                divisions: 30,
-                label: '${minutes.toInt()} dk',
-                onChanged: (value) => setDialogState(() => minutes = value),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Bu sürüm TYT + AYT kataloğuyla sınırlıdır; YDT içeriği yok. Puan türü ve seviye yeni profile kaydedilir, planı değiştirmez.',
-                  style: Theme.of(
-                    dialogContext,
-                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
-                ),
-              ),
-              if (state.completedExams > 0)
-                Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Mevcut profilindeki kayıtlar korunur; yeni profil boş başlar.',
+        builder: (dialogContext, setDialogState) => PopScope(
+          canPop: !saving,
+          child: AbsorbPointer(
+            absorbing: saving,
+            child: AlertDialog(
+              backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+              scrollable: true,
+              title: const Text('Yeni YKS profili'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Tarih kişisel plan hedefidir; resmî YKS tarihi değildir.',
                     style: Theme.of(
                       dialogContext,
                     ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                    textAlign: TextAlign.left,
                   ),
+                  TextField(
+                    controller: nameController,
+                    maxLength: 40,
+                    decoration: InputDecoration(
+                      labelText: 'Profil adı',
+                      hintText: 'Örn. 2027 YKS hazırlığı',
+                      errorText: showNameError
+                          ? 'Profil adı boş olamaz.'
+                          : null,
+                    ),
+                    onChanged: (value) {
+                      if (showNameError && value.trim().isNotEmpty) {
+                        setDialogState(() => showNameError = false);
+                      }
+                    },
+                  ),
+                  ExamYearField(
+                    value: examYear,
+                    onChanged: (value) =>
+                        setDialogState(() => examYear = value),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: scoreType,
+                    decoration: InputDecoration(
+                      labelText: 'Puan türü',
+                      errorText: showScoreTypeError
+                          ? 'Bir puan türü seç.'
+                          : null,
+                    ),
+                    items: ExamProfile.scoreTypeLabels.entries
+                        .map(
+                          (entry) => DropdownMenuItem(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) => setDialogState(() {
+                      scoreType = value ?? ExamProfile.unspecified;
+                      showScoreTypeError = false;
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: startingLevel,
+                    decoration: InputDecoration(
+                      labelText: 'Başlangıç seviyen (öz değerlendirme)',
+                      errorText: showStartingLevelError
+                          ? 'Bir başlangıç seviyesi seç.'
+                          : null,
+                    ),
+                    items: ExamProfile.startingLevelLabels.entries
+                        .map(
+                          (entry) => DropdownMenuItem(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) => setDialogState(() {
+                      startingLevel = value ?? ExamProfile.unspecified;
+                      showStartingLevelError = false;
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Kişisel hedef tarihi'),
+                    subtitle: Text(
+                      targetDate == null
+                          ? 'Bir tarih seç'
+                          : _formatDate(targetDate!),
+                    ),
+                    trailing: IconButton(
+                      tooltip: 'Kişisel hedef tarihini seç',
+                      icon: const Icon(Icons.calendar_month),
+                      onPressed: () async {
+                        final initialDate =
+                            targetDate == null ||
+                                targetDate!.isBefore(today) ||
+                                targetDate!.isAfter(lastDate)
+                            ? fallbackDate
+                            : targetDate!;
+                        final picked = await showDatePicker(
+                          context: dialogContext,
+                          initialDate: initialDate,
+                          firstDate: today,
+                          lastDate: lastDate,
+                        );
+                        if (picked != null) {
+                          setDialogState(() {
+                            targetDate = picked;
+                            showDateError = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  if (showDateError)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Devam etmek için bugün veya sonrası için bir tarih seç.',
+                        style: TextStyle(
+                          color: AppTheme.accentRed,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Çalışabileceğin günler',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 5,
+                    runSpacing: 0,
+                    children: List.generate(7, (index) {
+                      final weekday = index + 1;
+                      return FilterChip(
+                        visualDensity: VisualDensity.compact,
+                        label: Text(dayNames[index]),
+                        selected: availableDays.contains(weekday),
+                        onSelected: (selected) {
+                          setDialogState(() {
+                            if (selected) {
+                              availableDays.add(weekday);
+                            } else if (availableDays.length > 1) {
+                              availableDays.remove(weekday);
+                            } else {
+                              showDayError = true;
+                              return;
+                            }
+                            showDayError = false;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  if (showDayError)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'En az bir çalışma günü seçili kalmalı.',
+                        style: TextStyle(
+                          color: AppTheme.accentRed,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Günlük süre hedefi: ${minutes.toInt()} dakika',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Slider(
+                    value: minutes,
+                    min: 30,
+                    max: 480,
+                    divisions: 30,
+                    label: '${minutes.toInt()} dk',
+                    onChanged: (value) => setDialogState(() => minutes = value),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Etkin profilindeki gün ve süre başlangıç seçimi olarak gelir. Bu sürüm TYT + AYT kataloğuyla sınırlıdır; YDT içeriği yok. Puan türü ve seviye yeni profile kaydedilir, planı değiştirmez.',
+                      style: Theme.of(
+                        dialogContext,
+                      ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                    ),
+                  ),
+                  if (state.completedExams > 0)
+                    Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Mevcut profilindeki kayıtlar korunur; yeni profil boş başlar.',
+                        style: Theme.of(
+                          dialogContext,
+                        ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                      ),
+                    ),
+                  if (saveError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        saveError!,
+                        style: TextStyle(
+                          color: Theme.of(dialogContext).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Vazgeç'),
                 ),
-            ],
+                FilledButton(
+                  onPressed: () async {
+                    if (nameController.text.trim().isEmpty) {
+                      setDialogState(() => showNameError = true);
+                      return;
+                    }
+                    if (targetDate == null || targetDate!.isBefore(today)) {
+                      setDialogState(() => showDateError = true);
+                      return;
+                    }
+                    if (availableDays.isEmpty) {
+                      setDialogState(() => showDayError = true);
+                      return;
+                    }
+                    if (scoreType == ExamProfile.unspecified) {
+                      setDialogState(() => showScoreTypeError = true);
+                      return;
+                    }
+                    if (startingLevel == ExamProfile.unspecified) {
+                      setDialogState(() => showStartingLevelError = true);
+                      return;
+                    }
+                    if (state.activeProfile.id != openedProfileId ||
+                        state.isProfileTransitioning) {
+                      setDialogState(
+                        () => saveError =
+                            'Profil değişti. Formu kapatıp yeniden aç.',
+                      );
+                      return;
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    setDialogState(() {
+                      saving = true;
+                      saveError = null;
+                    });
+                    try {
+                      await state.createYksProfile(
+                        name: nameController.text.trim(),
+                        examYear: examYear,
+                        scoreType: scoreType,
+                        startingLevel: startingLevel,
+                        targetDate: targetDate!,
+                        schedulePreferences: StudySchedulePreferences(
+                          availableWeekdays: availableDays.toList()..sort(),
+                          dailyStudyMinutes: minutes.toInt(),
+                        ),
+                      );
+                      if (dialogContext.mounted) {
+                        Navigator.of(dialogContext).pop(true);
+                      }
+                    } catch (_) {
+                      if (dialogContext.mounted) {
+                        setDialogState(() {
+                          saving = false;
+                          saveError =
+                              'Profil kaydedilemedi. Bilgilerin burada duruyor; yeniden dene.';
+                        });
+                      }
+                    }
+                  },
+                  child: Text(saving ? 'Kaydediliyor…' : 'Oluştur'),
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (nameController.text.trim().isEmpty) {
-                  setDialogState(() => showNameError = true);
-                  return;
-                }
-                if (targetDate == null || targetDate!.isBefore(today)) {
-                  setDialogState(() => showDateError = true);
-                  return;
-                }
-                if (availableDays.isEmpty) {
-                  setDialogState(() => showDayError = true);
-                  return;
-                }
-                if (scoreType == ExamProfile.unspecified) {
-                  setDialogState(() => showScoreTypeError = true);
-                  return;
-                }
-                if (startingLevel == ExamProfile.unspecified) {
-                  setDialogState(() => showStartingLevelError = true);
-                  return;
-                }
-                Navigator.of(dialogContext).pop(true);
-              },
-              child: const Text('Oluştur'),
-            ),
-          ],
         ),
       ),
     );
 
     try {
       if (saved == true && targetDate != null) {
-        await state.createYksProfile(
-          name: nameController.text.trim(),
-          examYear: examYear,
-          scoreType: scoreType,
-          startingLevel: startingLevel,
-          targetDate: targetDate!,
-          schedulePreferences: StudySchedulePreferences(
-            availableWeekdays: availableDays.toList()..sort(),
-            dailyStudyMinutes: minutes.toInt(),
-          ),
-        );
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -1048,178 +1104,228 @@ class SettingsScreen extends StatelessWidget {
     var showNameError = false;
     var showDateError = false;
 
-    final saved = await showDialog<bool>(
+    var saving = false;
+    String? saveError;
+    final openedProfileId = state.activeProfile.id;
+    final saved = await showRetainedDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
-          backgroundColor: Theme.of(dialogContext).colorScheme.surface,
-          scrollable: true,
-          title: const Text('Kişisel plan hedefini düzenle'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                maxLength: 40,
-                decoration: InputDecoration(
-                  labelText: 'Profil adı',
-                  errorText: showNameError ? 'Profil adı boş olamaz.' : null,
-                ),
-                onChanged: (value) {
-                  if (showNameError && value.trim().isNotEmpty) {
-                    setDialogState(() => showNameError = false);
-                  }
-                },
-              ),
-              ExamYearField(
-                value: examYear,
-                onChanged: (value) => setDialogState(() => examYear = value),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: scoreType,
-                decoration: const InputDecoration(labelText: 'Puan türü'),
-                items: ExamProfile.scoreTypeLabels.entries
-                    .map(
-                      (entry) => DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
+        builder: (dialogContext, setDialogState) => PopScope(
+          canPop: !saving,
+          child: AbsorbPointer(
+            absorbing: saving,
+            child: AlertDialog(
+              backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+              scrollable: true,
+              title: const Text('Kişisel plan hedefini düzenle'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    maxLength: 40,
+                    decoration: InputDecoration(
+                      labelText: 'Profil adı',
+                      errorText: showNameError
+                          ? 'Profil adı boş olamaz.'
+                          : null,
+                    ),
+                    onChanged: (value) {
+                      if (showNameError && value.trim().isNotEmpty) {
+                        setDialogState(() => showNameError = false);
+                      }
+                    },
+                  ),
+                  ExamYearField(
+                    value: examYear,
+                    onChanged: (value) =>
+                        setDialogState(() => examYear = value),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: scoreType,
+                    decoration: const InputDecoration(labelText: 'Puan türü'),
+                    items: ExamProfile.scoreTypeLabels.entries
+                        .map(
+                          (entry) => DropdownMenuItem(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) => setDialogState(
+                      () => scoreType = value ?? ExamProfile.unspecified,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: startingLevel,
+                    decoration: const InputDecoration(
+                      labelText: 'Başlangıç seviyen (öz değerlendirme)',
+                    ),
+                    items: ExamProfile.startingLevelLabels.entries
+                        .map(
+                          (entry) => DropdownMenuItem(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) => setDialogState(
+                      () => startingLevel = value ?? ExamProfile.unspecified,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${profile.contentNotice} Sınav yılını değiştirmek geçmişini veya içerik sürümünü değiştirmez.',
+                      style: Theme.of(
+                        dialogContext,
+                      ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                    ),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Kişisel hedef tarihi'),
+                    subtitle: Text(_formatDate(targetDate)),
+                    trailing: IconButton(
+                      tooltip: 'Kişisel hedef tarihini seç',
+                      icon: const Icon(Icons.calendar_month),
+                      onPressed: () async {
+                        final now = DateTime.now();
+                        final today = DateTime(now.year, now.month, now.day);
+                        final lastDate = DateTime(now.year + 10, 12, 31);
+                        final initialDate = targetDate.isBefore(today)
+                            ? today
+                            : targetDate.isAfter(lastDate)
+                            ? lastDate
+                            : targetDate;
+                        final picked = await showDatePicker(
+                          context: dialogContext,
+                          initialDate: initialDate,
+                          firstDate: today,
+                          lastDate: lastDate,
+                        );
+                        if (picked != null) {
+                          setDialogState(() {
+                            targetDate = picked;
+                            showDateError = false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Bu tarih planını düzenler; resmî YKS tarihi değildir.',
+                      style: Theme.of(
+                        dialogContext,
+                      ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                    ),
+                  ),
+                  if (showDateError)
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Geçmiş hedef tarihi kullanılamaz. Takvimden yeni bir tarih seç.',
+                        style: TextStyle(
+                          color: AppTheme.accentRed,
+                          fontSize: 12,
+                        ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) => setDialogState(
-                  () => scoreType = value ?? ExamProfile.unspecified,
-                ),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: startingLevel,
-                decoration: const InputDecoration(
-                  labelText: 'Başlangıç seviyen (öz değerlendirme)',
-                ),
-                items: ExamProfile.startingLevelLabels.entries
-                    .map(
-                      (entry) => DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(entry.value),
+                    ),
+                  if (state.completedExams > 0)
+                    Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Tamamlanan günler ve deneme sonuçları hedef tarihini değiştirsen de bu profilde kalır. Yeni sınav dönemi için yeni profil açabilirsin.',
+                        style: Theme.of(
+                          dialogContext,
+                        ).textTheme.bodySmall?.copyWith(fontSize: 12),
                       ),
-                    )
-                    .toList(),
-                onChanged: (value) => setDialogState(
-                  () => startingLevel = value ?? ExamProfile.unspecified,
-                ),
+                    ),
+                  if (saveError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        saveError!,
+                        style: TextStyle(
+                          color: Theme.of(dialogContext).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '${profile.contentNotice} Sınav yılını değiştirmek geçmişini veya içerik sürümünü değiştirmez.',
-                  style: Theme.of(
-                    dialogContext,
-                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Vazgeç'),
                 ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Kişisel hedef tarihi'),
-                subtitle: Text(_formatDate(targetDate)),
-                trailing: IconButton(
-                  tooltip: 'Kişisel hedef tarihini seç',
-                  icon: const Icon(Icons.calendar_month),
+                FilledButton(
                   onPressed: () async {
+                    if (nameController.text.trim().isEmpty) {
+                      setDialogState(() => showNameError = true);
+                      return;
+                    }
                     final now = DateTime.now();
                     final today = DateTime(now.year, now.month, now.day);
-                    final lastDate = DateTime(now.year + 10, 12, 31);
-                    final initialDate = targetDate.isBefore(today)
-                        ? today
-                        : targetDate.isAfter(lastDate)
-                        ? lastDate
-                        : targetDate;
-                    final picked = await showDatePicker(
-                      context: dialogContext,
-                      initialDate: initialDate,
-                      firstDate: today,
-                      lastDate: lastDate,
+                    final selectedDate = DateTime(
+                      targetDate.year,
+                      targetDate.month,
+                      targetDate.day,
                     );
-                    if (picked != null) {
-                      setDialogState(() {
-                        targetDate = picked;
-                        showDateError = false;
-                      });
+                    if (selectedDate.isBefore(today)) {
+                      setDialogState(() => showDateError = true);
+                      return;
+                    }
+                    if (state.activeProfile.id != openedProfileId ||
+                        state.isProfileTransitioning) {
+                      setDialogState(
+                        () => saveError =
+                            'Profil değişti. Formu kapatıp yeniden aç.',
+                      );
+                      return;
+                    }
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    setDialogState(() {
+                      saving = true;
+                      saveError = null;
+                    });
+                    try {
+                      await state.updateActiveProfile(
+                        name: nameController.text.trim(),
+                        examYear: examYear,
+                        clearExamYear: examYear == null,
+                        scoreType: scoreType,
+                        startingLevel: startingLevel,
+                        targetDate: targetDate,
+                      );
+                      if (dialogContext.mounted) {
+                        Navigator.of(dialogContext).pop(true);
+                      }
+                    } catch (_) {
+                      if (dialogContext.mounted) {
+                        setDialogState(() {
+                          saving = false;
+                          saveError =
+                              'Profil kaydedilemedi. Bilgilerin burada duruyor; yeniden dene.';
+                        });
+                      }
                     }
                   },
+                  child: Text(saving ? 'Kaydediliyor…' : 'Kaydet'),
                 ),
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Bu tarih planını düzenler; resmî YKS tarihi değildir.',
-                  style: Theme.of(
-                    dialogContext,
-                  ).textTheme.bodySmall?.copyWith(fontSize: 12),
-                ),
-              ),
-              if (showDateError)
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Geçmiş hedef tarihi kullanılamaz. Takvimden yeni bir tarih seç.',
-                    style: TextStyle(color: AppTheme.accentRed, fontSize: 12),
-                  ),
-                ),
-              if (state.completedExams > 0)
-                Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Tamamlanan günler ve deneme sonuçları hedef tarihini değiştirsen de bu profilde kalır. Yeni sınav dönemi için yeni profil açabilirsin.',
-                    style: Theme.of(
-                      dialogContext,
-                    ).textTheme.bodySmall?.copyWith(fontSize: 12),
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (nameController.text.trim().isEmpty) {
-                  setDialogState(() => showNameError = true);
-                  return;
-                }
-                final now = DateTime.now();
-                final today = DateTime(now.year, now.month, now.day);
-                final selectedDate = DateTime(
-                  targetDate.year,
-                  targetDate.month,
-                  targetDate.day,
-                );
-                if (selectedDate.isBefore(today)) {
-                  setDialogState(() => showDateError = true);
-                  return;
-                }
-                Navigator.of(dialogContext).pop(true);
-              },
-              child: const Text('Kaydet'),
-            ),
-          ],
         ),
       ),
     );
 
     try {
       if (saved == true) {
-        await state.updateActiveProfile(
-          clearExamYear: examYear == null,
-          name: nameController.text.trim(),
-          examYear: examYear,
-          scoreType: scoreType,
-          startingLevel: startingLevel,
-          targetDate: targetDate,
-        );
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
