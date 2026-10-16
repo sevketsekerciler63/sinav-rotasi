@@ -16,6 +16,7 @@ import 'screens/stats_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/daily_reminder_service.dart';
+import 'services/backup_history_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,12 @@ void main() async {
     await DailyReminderService.initialize();
   } catch (_) {
     // Plugin not available on this platform, skip
+  }
+
+  try {
+    await BackupHistoryService.initialize();
+  } catch (_) {
+    // Backup history is optional; the rest of the app can still start.
   }
 
   runApp(const YKSApp());

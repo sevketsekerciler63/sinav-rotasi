@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +9,7 @@ import '../providers/app_state.dart';
 import '../providers/theme_state.dart';
 import '../models/study_schedule_preferences.dart';
 import '../services/profile_storage.dart';
+import '../services/backup_history_service.dart';
 import '../widgets/daily_reminder_settings_card.dart';
 import '../theme/app_theme.dart';
 
@@ -76,20 +80,26 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              _settingsCard(
-                context,
-                icon: Icons.cloud_download,
-                title: 'Veriyi Dışa Aktar',
-                subtitle: 'Tüm ilerlemenizi JSON olarak kopyala',
-                color: AppTheme.accentBlue,
-                onTap: () => _exportData(context),
+              ValueListenableBuilder<DateTime?>(
+                valueListenable: BackupHistoryService.lastSuccessfulBackupAt,
+                builder: (context, lastBackupAt, _) => _settingsCard(
+                  context,
+                  icon: Icons.cloud_download,
+                  title: 'Veriyi Dışa Aktar',
+                  subtitle: lastBackupAt == null
+                      ? 'JSON yedeğini panoya kopyala veya dosya olarak kaydet'
+                      : 'JSON yedeğini panoya kopyala veya dosya olarak kaydet\n'
+                            'Son başarılı yedek: ${_formatDateTime(lastBackupAt)}',
+                  color: AppTheme.accentBlue,
+                  onTap: () => _exportData(context),
+                ),
               ),
 
               _settingsCard(
                 context,
                 icon: Icons.cloud_upload,
                 title: 'Veriyi İçe Aktar',
-                subtitle: 'JSON verisini yapıştırarak geri yükle',
+                subtitle: 'JSON dosyası seç veya panodan/yazı alanından yükle',
                 color: AppTheme.accentGreen,
                 onTap: () => _importData(context, state),
               ),
@@ -507,14 +517,64 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _exportData(BuildContext context) async {
     try {
+      final destination = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Yedek oluştur'),
+          children: [
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, 'clipboard'),
+              child: const ListTile(
+                leading: Icon(Icons.content_copy_rounded),
+                title: Text('Panoya kopyala'),
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, 'file'),
+              child: const ListTile(
+                leading: Icon(Icons.save_alt_rounded),
+                title: Text('JSON dosyası kaydet'),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (destination == null || !context.mounted) return;
+
       final export = await ProfileStorage.instance.exportBackup();
       final jsonStr = const JsonEncoder.withIndent('  ').convert(export);
-      await Clipboard.setData(ClipboardData(text: jsonStr));
+      if (destination == 'clipboard') {
+        await Clipboard.setData(ClipboardData(text: jsonStr));
+      } else {
+        final now = DateTime.now();
+        final bytes = Uint8List.fromList(utf8.encode(jsonStr));
+        final savedPath = await FilePicker.saveFile(
+          dialogTitle: 'Sınav Rotası yedeğini kaydet',
+          fileName:
+              'sinav-rotasi-yedek-${now.year}-${_twoDigits(now.month)}-${_twoDigits(now.day)}-${_twoDigits(now.hour)}${_twoDigits(now.minute)}.json',
+          type: FileType.custom,
+          allowedExtensions: const ['json'],
+          bytes: bytes,
+        );
+        if (savedPath == null && !kIsWeb) return;
+      }
 
+      try {
+        await BackupHistoryService.recordSuccessfulBackup();
+      } catch (error) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Yedek oluşturuldu; zamanı kaydedilemedi: $error'),
+            backgroundColor: AppTheme.accentRed,
+          ),
+        );
+        return;
+      }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Yedek panoya kopyalandı.'),
+            content: Text('Yedek başarıyla oluşturuldu.'),
             backgroundColor: AppTheme.accentGreen,
           ),
         );
@@ -523,7 +583,7 @@ class SettingsScreen extends StatelessWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Yedek panoya kopyalanamadı: $error'),
+          content: Text('Yedek oluşturulamadı: $error'),
           backgroundColor: AppTheme.accentRed,
         ),
       );
@@ -553,7 +613,7 @@ class SettingsScreen extends StatelessWidget {
             _privacyDetail(
               dialogContext,
               'Yedek ne içerir?',
-              'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Dışa aktarma panoya kopyalar. İçe aktarmada önce profil/veri grubu özeti gösterilir; güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir.',
+              'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Yedeği panoya kopyalayabilir veya seçtiğin konuma dosya olarak kaydedebilirsin. İçe aktarmada JSON dosyası seçebilir ya da metni yapıştırabilirsin; önce profil/veri grubu özeti gösterilir. Güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir. Son başarılı dışa aktarma zamanı yalnız bu cihazda tutulur.',
             ),
             _privacyDetail(
               dialogContext,
@@ -1002,6 +1062,11 @@ class SettingsScreen extends StatelessWidget {
   String _formatDate(DateTime date) =>
       '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}';
 
+  String _formatDateTime(DateTime date) =>
+      '${_formatDate(date)} ${_twoDigits(date.hour)}:${_twoDigits(date.minute)}';
+
+  String _twoDigits(int value) => value.toString().padLeft(2, '0');
+
   Future<void> _importData(BuildContext context, AppState state) async {
     final controller = TextEditingController();
     try {
@@ -1015,45 +1080,31 @@ class SettingsScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Yedek JSON verisini yapıştır. Önce biçimi doğrulanıp içeriği gösterilecek.',
+                'JSON yedeği seç veya yapıştır. Önce biçimi doğrulanıp içeriği gösterilecek.',
                 style: Theme.of(
                   ctx,
                 ).textTheme.bodySmall?.copyWith(fontSize: 12),
               ),
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: () async {
-                    try {
-                      final clipboard = await Clipboard.getData('text/plain');
-                      final text = clipboard?.text?.trim();
-                      if (!ctx.mounted) return;
-                      if (text == null || text.isEmpty) {
-                        ScaffoldMessenger.of(ctx).showSnackBar(
-                          const SnackBar(
-                            content: Text('Panoda yapıştırılacak yedek yok.'),
-                          ),
-                        );
-                        return;
-                      }
-                      controller.value = TextEditingValue(
-                        text: text,
-                        selection: TextSelection.collapsed(offset: text.length),
-                      );
-                    } catch (error) {
-                      if (!ctx.mounted) return;
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text('Panoya erişilemedi: $error'),
-                          backgroundColor: AppTheme.accentRed,
-                        ),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.content_paste_rounded, size: 18),
-                  label: const Text('Panodan yapıştır'),
-                ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 4,
+                children: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      await _pasteBackupFromClipboard(ctx, controller);
+                    },
+                    icon: const Icon(Icons.content_paste_rounded, size: 18),
+                    label: const Text('Panodan yapıştır'),
+                  ),
+                  TextButton.icon(
+                    onPressed: () async {
+                      await _pickBackupFile(ctx, controller);
+                    },
+                    icon: const Icon(Icons.folder_open_rounded, size: 18),
+                    label: const Text('JSON dosyası seç'),
+                  ),
+                ],
               ),
               TextField(
                 controller: controller,
@@ -1118,13 +1169,23 @@ class SettingsScreen extends StatelessWidget {
       );
       if (confirmed != true) return;
 
+      final previousBackup = await ProfileStorage.instance.exportBackup();
       await ProfileStorage.instance.importBackup(data);
       await state.loadData();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Veriler başarıyla yüklendi.'),
+          SnackBar(
+            content: const Text(
+              'Veriler yüklendi. Kısa süre içinde geri alabilirsin.',
+            ),
             backgroundColor: AppTheme.accentGreen,
+            duration: const Duration(seconds: 12),
+            action: SnackBarAction(
+              label: 'Geri al',
+              onPressed: () {
+                unawaited(_undoBackupImport(context, state, previousBackup));
+              },
+            ),
           ),
         );
       }
@@ -1139,6 +1200,105 @@ class SettingsScreen extends StatelessWidget {
       }
     } finally {
       controller.dispose();
+    }
+  }
+
+  Future<void> _pasteBackupFromClipboard(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
+    try {
+      final clipboard = await Clipboard.getData('text/plain');
+      final text = clipboard?.text?.trim();
+      if (!context.mounted) return;
+      if (text == null || text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Panoda yapıştırılacak yedek yok.')),
+        );
+        return;
+      }
+      controller.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Panoya erişilemedi: $error'),
+          backgroundColor: AppTheme.accentRed,
+        ),
+      );
+    }
+  }
+
+  Future<void> _pickBackupFile(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
+    try {
+      final result = await FilePicker.pickFiles(
+        dialogTitle: 'Sınav Rotası yedeğini seç',
+        type: FileType.custom,
+        allowedExtensions: const ['json'],
+        allowMultiple: false,
+        withData: true,
+      );
+      if (!context.mounted || result == null) return;
+
+      final file = result.files.single;
+      if (file.size > 10 * 1024 * 1024) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Yedek dosyası 10 MB sınırını aşıyor.')),
+        );
+        return;
+      }
+      final Uint8List? bytes = file.bytes;
+      if (bytes == null) {
+        throw const FormatException('Dosya içeriği okunamadı.');
+      }
+      final text = utf8.decode(bytes).replaceFirst('\uFEFF', '').trim();
+      if (text.isEmpty) {
+        throw const FormatException('Yedek dosyası boş.');
+      }
+      controller.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Yedek dosyası okunamadı: $error'),
+          backgroundColor: AppTheme.accentRed,
+        ),
+      );
+    }
+  }
+
+  Future<void> _undoBackupImport(
+    BuildContext context,
+    AppState state,
+    Map<String, dynamic> previousBackup,
+  ) async {
+    try {
+      await ProfileStorage.instance.importBackup(previousBackup);
+      await state.loadData();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Önceki veriler geri yüklendi.'),
+          backgroundColor: AppTheme.accentGreen,
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Geri alma başarısız: $error'),
+          backgroundColor: AppTheme.accentRed,
+        ),
+      );
     }
   }
 

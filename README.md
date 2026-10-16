@@ -19,7 +19,7 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
 - Deneme netlerini profil derslerine göre toplama; −soru/4 ile soru sayısı arasında 0,25 adımlı giriş; resmî puan ve sıralama tahmini gösterilmez
 - Rota Atlası görsel kimliği, açık/koyu görünüm ve web ön izlemesi
 - Aynı rota-hedef simgesi web/PWA, Android launcher ve iOS App Store ikon boyutlarında kullanılır; düzenlenebilir kaynak `web/icons/sinar-rotasi.svg` dosyasıdır
-- Android release imzası `android/key.properties` ile yapılandırılır; anahtar yokken release imza için açık bir uyarı verir, yerel debug imzalama ayrıca etkinleştirilmelidir
+- Android release imzası `android/key.properties` ile yapılandırılır; anahtar yokken release derlemesi durur, yerel debug imzalama ayrıca açıkça etkinleştirilmelidir
 
 ## Çalıştırma
 
@@ -33,12 +33,12 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Günlük dakika tercihi hedef olarak gösterilir; mevcut görevlerin gerçek süre tahmini bu tercihe göre henüz yeniden hesaplanmıyor. Temel görevleri bir güne sığdırmak için birleştirme gerekebilir.
 - Yeni kurulumun kişisel plan hedefi kurulum anından 180 gün sonrasına ayarlanır; kayıtlı profiller otomatik değişmez. Bu tarih resmî sınav tarihi değildir. Kullanıcı Ayarlar'dan kendi hedefini güncelleyebilir; resmî tarih açıklanmadan YKS tarihi uydurulmamalıdır.
 - YKS kataloğu tüm puan türlerini kapsamaz; KPSS şablonu ve ekranları henüz yoktur.
-- Yedek dışa/içe aktarma panoya kopyalama ve JSON yapıştırma ile çalışır.
+- Yedek panoya kopyalanabilir veya JSON dosyası olarak kaydedilebilir; içe aktarmada dosya seçme, panodan yapıştırma ve metin alanı desteklenir. Önizleme ve etki onayı korunur; yükleme sonrası kısa süreli geri alma sunulur.
 - Eski toplam soru sayısı korunur fakat tarih bilgisi olmadığı için günlük/haftalık soru raporuna katılmaz; tarih anahtarı korunmuş eski plan kayıtları raporda ayrı gösterilir.
 - Profil geçişi, çok anahtarlı yazma ve Pomodoro devamı için kaynak korumaları eklendi. Net girişleri negatif/çeyrek değerleri koruyup soru sınırlarını doğrular; kaydedilmemiş Pomodoro sonucu kararlı kimlik ve bitiş bilgisiyle yeniden denenir. Analyzer ve web release derlemesi temiz. Davranış/regresyon testleri, işlem kesintisi enjeksiyonu, yedek round-trip ve gerçek cihazdaki zorla kapatıp açma doğrulaması bekliyor.
 - Günlük plan kartındaki soru sayısı yalnız seçilen günün tarihli soru olaylarından hesaplanır; tarihi belirsiz eski toplamlar haftalık raporda ayrıca belirtilir. Haftalık ayrıntı, mevcut şablondan çıkmış eski tamamlanma tarihlerini de gösterebilir.
 - Kart ve zayıf konu tekrarları cihaz içinde tarihlendirilir; günlük hatırlatıcı bunlardan ayrı, isteğe bağlı bir cihaz bildirimidir. Profil/hedef tarihi değişince planlı bildirim güncellenir. Eski tamamlanmış günlük tekrarların konu bağlantısı bulunmayabilir, yeni bağlı görevler bu tarihe göre planlanır.
-- Yedek JSON panoya kopyalanabilir ve içe aktarma sırasında panodan yapıştırılabilir; dosya seçerek aktarma ve zaman damgalı yedek henüz yoktur.
+- Son başarılı dışa aktarma zamanı cihazda gösterilir ve profil yedeğine dahil edilmez. Gerçek Android/iOS dosya seçici, farklı cihaz/origin taşıması ve geri yükleme round-trip kabulü bekliyor.
 - Ayarlarındaki “Veri ve gizlilik” özeti yerel veri alanını, kullanıcı seçtiğinde açılan YouTube ve kart kaynak bağlantılarını, yedek kapsamını, cihazdaki hatırlatıcı tercihini ve silme etkisini açıklar. Inter ve Space Grotesk lisanslarıyla uygulamaya gömülüdür; fontlar için çalışma anında ağ isteği yapılmaz.
 - `test/widget_test.dart` henüz çalıştırılabilir test içermiyor.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
