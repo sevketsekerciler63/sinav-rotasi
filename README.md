@@ -19,6 +19,7 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
 - Deneme netlerini profil derslerine göre toplama; −soru/4 ile soru sayısı arasında 0,25 adımlı giriş; resmî puan ve sıralama tahmini gösterilmez
 - Rota Atlası görsel kimliği, açık/koyu görünüm ve web ön izlemesi
 - Aynı rota-hedef simgesi web/PWA, Android launcher ve iOS App Store ikon boyutlarında kullanılır; düzenlenebilir kaynak `web/icons/sinar-rotasi.svg` dosyasıdır
+- Android release imzası `android/key.properties` ile yapılandırılır; anahtar yokken release imza için açık bir uyarı verir, yerel debug imzalama ayrıca etkinleştirilmelidir
 
 ## Çalıştırma
 
@@ -41,5 +42,5 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Ayarlarındaki “Veri ve gizlilik” özeti yerel veri alanını, kullanıcı seçtiğinde açılan YouTube ve kart kaynak bağlantılarını, yedek kapsamını, cihazdaki hatırlatıcı tercihini ve silme etkisini açıklar. Inter ve Space Grotesk lisanslarıyla uygulamaya gömülüdür; fontlar için çalışma anında ağ isteği yapılmaz.
 - `test/widget_test.dart` henüz çalıştırılabilir test içermiyor.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
-- `flutter build apk --release --no-pub` yerel paketleme kontrolünden geçer; mevcut Gradle release yapılandırması debug anahtarı kullandığından bu APK mağazaya yüklenemez. iOS artefaktı macOS/Xcode üzerinde derlenip doğrulanmalıdır.
+- [Release checklist](docs/release-checklist.md) sürüm, Android imzası, build, güncelleme ve geri dönüş akışını açıklar. Üretim keystore'u yoktur; yerel debug imzalı release için `ALLOW_DEBUG_SIGNING_FOR_RELEASE=true` açıkça ayarlanmalıdır. iOS artefaktı macOS/Xcode üzerinde derlenip doğrulanmalıdır.
 - `arsiv/eski-yks-kaynaklari` klasöründe eski MTOK Excel kaynakları vardır.

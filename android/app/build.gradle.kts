@@ -1,8 +1,36 @@
+import java.io.FileInputStream
+import java.util.Properties
+import org.gradle.api.GradleException
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val releaseKeyPropertiesFile = rootProject.file("key.properties")
+val releaseKeyProperties = Properties()
+if (releaseKeyPropertiesFile.exists()) {
+    FileInputStream(releaseKeyPropertiesFile).use(releaseKeyProperties::load)
+}
+val releaseStoreFile = releaseKeyProperties.getProperty("storeFile")
+    ?.takeIf(String::isNotBlank)
+    ?.let(::file)
+val releaseSigningConfigured = listOf(
+    "storePassword",
+    "keyPassword",
+    "keyAlias",
+).all { !releaseKeyProperties.getProperty(it).isNullOrBlank() } &&
+    releaseStoreFile?.isFile == true
+val allowDebugReleaseSigning =
+    providers.environmentVariable("ALLOW_DEBUG_SIGNING_FOR_RELEASE")
+        .orNull == "true"
+
+if (releaseKeyPropertiesFile.exists() && !releaseSigningConfigured) {
+    throw GradleException(
+        "android/key.properties is incomplete or its storeFile does not exist.",
+    )
 }
 
 android {
@@ -31,11 +59,24 @@ android {
         versionName = flutter.versionName
     }
 
+    if (releaseSigningConfigured) {
+        signingConfigs {
+            create("release") {
+                keyAlias = releaseKeyProperties.getProperty("keyAlias")
+                keyPassword = releaseKeyProperties.getProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = releaseKeyProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = when {
+                releaseSigningConfigured -> signingConfigs.getByName("release")
+                allowDebugReleaseSigning -> signingConfigs.getByName("debug")
+                else -> null
+            }
         }
     }
 }
@@ -46,4 +87,24 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.2")
+}
+
+tasks.configureEach {
+    if (
+        name == "assembleRelease" ||
+        name == "bundleRelease" ||
+        name == "packageRelease" ||
+        name == "packageReleaseBundle" ||
+        name == "signReleaseBundle"
+    ) {
+        doFirst {
+            if (!releaseSigningConfigured && !allowDebugReleaseSigning) {
+                throw GradleException(
+                    "Release signing is not configured. Create android/key.properties; " +
+                        "for a local-only debug-signed build, set " +
+                        "ALLOW_DEBUG_SIGNING_FOR_RELEASE=true explicitly.",
+                )
+            }
+        }
+    }
 }

@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and fill it with private values.
+# Keep the keystore outside the repository and never commit either file.
+storePassword=<keystore-password>
+keyPassword=<key-password>
+keyAlias=upload
+storeFile=C:\\path\\to\\upload-keystore.jks
