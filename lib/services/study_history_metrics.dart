@@ -19,6 +19,24 @@ class StudyHistoryMetrics {
     });
   }
 
+  static int solvedQuestionsForProgressOn(
+    Iterable<QuestionEvent> events,
+    String progressId,
+    DateTime date,
+  ) {
+    final dateKey = _dateKey(date);
+    return events.fold<int>(0, (sum, event) {
+      final occurredAt = event.occurredAt;
+      if (event.progressId != progressId ||
+          event.isLegacyUnattributed ||
+          occurredAt == null ||
+          _dateKey(occurredAt) != dateKey) {
+        return sum;
+      }
+      return sum + event.questionCount;
+    });
+  }
+
   static int legacyUnattributedQuestionCount(Iterable<QuestionEvent> events) =>
       events
           .where((event) => event.isLegacyUnattributed)
