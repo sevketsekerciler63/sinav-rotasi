@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -959,7 +960,12 @@ class DashboardScreen extends StatelessWidget {
                 child: IconButton.filledTonal(
                   onPressed: today.isRestDay
                       ? null
-                      : () => state.toggleDayCompleted(today.dateKey),
+                      : state.isSavingRecord('daily_logs', today.dateKey)
+                      ? null
+                      : () => showRecordResult(
+                          context,
+                          state.toggleDayCompleted(today.dateKey),
+                        ),
                   icon: Icon(
                     today.isCompleted
                         ? Icons.check_circle_rounded

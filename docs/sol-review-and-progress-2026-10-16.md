@@ -137,3 +137,8 @@ Android yedek kuralları ve ayrı cihaz tercihi deposu uygulandı; hatırlatıc�
 - Kaynak geçmişi veya hata/tekrar kaydı bağlı dersi/konuyu silmek engellenir; ilgili geçmiş kendiliğinden kaldırılmaz. Form hata metni gösterir, kalıcı kayıt bekler ve eski profil formu yeni profile yazmaz. Controller ömrü çıkış animasyonunu kapsar.
 - 2 yeni depo kabulü geçti: başarısız ekle/düzenle eski tanım/notu korur, bağlı kaynak dersi silinmez; silmede ikinci grup hatası hem müfredatı hem ilerlemeyi geri alır, sonraki başarılı silme yeniden yüklenir.
 - Açık kalan bu veri dilimi: eski günlük şablon tamamla/soru, rozet ve flashcard kalıcı başarı sırası. Son ortak test sayısı önceki 49'a ek 2 = 51; tam çalışma yeniden yapılacak.
+
+
+## SOL-02 · Eski günlük kayıt işlemleri
+
+Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son kalıcı veri üzerinde tek işlemde yazılır; başarısızlıkta ekrandaki gün/soru/tekrar sayısı değişmez. Kimlikli tamamla → geri al → tamamla kabulü yeni async sonuçla yeniden geçti. Günlük ve soru gruplarından birinin yazımı başarısızken diğerinin de geri alınması ve yeniden yükleme testi geçti. İlgili sayaçlar yazım sırasında kilitli. Kalan bu dilim: rozet ve flashcard sonuç sırası.

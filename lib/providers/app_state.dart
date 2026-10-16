@@ -712,31 +712,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _saveDailyLogs(
-    DailyLog changedLog, {
-    bool? completedOverride,
-    bool includeWeakTopics = false,
-  }) async {
-    final profileId = _activeProfile.id;
-    final ids = changedLog.progressIds;
-    if (ids.isEmpty || changedLog.isRestDay) return;
-    DailyPlanMetrics.saveLogProgress(
-      planEntries: _dailyPlanEntries,
-      changedLog: changedLog,
-      completedOverride: completedOverride,
-    );
-    await _writeProfileData(profileId, {
-      'daily_logs': jsonEncode({
-        'schemaVersion': 2,
-        'entries': _dailyPlanEntries,
-        'history': _dailyLogHistory,
-      }),
-      'daily_logs_quarantine': _dailyPlanQuarantineJson(),
-      'question_history': jsonEncode(_questionHistoryJson()),
-      if (includeWeakTopics) 'weak_topics': _weakTopicsJson(),
-    });
-  }
-
   void _migrateLegacyQuestionCounts(String profileId) {
     questionEvents = DailyPlanMigration.migrateLegacyQuestionEvents(
       entries: _dailyPlanEntries,
@@ -1631,65 +1606,177 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   String _planReviewEventId(String progressId, String topicId) =>
       'plan:$progressId:$topicId';
 
-  void toggleDayCompleted(String dateKey) {
-    if (_isProfileTransitioning) return;
-    final log = DailyPlanMetrics.toggleCompletionForDate(
-      logs: dailyLogs,
-      dateKey: dateKey,
-      changedAt: DateTime.now(),
+  Future<bool> _changeLegacyDay(
+    String dateKey, {
+    bool toggle = false,
+    int? solvedQuestions,
+    String? weakTopicNotes,
+  }) async {
+    if (isProfileTransitioning) return false;
+    final source = dailyLogs
+        .where(
+          (log) =>
+              log.dateKey == dateKey &&
+              !log.isRestDay &&
+              log.progressIds.isNotEmpty,
+        )
+        .firstOrNull;
+    if (source == null) return false;
+    final profile = activeProfile.id;
+    final key = '$profile:daily_logs:$dateKey';
+    if (!_pendingRecordWrites.add(key)) return false;
+    final initialLogs = jsonEncode({
+      'schemaVersion': 2,
+      'entries': _dailyPlanEntries,
+      'history': _dailyLogHistory,
+    });
+    final initialQuestions = jsonEncode(_questionHistoryJson());
+    final initialWeak = _weakTopicsJson();
+    final now = DateTime.now();
+    final review =
+        source.progressIds.length == 1 &&
+        source.progressIds.single.startsWith('review_') &&
+        source.reviewTopicId != null;
+    final log = DailyLog(
+      date: source.date,
+      dayName: source.dayName,
+      tytContent: source.tytContent,
+      aytContent: source.aytContent,
+      studyHours: source.studyHours,
+      motivationNote: source.motivationNote,
+      progressIds: List.of(source.progressIds),
+      reviewTopicId: source.reviewTopicId,
     );
-    if (log == null) return;
-    var reviewChanged = false;
-    if (log.progressIds.length == 1 &&
-        log.progressIds.single.startsWith('review_') &&
-        log.reviewTopicId != null) {
-      final topic = weakTopics
-          .where((topic) => topic.id == log.reviewTopicId)
-          .firstOrNull;
-      if (topic != null) {
-        final eventId = _planReviewEventId(log.progressIds.single, topic.id);
-        reviewChanged = log.isCompleted
-            ? topic.scheduleNextReview(DateTime.now(), eventId: eventId)
-            : topic.undoReview(eventId);
-      }
-    }
-    _saveDailyLogs(
-      log,
-      completedOverride: log.isCompleted,
-      includeWeakTopics: reviewChanged,
-    );
-    _applyWeakTopicReviews();
-    checkAchievements();
     notifyListeners();
+    try {
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profile,
+        {'daily_logs', 'question_history', if (review && toggle) 'weak_topics'},
+        (values) {
+          final snapshot = DailyPlanMigration.restore(
+            values['daily_logs'] ?? initialLogs,
+            templateLogs: getDailySchedule(),
+          );
+          final questionsRaw =
+              jsonDecode(values['question_history'] ?? initialQuestions) as Map;
+          final events = (questionsRaw['events'] as List)
+              .map(
+                (raw) => QuestionEvent.fromJson(
+                  Map<String, dynamic>.from(raw as Map),
+                ),
+              )
+              .toList();
+          DailyPlanMetrics.applyPersistedProgress(
+            logs: [log],
+            planEntries: snapshot.entries,
+            questionEvents: events,
+          );
+          if (toggle) {
+            log.isCompleted = !log.isCompleted;
+            log.completedAt = log.isCompleted ? now : null;
+          }
+          if (weakTopicNotes != null) log.weakTopicNotes = weakTopicNotes;
+          log.activityAt = now;
+          if (solvedQuestions != null) {
+            if (solvedQuestions < 0 || solvedQuestions > 1000000) {
+              throw const FormatException(
+                'Soru sayısı 0–1000000 arasında olmalı.',
+              );
+            }
+            DailyPlanMetrics.setSolvedQuestionsForLog(
+              log: log,
+              questionEvents: events,
+              profileId: profile,
+              targetCount: solvedQuestions,
+              nextEventId: () =>
+                  '${profile}_q_${now.microsecondsSinceEpoch}_${++_questionEventSequence}',
+            );
+          }
+          DailyPlanMetrics.saveLogProgress(
+            planEntries: snapshot.entries,
+            changedLog: log,
+            completedOverride: toggle ? log.isCompleted : null,
+          );
+          final updates = {
+            'daily_logs': jsonEncode({
+              'schemaVersion': 2,
+              'entries': snapshot.entries,
+              'history': snapshot.history,
+            }),
+            'question_history': jsonEncode({
+              'schemaVersion': 1,
+              'events': events.map((event) => event.toJson()).toList(),
+            }),
+          };
+          if (review && toggle) {
+            final topics =
+                (jsonDecode(values['weak_topics'] ?? initialWeak) as List)
+                    .map(
+                      (raw) => WeakTopic.fromJson(
+                        Map<String, dynamic>.from(raw as Map),
+                      ),
+                    )
+                    .toList();
+            final topic = topics
+                .where((topic) => topic.id == log.reviewTopicId)
+                .firstOrNull;
+            if (topic != null) {
+              final id = _planReviewEventId(log.progressIds.single, topic.id);
+              if (log.isCompleted) {
+                topic.scheduleNextReview(now, eventId: id);
+              } else {
+                topic.undoReview(id);
+              }
+            }
+            updates['weak_topics'] = jsonEncode(
+              topics.map((topic) => topic.toJson()).toList(),
+            );
+          }
+          return updates;
+        },
+      );
+      _clearWriteErrors(profile, {'daily_logs:$dateKey'});
+      if (profile == activeProfile.id && !isProfileTransitioning) {
+        _restoreQuestionHistory(saved['question_history']!, profile);
+        _restoreDailyPlanProgress(saved['daily_logs']!);
+        if (saved['weak_topics'] != null) {
+          weakTopics = (jsonDecode(saved['weak_topics']!) as List)
+              .map(
+                (raw) =>
+                    WeakTopic.fromJson(Map<String, dynamic>.from(raw as Map)),
+              )
+              .toList();
+        }
+        _applyWeakTopicReviews();
+        recordSaveError = null;
+        checkAchievements();
+      }
+      return true;
+    } catch (error) {
+      if (profile == activeProfile.id) {
+        recordSaveError = error is FormatException
+            ? error.message.toString()
+            : 'Günlük kayıt yapılamadı. Yeniden dene.';
+      }
+      _recordWriteError(profile, {'daily_logs:$dateKey'}, error);
+      return false;
+    } finally {
+      _pendingRecordWrites.remove(key);
+      notifyListeners();
+    }
   }
 
-  void updateDailyLog(
+  Future<bool> toggleDayCompleted(String dateKey) =>
+      _changeLegacyDay(dateKey, toggle: true);
+  Future<bool> updateDailyLog(
     String dateKey, {
     int? solvedQuestions,
     String? weakTopicNotes,
-  }) {
-    if (_isProfileTransitioning) return;
-    final log = DailyPlanMetrics.updateLogFieldsForDate(
-      logs: dailyLogs,
-      dateKey: dateKey,
-      changedAt: DateTime.now(),
-      weakTopicNotes: weakTopicNotes,
-    );
-    if (log == null) return;
-    if (solvedQuestions != null) {
-      final profileId = _activeProfile.id;
-      DailyPlanMetrics.setSolvedQuestionsForLog(
-        log: log,
-        questionEvents: questionEvents,
-        profileId: profileId,
-        targetCount: solvedQuestions,
-        nextEventId: () =>
-            '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
-      );
-    }
-    _saveDailyLogs(log);
-    notifyListeners();
-  }
+  }) => _changeLegacyDay(
+    dateKey,
+    solvedQuestions: solvedQuestions,
+    weakTopicNotes: weakTopicNotes,
+  );
 
   // ─── Mock Exam Actions ─────────────────────────
   Future<bool> updateMockExam(

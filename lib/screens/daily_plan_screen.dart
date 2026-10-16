@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -289,8 +290,18 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                       tooltip: log.isCompleted
                                           ? '${log.dayName} planının tamamlandı durumunu kaldır.'
                                           : '${log.dayName} planını tamamlandı olarak işaretle.',
-                                      onPressed: () =>
-                                          state.toggleDayCompleted(log.dateKey),
+                                      onPressed:
+                                          state.isSavingRecord(
+                                            'daily_logs',
+                                            log.dateKey,
+                                          )
+                                          ? null
+                                          : () => showRecordResult(
+                                              context,
+                                              state.toggleDayCompleted(
+                                                log.dateKey,
+                                              ),
+                                            ),
                                       padding: EdgeInsets.zero,
                                       constraints: const BoxConstraints(
                                         minWidth: 48,
@@ -557,76 +568,90 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                                       color: colors.onSurfaceVariant,
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      _counterButton(
-                                        context,
-                                        Icons.remove,
-                                        'Bir soru azalt',
-                                        () {
-                                          if (log.solvedQuestions > 0) {
-                                            state.updateDailyLog(
-                                              log.dateKey,
-                                              solvedQuestions:
-                                                  log.solvedQuestions - 1,
-                                            );
-                                          }
-                                        },
-                                      ),
-                                      Container(
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          '${log.solvedQuestions}',
-                                          style: TextStyle(
-                                            color: colors.primary,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 18,
-                                          ),
+                                  AbsorbPointer(
+                                    absorbing: state.isSavingRecord(
+                                      'daily_logs',
+                                      log.dateKey,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        _counterButton(
+                                          context,
+                                          Icons.remove,
+                                          'Bir soru azalt',
+                                          () {
+                                            if (log.solvedQuestions > 0) {
+                                              showRecordResult(
+                                                context,
+                                                state.updateDailyLog(
+                                                  log.dateKey,
+                                                  solvedQuestions:
+                                                      log.solvedQuestions - 1,
+                                                ),
+                                              );
+                                            }
+                                          },
                                         ),
-                                      ),
-                                      _counterButton(
-                                        context,
-                                        Icons.add,
-                                        'Bir soru artır',
-                                        () => state.updateDailyLog(
-                                          log.dateKey,
-                                          solvedQuestions:
-                                              log.solvedQuestions + 1,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      TextButton(
-                                        onPressed: () {
-                                          state.updateDailyLog(
-                                            log.dateKey,
-                                            solvedQuestions:
-                                                log.solvedQuestions + 10,
-                                          );
-                                        },
-                                        style: TextButton.styleFrom(
-                                          minimumSize: const Size(48, 48),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                          ),
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.padded,
-                                          backgroundColor: colors.primary
-                                              .withValues(alpha: 0.15),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
+                                        Container(
+                                          width: 50,
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '${log.solvedQuestions}',
+                                            style: TextStyle(
+                                              color: colors.primary,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 18,
                                             ),
                                           ),
                                         ),
-                                        child: Text(
-                                          '+10',
-                                          style: TextStyle(
-                                            color: colors.primary,
+                                        _counterButton(
+                                          context,
+                                          Icons.add,
+                                          'Bir soru artır',
+                                          () => showRecordResult(
+                                            context,
+                                            state.updateDailyLog(
+                                              log.dateKey,
+                                              solvedQuestions:
+                                                  log.solvedQuestions + 1,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 4),
+                                        TextButton(
+                                          onPressed: () {
+                                            showRecordResult(
+                                              context,
+                                              state.updateDailyLog(
+                                                log.dateKey,
+                                                solvedQuestions:
+                                                    log.solvedQuestions + 10,
+                                              ),
+                                            );
+                                          },
+                                          style: TextButton.styleFrom(
+                                            minimumSize: const Size(48, 48),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            tapTargetSize:
+                                                MaterialTapTargetSize.padded,
+                                            backgroundColor: colors.primary
+                                                .withValues(alpha: 0.15),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '+10',
+                                            style: TextStyle(
+                                              color: colors.primary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

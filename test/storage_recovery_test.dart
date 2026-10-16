@@ -377,11 +377,11 @@ void main() {
       reviewTopicId: topic.id,
     );
     state.dailyLogs = [log];
-    state.toggleDayCompleted(log.dateKey);
-    state.toggleDayCompleted(log.dateKey);
-    state.toggleDayCompleted(log.dateKey);
-    expect(topic.reviewRepetitions, 1);
-    expect(topic.reviewIntervalDays, 1);
+    await state.toggleDayCompleted(log.dateKey);
+    await state.toggleDayCompleted(log.dateKey);
+    await state.toggleDayCompleted(log.dateKey);
+    expect(state.weakTopics.single.reviewRepetitions, 1);
+    expect(state.weakTopics.single.reviewIntervalDays, 1);
     final backup = await storage.exportBackup();
     await storage.importBackup(backup);
     await state.loadData();
@@ -853,6 +853,60 @@ void main() {
         state.subjects.first.topics.any((item) => item.id == topic.id),
         isFalse,
       );
+    },
+  );
+  test(
+    'legacy day completion questions and review roll back together on failure',
+    () async {
+      final now = DateTime.now();
+      await state.addWeakTopic(
+        WeakTopic(
+          id: 'review-day',
+          date: now.toIso8601String(),
+          subject: state.subjects.first.name,
+          subjectId: state.subjects.first.storageId,
+          topic: 'Test',
+          errorType: 'Test',
+          errorCount: 1,
+          action: 'Tekrar',
+          isStudied: true,
+          needsRepeat: true,
+        ),
+      );
+      final log = DailyLog(
+        date: now,
+        dayName: 'Kontrol',
+        tytContent: 'Tekrar',
+        aytContent: '',
+        studyHours: '30 dk',
+        motivationNote: '',
+        progressIds: ['review_${now.toIso8601String().substring(0, 10)}'],
+        reviewTopicId: 'review-day',
+      );
+      state.dailyLogs = [log];
+      store.failSuffix = '__question_history';
+      expect(await state.toggleDayCompleted(log.dateKey), isFalse);
+      expect(log.isCompleted, isFalse);
+      expect(state.weakTopics.single.reviewRepetitions, 0);
+      expect(await state.toggleDayCompleted(log.dateKey), isTrue);
+      expect(log.isCompleted, isTrue);
+      expect(state.weakTopics.single.reviewRepetitions, 1);
+      store.failSuffix = '__daily_logs';
+      expect(
+        await state.updateDailyLog(log.dateKey, solvedQuestions: 20),
+        isFalse,
+      );
+      expect(log.solvedQuestions, 0);
+      expect(state.questionEvents, isEmpty);
+      expect(
+        await state.updateDailyLog(log.dateKey, solvedQuestions: 20),
+        isTrue,
+      );
+      expect(log.solvedQuestions, 20);
+      expect(state.totalSolvedQuestions, 20);
+      await state.loadData();
+      expect(state.totalSolvedQuestions, 20);
+      expect(state.weakTopics.single.reviewRepetitions, 1);
     },
   );
 }
