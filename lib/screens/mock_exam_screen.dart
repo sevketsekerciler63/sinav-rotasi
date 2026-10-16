@@ -822,7 +822,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                       ? 'Kaydediliyor…'
                       : exam.isCompleted
                       ? 'Değişiklikleri kaydet'
-                      : 'Netleri Kaydet',
+                      : 'Netleri kaydet',
                 ),
               ),
             ),

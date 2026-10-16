@@ -415,7 +415,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
         theme.textTheme.bodySmall?.color ?? colorScheme.onSurface;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pomodoro Zamanlayici')),
+      appBar: AppBar(title: const Text('Pomodoro Zamanlayıcı')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

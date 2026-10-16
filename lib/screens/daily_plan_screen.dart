@@ -418,7 +418,7 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               child: const Row(
                                 children: [
                                   Text(
-                                    'DENEME SINAVI GUNU',
+                                    'DENEME SINAVI GÜNÜ',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,

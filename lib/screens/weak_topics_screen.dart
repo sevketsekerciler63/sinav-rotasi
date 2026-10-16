@@ -33,7 +33,7 @@ class WeakTopicsScreen extends StatelessWidget {
             .toList();
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Zayif Konularim')),
+          appBar: AppBar(title: const Text('Zayıf Konularım')),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () => _showAddDialog(context, state),
             icon: const Icon(Icons.add),
@@ -47,12 +47,12 @@ class WeakTopicsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Henuz zayif konu eklenmedi',
+                        'Henüz zayıf konu eklenmedi',
                         style: TextStyle(color: colors.onSurfaceVariant),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Deneme veya soru cozerken hata yaptigin\nkonulari buraya ekle!',
+                        'Deneme veya soru çözerken hata yaptığın\nkonuları buraya ekle.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: colors.onSurfaceVariant,
@@ -93,7 +93,7 @@ class WeakTopicsScreen extends StatelessWidget {
                     ],
                     if (active.isNotEmpty) ...[
                       Text(
-                        'Calisilacak (${active.length})',
+                        'Çalışılacak (${active.length})',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 10),
@@ -102,7 +102,7 @@ class WeakTopicsScreen extends StatelessWidget {
                     if (studied.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       Text(
-                        'Calisildi (${studied.length})',
+                        'Çalışıldı (${studied.length})',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 10),
@@ -210,7 +210,7 @@ class WeakTopicsScreen extends StatelessWidget {
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
             ),
             Text(
-              'Yapilacak: ${topic.action}',
+              'Yapılacak: ${topic.action}',
               style: TextStyle(color: colors.tertiary, fontSize: 12),
             ),
             if (topic.nextReviewAt != null)
@@ -464,7 +464,7 @@ class WeakTopicsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Zayif Konu Ekle',
+                'Zayıf konu ekle',
                 style: TextStyle(
                   color: colors.onSurface,
                   fontWeight: FontWeight.w700,
@@ -560,12 +560,12 @@ class WeakTopicsScreen extends StatelessWidget {
               ],
               const SizedBox(height: 10),
               TextField(
-                decoration: const InputDecoration(labelText: 'Hata Tipi'),
+                decoration: const InputDecoration(labelText: 'Hata türü'),
                 onChanged: (v) => errorType = v,
               ),
               const SizedBox(height: 10),
               TextField(
-                decoration: const InputDecoration(labelText: 'Ne Yapacaksin?'),
+                decoration: const InputDecoration(labelText: 'Ne yapacaksın?'),
                 onChanged: (v) => action = v,
               ),
               const SizedBox(height: 16),

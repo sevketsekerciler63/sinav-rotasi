@@ -939,7 +939,7 @@ class SubjectDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                '${topic.questionCount} soru - ${topic.estimatedDays} gun',
+                '${topic.questionCount} soru · ${topic.estimatedDays} gün',
                 style: textTheme.labelSmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -1091,9 +1091,9 @@ class SubjectDetailScreen extends StatelessWidget {
       opened = false;
     }
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kaynak açılamadı.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Kaynak açılamadı.')));
     }
   }
 

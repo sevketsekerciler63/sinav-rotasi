@@ -105,7 +105,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'fiz_6',
         'Is-Enerji teoremi?',
-        'Wnet = \u0394Ek = 1/2mv\u00B2 - 1/2mv0\u00B2\nNet is = Kinetik enerji degisimi',
+        'Wnet = \u0394Ek = 1/2mv\u00B2 - 1/2mv0\u00B2\nNet iş = Kinetik enerji değişimi',
       ),
     ],
     'Kimya': [
@@ -130,7 +130,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_4',
         'Elektron dizilimi kurallari?',
-        '1. Aufbau (dusuk enerjiden baslama)\n2. Pauli (max 2 elektron/orbital)\n3. Hund (ayni alt kabuklarda once tek tek)',
+        '1. Aufbau (düşük enerjiden başlama)\n2. Pauli (en fazla 2 elektron/orbital)\n3. Hund (aynı alt kabuklarda önce tek tek)',
       ),
       Flashcard(
         'kim_5',
