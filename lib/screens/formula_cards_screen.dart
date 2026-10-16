@@ -62,9 +62,12 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         'r: taban yaricapi, h: yukseklik',
       ),
       FormulaItem(
-        'Logaritma Kurali',
+        'Logaritma Kuralı',
         'log_a(xy) = log_a(x) + log_a(y)',
-        'Carpimin logaritmasi',
+        'a > 0, a ≠ 1 ve x, y > 0. Çarpımın logaritması.',
+        sourceLabel: 'MEB OGM Materyal · Matematik 12',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/matematik/12/unite1/files/basic-html/page22.html',
       ),
       FormulaItem('Turev Kural', 'd/dx [x^n] = nx^(n-1)', 'Kuvvet kurali'),
       FormulaItem(
@@ -74,7 +77,14 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
       ),
     ],
     'Fizik': [
-      FormulaItem('Newton 2. Yasa', 'F = m \u00D7 a', 'Kuvvet = Kutle x Ivme'),
+      FormulaItem(
+        'Newton\'ın 2. Yasası',
+        'ΣF = m × a',
+        'ΣF: cisme etki eden bileşke kuvvet; m: kütle, a: ivme.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Fizik 9',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/9/unite3/files/basic-html/page18.html',
+      ),
       FormulaItem('Kinetik Enerji', 'Ek = 1/2 mv\u00B2', 'm: kutle, v: hiz'),
       FormulaItem(
         'Potansiyel Enerji',
