@@ -61,6 +61,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   final Set<String> _savingMockExams = {};
   List<String> _recoveryDataKeys = [];
   late ExamAttemptBook _examAttemptBook;
+  final Set<String> _pendingRecordWrites = {};
+  String? recordSaveError;
+  bool isSavingRecord(String group, String id) =>
+      _pendingRecordWrites.contains('${activeProfile.id}:$group:$id');
   String? _examAttemptError;
   ExamAttemptBook get examAttemptBook => _examAttemptBook;
   String? get examAttemptError => _examAttemptError;
@@ -708,17 +712,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _saveTopics() async {
-    final profileId = _activeProfile.id;
-    final Map<String, dynamic> data = {};
-    for (var subject in subjects) {
-      for (var topic in subject.topics) {
-        data[topic.id] = topic.toJson();
-      }
-    }
-    await _writeProfileData(profileId, {'topics_data': jsonEncode(data)});
-  }
-
   Future<void> _saveDailyLogs(
     DailyLog changedLog, {
     bool? completedOverride,
@@ -1314,11 +1307,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
-  Future<void> _saveWeakTopics() async {
-    final profileId = _activeProfile.id;
-    await _saveWeakTopicsForProfile(profileId, _weakTopicsJson());
-  }
-
   String _weakTopicsJson() =>
       jsonEncode(weakTopics.map((topic) => topic.toJson()).toList());
 
@@ -1383,15 +1371,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _saveGoals() async {
-    final profileId = _activeProfile.id;
-    final savedGoals = [
-      ...goals.map((goal) => goal.toJson()),
-      ..._quarantinedGoalRecords.map(Goal.quarantineRecord),
-    ];
-    await _writeProfileData(profileId, {'goals_data': jsonEncode(savedGoals)});
-  }
-
   Future<void> _saveAchievements() async {
     final profileId = _activeProfile.id;
     final Map<String, dynamic> data = {};
@@ -1450,38 +1429,108 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     await loadData();
   }
 
-  // ─── Topic Actions ─────────────────────────────
-  void toggleTopic(String topicId) {
-    if (_isProfileTransitioning) return;
-    for (var subject in subjects) {
-      for (var topic in subject.topics) {
-        if (topic.id == topicId) {
-          topic.isCompleted = !topic.isCompleted;
-          if (topic.isCompleted) {
-            onCelebrate?.call(); // 🎉 Confetti!
+  Future<bool> _changeRecordGroup(
+    String group,
+    String id,
+    Object initial,
+    Object Function(dynamic) change,
+    void Function(dynamic) apply,
+  ) async {
+    if (_isProfileTransitioning) return false;
+    final profileId = activeProfile.id;
+    final pendingKey = '$profileId:$group:$id';
+    if (!_pendingRecordWrites.add(pendingKey)) return false;
+    final fallback = jsonEncode(initial);
+    final errorKey = '$group:$id';
+    notifyListeners();
+    try {
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profileId,
+        {group},
+        (values) {
+          final raw = values[group];
+          dynamic decoded;
+          try {
+            decoded = jsonDecode(raw ?? fallback);
+          } catch (_) {
+            if (group != 'goals_data') rethrow;
+            decoded = jsonDecode(fallback);
           }
-          _saveTopics();
-          checkAchievements();
-          notifyListeners();
-          return;
-        }
+          return {group: jsonEncode(change(decoded))};
+        },
+      );
+      _clearWriteErrors(profileId, {errorKey});
+      if (profileId == activeProfile.id && !_isProfileTransitioning) {
+        apply(jsonDecode(saved[group]!));
+        recordSaveError = null;
       }
+      return true;
+    } catch (error) {
+      if (profileId == activeProfile.id) {
+        recordSaveError = error is FormatException
+            ? error.message.toString()
+            : 'Kayıt yapılamadı. Yeniden dene.';
+      }
+      _recordWriteError(profileId, {errorKey}, error);
+      return false;
+    } finally {
+      _pendingRecordWrites.remove(pendingKey);
+      notifyListeners();
     }
   }
 
-  void updateTopicNotes(String topicId, String notes) {
-    if (_isProfileTransitioning) return;
-    for (var subject in subjects) {
-      for (var topic in subject.topics) {
-        if (topic.id == topicId) {
-          topic.notes = notes;
-          _saveTopics();
-          notifyListeners();
-          return;
+  Future<bool> _changeTopic(
+    String id,
+    Map<String, dynamic> Function(Map<String, dynamic>) change,
+  ) async {
+    final topic = subjects
+        .expand((subject) => subject.topics)
+        .where((topic) => topic.id == id)
+        .firstOrNull;
+    if (topic == null) return false;
+    final initial = topic.toJson();
+    return _changeRecordGroup(
+      'topics_data',
+      id,
+      {},
+      (raw) {
+        final data = Map<String, dynamic>.from(raw as Map);
+        final current = Map<String, dynamic>.from((data[id] ?? initial) as Map);
+        data[id] = change(current);
+        return data;
+      },
+      (raw) {
+        final current = subjects
+            .expand((subject) => subject.topics)
+            .where((topic) => topic.id == id)
+            .firstOrNull;
+        if (current != null) {
+          current.fromJson(Map<String, dynamic>.from(raw[id] as Map));
         }
-      }
-    }
+      },
+    );
   }
+
+  Future<bool> toggleTopic(String topicId) async {
+    final profile = activeProfile.id;
+    final saved = await _changeTopic(
+      topicId,
+      (value) => {...value, 'isCompleted': !(value['isCompleted'] == true)},
+    );
+    if (saved && profile == activeProfile.id && !isProfileTransitioning) {
+      if (subjects
+          .expand((subject) => subject.topics)
+          .any((topic) => topic.id == topicId && topic.isCompleted)) {
+        onCelebrate?.call();
+      }
+      checkAchievements();
+      notifyListeners();
+    }
+    return saved;
+  }
+
+  Future<bool> updateTopicNotes(String topicId, String notes) =>
+      _changeTopic(topicId, (value) => {...value, 'notes': notes});
 
   // ─── Daily Log Actions ─────────────────────────
   String _planReviewEventId(String progressId, String topicId) =>
@@ -1839,146 +1888,216 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       });
 
   // ─── Weak Topics Actions ───────────────────────
-  void addWeakTopic(WeakTopic topic) {
-    if (_isProfileTransitioning) return;
-    weakTopics.add(topic);
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    notifyListeners();
+  Future<bool> _changeWeakTopics(
+    String id,
+    void Function(List<WeakTopic>) change,
+  ) => _changeRecordGroup(
+    'weak_topics',
+    id,
+    weakTopics.map((topic) => topic.toJson()).toList(),
+    (raw) {
+      final list = (raw as List)
+          .map(
+            (item) =>
+                WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
+          )
+          .toList();
+      change(list);
+      if (list.map((topic) => topic.id).toSet().length != list.length) {
+        throw const FormatException('Konu kimliği yineleniyor.');
+      }
+      return list.map((topic) => topic.toJson()).toList();
+    },
+    (raw) {
+      weakTopics = (raw as List)
+          .map(
+            (item) =>
+                WeakTopic.fromJson(Map<String, dynamic>.from(item as Map)),
+          )
+          .toList();
+      _applyWeakTopicReviews();
+    },
+  );
+  Future<bool> addWeakTopic(WeakTopic topic) {
+    final copy = WeakTopic.fromJson(topic.toJson());
+    return _changeWeakTopics(topic.id, (list) {
+      if (list.any((item) => item.id == copy.id)) {
+        throw const FormatException('Konu zaten kayıtlı.');
+      }
+      list.add(copy);
+    });
   }
 
-  void toggleWeakTopicStudied(String id) {
-    if (_isProfileTransitioning) return;
-    final topic = weakTopics.firstWhere((t) => t.id == id);
-    if (topic.isStudied) {
-      topic.setReviewFlags(DateTime.now(), isStudied: false);
-    } else {
-      topic.scheduleNextReview(DateTime.now());
-    }
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    checkAchievements();
-    notifyListeners();
-  }
-
-  void toggleWeakTopicRepeat(String id) {
-    if (_isProfileTransitioning) return;
-    final topic = weakTopics.firstWhere((t) => t.id == id);
-    topic.setReviewFlags(DateTime.now(), needsRepeat: !topic.needsRepeat);
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    notifyListeners();
-  }
-
-  void completeWeakTopicReview(String id) {
-    _recordWeakTopicReview(id);
-  }
-
-  void _recordWeakTopicReview(String id) {
-    if (_isProfileTransitioning) return;
-    final topic = weakTopics.firstWhere((t) => t.id == id);
+  Future<bool> toggleWeakTopicStudied(String id) {
     final now = DateTime.now();
-    if (!topic.isStudied || (!topic.needsRepeat && !topic.isReviewDueOn(now))) {
-      return;
-    }
-    topic.scheduleNextReview(now);
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    notifyListeners();
+    return _changeWeakTopics(id, (list) {
+      final topic = list.firstWhere((topic) => topic.id == id);
+      if (topic.isStudied) {
+        topic.setReviewFlags(now, isStudied: false);
+      } else {
+        topic.scheduleNextReview(
+          now,
+          eventId: 'manual:$id:${now.microsecondsSinceEpoch}',
+        );
+      }
+    });
   }
 
-  void removeWeakTopic(String id) {
-    if (_isProfileTransitioning) return;
-    weakTopics.removeWhere((t) => t.id == id);
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    notifyListeners();
+  Future<bool> toggleWeakTopicRepeat(String id) =>
+      _changeWeakTopics(id, (list) {
+        final topic = list.firstWhere((topic) => topic.id == id);
+        topic.setReviewFlags(DateTime.now(), needsRepeat: !topic.needsRepeat);
+      });
+  Future<bool> completeWeakTopicReview(String id) {
+    final now = DateTime.now();
+    return _changeWeakTopics(id, (list) {
+      final topic = list.firstWhere((topic) => topic.id == id);
+      if (topic.isStudied && (topic.needsRepeat || topic.isReviewDueOn(now))) {
+        topic.scheduleNextReview(
+          now,
+          eventId: 'manual:$id:${now.microsecondsSinceEpoch}',
+        );
+      }
+    });
   }
 
-  void restoreWeakTopic(
+  Future<bool> removeWeakTopic(String id) => _changeWeakTopics(
+    id,
+    (list) => list.removeWhere((topic) => topic.id == id),
+  );
+  Future<bool> restoreWeakTopic(
     WeakTopic topic, {
     required int index,
     required String profileId,
-  }) {
-    if (_isProfileTransitioning || profileId != _activeProfile.id) return;
-    if (weakTopics.any((savedTopic) => savedTopic.id == topic.id)) return;
-    final insertionIndex = index < 0
-        ? 0
-        : index > weakTopics.length
-        ? weakTopics.length
-        : index;
-    weakTopics.insert(insertionIndex, topic);
-    _applyWeakTopicReviews();
-    _saveWeakTopics();
-    notifyListeners();
+  }) async {
+    if (profileId != activeProfile.id) return false;
+    final copy = WeakTopic.fromJson(topic.toJson());
+    return _changeWeakTopics(topic.id, (list) {
+      if (!list.any((item) => item.id == topic.id)) {
+        list.insert(index.clamp(0, list.length), copy);
+      }
+    });
   }
 
   // ─── Goals Actions ─────────────────────────────
-  void addGoal(Goal goal) {
-    if (_isProfileTransitioning) return;
+  List<dynamic> _goalRecordsSnapshot() => [
+    ...goals.map((goal) => goal.toJson()),
+    ..._quarantinedGoalRecords.map(Goal.quarantineRecord),
+  ];
+  void _applyGoalRecords(dynamic raw) {
+    goals = [];
+    _quarantinedGoalRecords.clear();
+    for (final value in raw as List) {
+      if (Goal.isQuarantinedRecord(value)) {
+        _quarantinedGoalRecords.add(Goal.quarantinedRawValue(value));
+        continue;
+      }
+      try {
+        final goal = Goal.fromJson(Map<String, dynamic>.from(value as Map));
+        goal.validateForPersistence();
+        goals.add(goal);
+      } catch (_) {
+        _quarantinedGoalRecords.add(value);
+      }
+    }
+  }
+
+  Future<bool> _changeGoals(String id, void Function(List<dynamic>) change) =>
+      _changeRecordGroup('goals_data', id, _goalRecordsSnapshot(), (raw) {
+        final list = raw is List
+            ? List<dynamic>.of(raw)
+            : [Goal.quarantineRecord(raw)];
+        for (var index = 0; index < list.length; index++) {
+          final value = list[index];
+          if (Goal.isQuarantinedRecord(value)) continue;
+          try {
+            Goal.fromJson(
+              Map<String, dynamic>.from(value as Map),
+            ).validateForPersistence();
+          } catch (_) {
+            list[index] = Goal.quarantineRecord(value);
+          }
+        }
+        change(list);
+        return list;
+      }, _applyGoalRecords);
+  Future<bool> addGoal(Goal goal) {
     goal.validateForCreation();
-    goals.add(goal);
-    _saveGoals();
-    notifyListeners();
+    final copy = goal.toJson();
+    return _changeGoals(goal.id, (list) {
+      if (list.any((value) => value is Map && value['id'] == goal.id)) {
+        throw const FormatException('Hedef zaten kayıtlı.');
+      }
+      list.add(copy);
+    });
   }
 
-  void updateGoalProgress(String goalId, int newCount) {
-    if (_isProfileTransitioning) return;
-    final goal = goals.firstWhere((g) => g.id == goalId);
-    if (!goal.hasValidTarget) return;
-    final wasCompleted = goal.isCompleted;
-    goal.currentCount = newCount.clamp(
-      0,
-      goal.targetCount * 2,
-    ); // allow some overflow
-    if (!wasCompleted && goal.isCompleted) {
-      onCelebrate?.call(); // 🎉 Confetti!
+  Future<bool> updateGoalProgress(String goalId, int newCount) async {
+    final profile = activeProfile.id;
+    final wasCompleted =
+        goals.where((goal) => goal.id == goalId).firstOrNull?.isCompleted ??
+        false;
+    final saved = await _changeGoals(goalId, (list) {
+      final index = list.indexWhere(
+        (value) => value is Map && value['id'] == goalId,
+      );
+      if (index < 0) throw const FormatException('Hedef bulunamadı.');
+      final goal = Goal.fromJson(Map<String, dynamic>.from(list[index] as Map));
+      if (!goal.hasValidTarget) {
+        throw const FormatException('Hedef sayısı geçersiz.');
+      }
+      goal.currentCount = newCount.clamp(0, goal.targetCount * 2);
+      list[index] = goal.toJson();
+    });
+    if (saved &&
+        profile == activeProfile.id &&
+        !isProfileTransitioning &&
+        !wasCompleted &&
+        goals.any((goal) => goal.id == goalId && goal.isCompleted)) {
+      onCelebrate?.call();
     }
-    _saveGoals();
-    notifyListeners();
+    return saved;
   }
 
-  void removeGoal(String id) {
-    if (_isProfileTransitioning) return;
-    goals.removeWhere((g) => g.id == id);
-    _saveGoals();
-    notifyListeners();
+  Future<bool> removeGoal(String id) => _changeGoals(
+    id,
+    (list) => list.removeWhere((value) => value is Map && value['id'] == id),
+  );
+  Future<bool> restoreGoal(
+    Goal goal, {
+    required int index,
+    required String profileId,
+  }) async {
+    if (profileId != activeProfile.id) return false;
+    final copy = goal.toJson();
+    return _changeGoals(goal.id, (list) {
+      if (!list.any((value) => value is Map && value['id'] == goal.id)) {
+        list.insert(index.clamp(0, list.length), copy);
+      }
+    });
   }
 
-  void removeQuarantinedGoalRecord(int index) {
-    if (_isProfileTransitioning ||
-        index < 0 ||
-        index >= _quarantinedGoalRecords.length) {
-      return;
-    }
-    _quarantinedGoalRecords.removeAt(index);
-    _saveGoals();
-    notifyListeners();
+  Future<bool> removeQuarantinedGoalRecord(int index) async {
+    if (index < 0 || index >= _quarantinedGoalRecords.length) return false;
+    final target = jsonEncode(
+      Goal.quarantineRecord(_quarantinedGoalRecords[index]),
+    );
+    return _changeGoals('quarantine:$index', (list) {
+      final found = list.indexWhere((value) => jsonEncode(value) == target);
+      if (found >= 0) list.removeAt(found);
+    });
   }
 
-  void restoreQuarantinedGoalRecord(
+  Future<bool> restoreQuarantinedGoalRecord(
     Object? rawValue, {
     required int index,
     required String profileId,
-  }) {
-    if (_isProfileTransitioning || profileId != _activeProfile.id) return;
-    final insertionIndex = index.clamp(0, _quarantinedGoalRecords.length);
-    _quarantinedGoalRecords.insert(insertionIndex, rawValue);
-    _saveGoals();
-    notifyListeners();
-  }
-
-  void restoreGoal(Goal goal, {required int index, required String profileId}) {
-    if (_isProfileTransitioning || profileId != _activeProfile.id) return;
-    if (goals.any((savedGoal) => savedGoal.id == goal.id)) return;
-    final insertionIndex = index < 0
-        ? 0
-        : index > goals.length
-        ? goals.length
-        : index;
-    goals.insert(insertionIndex, goal);
-    _saveGoals();
-    notifyListeners();
+  }) async {
+    if (profileId != activeProfile.id) return false;
+    final value = Goal.quarantineRecord(rawValue);
+    return _changeGoals('quarantine:$index', (list) {
+      list.add(value);
+    });
   }
 
   // ─── Achievement Checker ───────────────────────

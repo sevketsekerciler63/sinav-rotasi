@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:yks_study_app/models/exam_profile.dart';
+import 'package:yks_study_app/models/goal.dart';
 import 'exam_attempt_test.dart' show attempt;
 import 'package:yks_study_app/models/study_schedule_preferences.dart';
 import 'package:yks_study_app/models/study_session.dart';
@@ -614,6 +615,112 @@ void main() {
         storage.previewBackup(corrupted),
         throwsFormatException,
       );
+    },
+  );
+  test(
+    'topic writes merge by identity and failed completion never celebrates',
+    () async {
+      final first = state.subjects.first.topics[0],
+          second = state.subjects.first.topics[1];
+      var celebrations = 0;
+      state.onCelebrate = () => celebrations++;
+      store.failSuffix = '__topics_data';
+      expect(await state.toggleTopic(first.id), isFalse);
+      expect(first.isCompleted, isFalse);
+      expect(celebrations, 0);
+      expect(
+        await Future.wait([
+          state.updateTopicNotes(first.id, 'Notum'),
+          state.toggleTopic(second.id),
+        ]),
+        [true, true],
+      );
+      expect(first.notes, 'Notum');
+      expect(second.isCompleted, isTrue);
+      expect(celebrations, 1);
+      await state.loadData();
+      expect(state.subjects.first.topics.first.notes, 'Notum');
+      expect(state.subjects.first.topics[1].isCompleted, isTrue);
+    },
+  );
+  test(
+    'goals preserve failed add progress delete and protected legacy records',
+    () async {
+      final now = DateTime.now();
+      final goal = Goal(
+        id: 'g',
+        title: 'Hedef',
+        subject: 'Genel',
+        targetCount: 10,
+        unit: 'soru',
+        deadline: 'ozel',
+        dueDate: now.add(const Duration(days: 7)),
+      );
+      store.failSuffix = '__goals_data';
+      expect(await state.addGoal(goal), isFalse);
+      expect(state.goals, isEmpty);
+      expect(await state.addGoal(goal), isTrue);
+      var celebrations = 0;
+      state.onCelebrate = () => celebrations++;
+      store.failSuffix = '__goals_data';
+      expect(await state.updateGoalProgress('g', 10), isFalse);
+      expect(state.goals.single.currentCount, 0);
+      expect(celebrations, 0);
+      expect(await state.updateGoalProgress('g', 10), isTrue);
+      expect(celebrations, 1);
+      store.failSuffix = '__goals_data';
+      expect(await state.removeGoal('g'), isFalse);
+      expect(state.goals.length, 1);
+      expect(await state.removeGoal('g'), isTrue);
+      expect(
+        await state.restoreGoal(
+          goal,
+          index: 0,
+          profileId: state.activeProfile.id,
+        ),
+        isTrue,
+      );
+      await storage.writeStringsForProfile(state.activeProfile.id, {
+        'goals_data': jsonEncode([
+          goal.toJson(),
+          {'bad': 'preserve'},
+        ]),
+      });
+      await state.loadData();
+      expect(state.quarantinedGoalRecords.length, 1);
+      expect(await state.updateGoalProgress('g', 3), isTrue);
+      await state.loadData();
+      expect(state.quarantinedGoalRecords.single, {'bad': 'preserve'});
+    },
+  );
+  test(
+    'weak topic failure leaves review flags count and removal unchanged',
+    () async {
+      final topic = WeakTopic(
+        id: 'w',
+        date: '16.10.2026',
+        subject: state.subjects.first.name,
+        subjectId: state.subjects.first.storageId,
+        topic: 'Sayılar',
+        errorType: 'Kavram',
+        errorCount: 1,
+        action: 'Tekrar',
+      );
+      store.failSuffix = '__weak_topics';
+      expect(await state.addWeakTopic(topic), isFalse);
+      expect(state.weakTopics, isEmpty);
+      expect(await state.addWeakTopic(topic), isTrue);
+      store.failSuffix = '__weak_topics';
+      expect(await state.toggleWeakTopicStudied('w'), isFalse);
+      expect(state.weakTopics.single.isStudied, isFalse);
+      expect(state.weakTopics.single.reviewRepetitions, 0);
+      expect(await state.toggleWeakTopicStudied('w'), isTrue);
+      expect(state.weakTopics.single.reviewRepetitions, 1);
+      store.failSuffix = '__weak_topics';
+      expect(await state.removeWeakTopic('w'), isFalse);
+      expect(state.weakTopics.length, 1);
+      await state.loadData();
+      expect(state.weakTopics.single.reviewRepetitions, 1);
     },
   );
 }

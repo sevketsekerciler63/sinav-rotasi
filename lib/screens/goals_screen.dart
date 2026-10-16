@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -210,7 +211,12 @@ class GoalsScreen extends StatelessWidget {
     );
     if (shouldRemove != true || !context.mounted) return;
     final profileId = state.activeProfile.id;
-    state.removeQuarantinedGoalRecord(index);
+    final saved = await state.removeQuarantinedGoalRecord(index);
+    if (!context.mounted) return;
+    if (!saved) {
+      await showRecordResult(context, Future.value(false));
+      return;
+    }
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -218,10 +224,13 @@ class GoalsScreen extends StatelessWidget {
           content: const Text('Okunamayan hedef kaydı kaldırıldı.'),
           action: SnackBarAction(
             label: 'Geri al',
-            onPressed: () => state.restoreQuarantinedGoalRecord(
-              rawValue,
-              index: index,
-              profileId: profileId,
+            onPressed: () => showRecordResult(
+              context,
+              state.restoreQuarantinedGoalRecord(
+                rawValue,
+                index: index,
+                profileId: profileId,
+              ),
             ),
           ),
         ),
@@ -243,7 +252,10 @@ class GoalsScreen extends StatelessWidget {
         ),
         child: Icon(Icons.delete, color: colors.onError),
       ),
-      onDismissed: (_) => _removeGoalWithUndo(context, state, goal),
+      confirmDismiss: (_) async {
+        await _removeGoalWithUndo(context, state, goal);
+        return false;
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
@@ -345,15 +357,23 @@ class GoalsScreen extends StatelessWidget {
     );
   }
 
-  void _removeGoalWithUndo(BuildContext context, AppState state, Goal goal) {
+  Future<void> _removeGoalWithUndo(
+    BuildContext context,
+    AppState state,
+    Goal goal,
+  ) async {
     if (state.isProfileTransitioning) return;
     final index = state.goals.indexWhere(
       (savedGoal) => savedGoal.id == goal.id,
     );
     if (index < 0) return;
     final profileId = state.activeProfile.id;
-    state.removeGoal(goal.id);
+    final saved = await state.removeGoal(goal.id);
     if (!context.mounted) return;
+    if (!saved) {
+      await showRecordResult(context, Future.value(false));
+      return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     messenger
       ..hideCurrentSnackBar()
@@ -362,8 +382,10 @@ class GoalsScreen extends StatelessWidget {
           content: Text('${goal.title} silindi.'),
           action: SnackBarAction(
             label: 'Geri al',
-            onPressed: () =>
-                state.restoreGoal(goal, index: index, profileId: profileId),
+            onPressed: () => showRecordResult(
+              context,
+              state.restoreGoal(goal, index: index, profileId: profileId),
+            ),
           ),
         ),
       );
@@ -386,8 +408,12 @@ class GoalsScreen extends StatelessWidget {
         label: 'Hedef ilerlemesini $amountLabel ${goal.unit} $action',
         button: true,
         child: TextButton(
-          onPressed: () =>
-              state.updateGoalProgress(goal.id, goal.currentCount + amount),
+          onPressed: state.isSavingRecord('goals_data', goal.id)
+              ? null
+              : () => showRecordResult(
+                  context,
+                  state.updateGoalProgress(goal.id, goal.currentCount + amount),
+                ),
           style: TextButton.styleFrom(
             minimumSize: const Size(44, 44),
             padding: EdgeInsets.zero,
@@ -428,190 +454,185 @@ class GoalsScreen extends StatelessWidget {
     final targetController = TextEditingController(text: '20');
     final colors = Theme.of(context).colorScheme;
 
-    showModalBottomSheet<void>(
+    showRetainedBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 20,
-        ),
-        child: StatefulBuilder(
-          builder: (context, setModalState) => Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '🎯 Yeni Hedef',
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Hedef başlığı (ör: Bu hafta 30 Mat sorusu çöz)',
-                  ),
-                  maxLength: 120,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Hedef başlığını yaz.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: targetController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Hedef sayı',
-                          helperText: '1–${Goal.maxTargetCount}',
-                        ),
-                        validator: (value) {
-                          final parsed = int.tryParse(value?.trim() ?? '');
-                          if (parsed == null) return 'Tam sayı gir.';
-                          if (parsed < 1 || parsed > Goal.maxTargetCount) {
-                            return '1 ile ${Goal.maxTargetCount} arasında olmalı.';
-                          }
-                          return null;
-                        },
-                      ),
+      builder: (context) => ProfileSaveForm(
+        builder: (context, submit) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setModalState) => Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '🎯 Yeni Hedef',
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        initialValue: unit,
-                        dropdownColor: colors.surface,
-                        decoration: const InputDecoration(labelText: 'Birim'),
-                        items: ['soru', 'konu', 'saat', 'deneme']
-                            .map(
-                              (u) => DropdownMenuItem(value: u, child: Text(u)),
-                            )
-                            .toList(),
-                        onChanged: (v) => setModalState(() => unit = v!),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                FormField<DateTime>(
-                  initialValue: dueDate,
-                  validator: (value) {
-                    if (value == null) return 'Hedef tarihi seç.';
-                    final current = DateTime.now();
-                    final today = DateTime(
-                      current.year,
-                      current.month,
-                      current.day,
-                    );
-                    final selected = DateTime(
-                      value.year,
-                      value.month,
-                      value.day,
-                    );
-                    if (selected.isBefore(today)) {
-                      return 'Hedef tarihi bugünden önce olamaz.';
-                    }
-                    return null;
-                  },
-                  builder: (field) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          final current = DateTime.now();
-                          final today = DateTime(
-                            current.year,
-                            current.month,
-                            current.day,
-                          );
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: dueDate.isBefore(today)
-                                ? today
-                                : dueDate,
-                            firstDate: today,
-                            lastDate: DateTime(today.year + 5, 12, 31),
-                            helpText: 'Hedefin tamamlanacağı günü seç',
-                            cancelText: 'Vazgeç',
-                            confirmText: 'Seç',
-                          );
-                          if (picked == null || !context.mounted) return;
-                          final selected = DateTime(
-                            picked.year,
-                            picked.month,
-                            picked.day,
-                          );
-                          setModalState(() => dueDate = selected);
-                          field.didChange(selected);
-                        },
-                        icon: const Icon(Icons.event_outlined),
-                        label: Text('Hedef tarihi: ${_formatDate(dueDate)}'),
-                      ),
-                      if (field.errorText != null)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12, top: 4),
-                          child: Text(
-                            field.errorText!,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState?.validate() == true) {
-                        state.addGoal(
-                          Goal(
-                            id: 'goal_${DateTime.now().millisecondsSinceEpoch}',
-                            title: titleController.text,
-                            subject: subject,
-                            targetCount: int.parse(
-                              targetController.text.trim(),
-                            ),
-                            unit: unit,
-                            deadline: 'ozel',
-                            dueDate: dueDate,
-                          ),
-                        );
-                        Navigator.pop(context);
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText:
+                          'Hedef başlığı (ör: Bu hafta 30 Mat sorusu çöz)',
+                    ),
+                    maxLength: 120,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Hedef başlığını yaz.';
                       }
+                      return null;
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      foregroundColor: colors.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Hedefi Kaydet'),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: targetController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Hedef miktarı',
+                    ),
+                    validator: (value) {
+                      final parsed = int.tryParse(value?.trim() ?? '');
+                      if (parsed == null ||
+                          parsed < 1 ||
+                          parsed > Goal.maxTargetCount)
+                        return '1 ile ${Goal.maxTargetCount} arasında tam sayı gir.';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    initialValue: unit,
+                    isExpanded: true,
+                    dropdownColor: colors.surface,
+                    decoration: const InputDecoration(labelText: 'Birim'),
+                    items: [
+                      for (final value in ['soru', 'konu', 'saat', 'deneme'])
+                        DropdownMenuItem(value: value, child: Text(value)),
+                    ],
+                    onChanged: (value) => setModalState(() => unit = value!),
+                  ),
+                  const SizedBox(height: 10),
+                  FormField<DateTime>(
+                    initialValue: dueDate,
+                    validator: (value) {
+                      if (value == null) return 'Hedef tarihi seç.';
+                      final current = DateTime.now();
+                      final today = DateTime(
+                        current.year,
+                        current.month,
+                        current.day,
+                      );
+                      final selected = DateTime(
+                        value.year,
+                        value.month,
+                        value.day,
+                      );
+                      if (selected.isBefore(today)) {
+                        return 'Hedef tarihi bugünden önce olamaz.';
+                      }
+                      return null;
+                    },
+                    builder: (field) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            final current = DateTime.now();
+                            final today = DateTime(
+                              current.year,
+                              current.month,
+                              current.day,
+                            );
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: dueDate.isBefore(today)
+                                  ? today
+                                  : dueDate,
+                              firstDate: today,
+                              lastDate: DateTime(today.year + 5, 12, 31),
+                              helpText: 'Hedefin tamamlanacağı günü seç',
+                              cancelText: 'Vazgeç',
+                              confirmText: 'Seç',
+                            );
+                            if (picked == null || !context.mounted) return;
+                            final selected = DateTime(
+                              picked.year,
+                              picked.month,
+                              picked.day,
+                            );
+                            setModalState(() => dueDate = selected);
+                            field.didChange(selected);
+                          },
+                          icon: const Icon(Icons.event_outlined),
+                          label: Text('Hedef tarihi: ${_formatDate(dueDate)}'),
+                        ),
+                        if (field.errorText != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, top: 4),
+                            child: Text(
+                              field.errorText!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState?.validate() == true) {
+                          submit(
+                            () => state.addGoal(
+                              Goal(
+                                id: 'goal_${DateTime.now().millisecondsSinceEpoch}',
+                                title: titleController.text,
+                                subject: subject,
+                                targetCount: int.parse(
+                                  targetController.text.trim(),
+                                ),
+                                unit: unit,
+                                deadline: 'ozel',
+                                dueDate: dueDate,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primary,
+                        foregroundColor: colors.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Hedefi Kaydet'),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),

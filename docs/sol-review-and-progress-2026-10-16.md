@@ -120,3 +120,12 @@ Son ortak kabul: 43 test geçti; `flutter analyze --no-pub` temiz.
 ## SOL-07 · Android veri ayrımı ve dış kabul engelleri
 
 Android yedek kuralları ve ayrı cihaz tercihi deposu uygulandı; hatırlatıcı snapshot/hata düzeltmesi ve iki kontrol geçti. Debug APK derlendi. [Yapılanlar ve somut cihaz/OAuth/iOS/yayın engelleri](platform-backup-acceptance.md). CI tanımı eklendi, uzak CI çalışması iddia edilmiyor. Tam proje veya gerçek cihaz kurtarma tamamlandı sayılmıyor.
+
+
+## SOL-02 · Konu / hedef / zayıf konu kalıcı sonucu
+
+- Eski konu tamamlaması/notu, hedef ekle/ilerlet/sil/geri al ve zayıf konu ekle/durum/tekrar/sil/geri al son kalıcı grubu kuyruk içinde değiştirir. Bellek ve kutlama yalnız başarılı yazımdan sonra; ilgisiz kaydın başarısı başka olayın hatasını temizlemez. Aynı olay beklerken çift basış reddedilir.
+- Hedef ve konu notu formu, zayıf konu ekleme ortak `ProfileSaveForm` kullanır: profil kimliği sabit, yazarken giriş/geri kapalı, hata taslağı korur, yeniden dene aynı ekranda; kapatmak için Vazgeç. Controller'lar alt sayfa çıkış animasyonundan sonra bırakılır.
+- Sil/geri al bildirimi gerçek yazım sonucundan sonra; kaydırma başarısız kaydı görünümden gizlemez. Korunan bozuk eski hedefler diğer hedef kaydında ham arşiv olarak kalır.
+- 3 yeni depo kabulü geçti; 320px yüzde 200 yazıda gerçek hedef formu → disk hatası → açık taslak → yeniden kaydet kontrolü geçti. Bu kontrolde bulunan miktar/birim satırı taşması dikey düzenle düzeltildi.
+- **Açık:** eski hazır günlük şablon işlemleri, özel müfredat ekle/düzenle/sil işlemleri ve rozet/flashcard kayıtlarının aynı kalıcı sonuç sözleşmesine tamamlanması. Bunlar bu teslimde bitmiş işaretlenmedi.

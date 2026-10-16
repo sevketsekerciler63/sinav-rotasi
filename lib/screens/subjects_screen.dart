@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -529,7 +530,9 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
             tooltip: topic.isCompleted
                 ? '${topic.name} tamamlandı. Tamamlandı durumunu kaldır.'
                 : '${topic.name} konusunu tamamlandı olarak işaretle.',
-            onPressed: () => state.toggleTopic(topic.id),
+            onPressed: state.isSavingRecord('topics_data', topic.id)
+                ? null
+                : () => showRecordResult(context, state.toggleTopic(topic.id)),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             icon: Container(
@@ -881,7 +884,9 @@ class SubjectDetailScreen extends StatelessWidget {
           tooltip: topic.isCompleted
               ? '${topic.name} tamamlandı. Tamamlandı durumunu kaldır.'
               : '${topic.name} konusunu tamamlandı olarak işaretle.',
-          onPressed: () => state.toggleTopic(topic.id),
+          onPressed: state.isSavingRecord('topics_data', topic.id)
+              ? null
+              : () => showRecordResult(context, state.toggleTopic(topic.id)),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           icon: Container(
@@ -1174,65 +1179,68 @@ class SubjectDetailScreen extends StatelessWidget {
     final controller = TextEditingController(text: topic.notes);
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    await showModalBottomSheet<void>(
+    await showRetainedBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Not: ${topic.name}',
-              style: textTheme.titleMedium?.copyWith(
-                color: colors.onSurface,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              maxLines: 5,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText:
-                    'Notlarını buraya yaz...\n(formül, kısa yol, önemli detay)',
-                hintStyle: textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
+      builder: (context) => ProfileSaveForm(
+        builder: (context, submit) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Not: ${topic.name}',
+                style: textTheme.titleMedium?.copyWith(
+                  color: colors.onSurface,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  state.updateTopicNotes(topic.id, controller.text);
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                maxLines: 5,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText:
+                      'Notlarını buraya yaz...\n(formül, kısa yol, önemli detay)',
+                  hintStyle: textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
-                child: const Text('Kaydet'),
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    submit(
+                      () => state.updateTopicNotes(topic.id, controller.text),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Kaydet'),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

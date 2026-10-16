@@ -1,3 +1,4 @@
+import '../widgets/profile_save_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -121,7 +122,10 @@ class WeakTopicsScreen extends StatelessWidget {
         ),
         child: Icon(Icons.delete, color: colors.onError),
       ),
-      onDismissed: (_) => _removeTopicWithUndo(context, state, topic),
+      confirmDismiss: (_) async {
+        await _removeTopicWithUndo(context, state, topic);
+        return false;
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
@@ -277,9 +281,14 @@ class WeakTopicsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: dueReview
-                        ? () => state.completeWeakTopicReview(topic.id)
-                        : () => state.toggleWeakTopicStudied(topic.id),
+                    onPressed: state.isSavingRecord('weak_topics', topic.id)
+                        ? null
+                        : () => showRecordResult(
+                            context,
+                            dueReview
+                                ? state.completeWeakTopicReview(topic.id)
+                                : state.toggleWeakTopicStudied(topic.id),
+                          ),
                     icon: Icon(
                       dueReview
                           ? Icons.replay_rounded
@@ -318,7 +327,12 @@ class WeakTopicsScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => state.toggleWeakTopicRepeat(topic.id),
+                    onPressed: state.isSavingRecord('weak_topics', topic.id)
+                        ? null
+                        : () => showRecordResult(
+                            context,
+                            state.toggleWeakTopicRepeat(topic.id),
+                          ),
                     icon: Icon(
                       topic.needsRepeat ? Icons.replay : Icons.replay_outlined,
                       size: 16,
@@ -363,19 +377,23 @@ class WeakTopicsScreen extends StatelessWidget {
   String _formatDate(DateTime date) =>
       '${date.day}.${date.month.toString().padLeft(2, '0')}.${date.year}';
 
-  void _removeTopicWithUndo(
+  Future<void> _removeTopicWithUndo(
     BuildContext context,
     AppState state,
     WeakTopic topic,
-  ) {
+  ) async {
     if (state.isProfileTransitioning) return;
     final index = state.weakTopics.indexWhere(
       (savedTopic) => savedTopic.id == topic.id,
     );
     if (index < 0) return;
     final profileId = state.activeProfile.id;
-    state.removeWeakTopic(topic.id);
+    final saved = await state.removeWeakTopic(topic.id);
     if (!context.mounted) return;
+    if (!saved) {
+      await showRecordResult(context, Future.value(false));
+      return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     messenger
       ..hideCurrentSnackBar()
@@ -384,10 +402,9 @@ class WeakTopicsScreen extends StatelessWidget {
           content: Text('${topic.topic} silindi.'),
           action: SnackBarAction(
             label: 'Geri al',
-            onPressed: () => state.restoreWeakTopic(
-              topic,
-              index: index,
-              profileId: profileId,
+            onPressed: () => showRecordResult(
+              context,
+              state.restoreWeakTopic(topic, index: index, profileId: profileId),
             ),
           ),
         ),
@@ -433,174 +450,180 @@ class WeakTopicsScreen extends StatelessWidget {
     String action = '';
     const manualTopicId = '__manual_topic__';
 
-    showModalBottomSheet(
+    showRetainedBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 20,
-        ),
-        child: StatefulBuilder(
-          builder: (context, setModalState) => Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Zayıf konu ekle',
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: selectedSubject.storageId,
-                dropdownColor: colors.surface,
-                decoration: const InputDecoration(labelText: 'Ders'),
-                items: subjects
-                    .map(
-                      (item) => DropdownMenuItem(
-                        value: item.storageId,
-                        child: Text(
-                          item.name,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value == null) return;
-                  setModalState(() {
-                    selectedSubject = subjects.firstWhere(
-                      (item) => item.storageId == value,
-                    );
-                    selectedTopicId = null;
-                    topic = '';
-                    topicError = null;
-                  });
-                },
-              ),
-              const SizedBox(height: 10),
-              if (selectedSubject.topics.isNotEmpty)
-                DropdownButtonFormField<String>(
-                  key: ValueKey(selectedSubject.storageId),
-                  initialValue: selectedTopicId,
-                  dropdownColor: colors.surface,
-                  decoration: InputDecoration(
-                    labelText: 'Konu',
-                    hintText: 'Müfredattan konu seç',
-                    errorText: topicError,
+      builder: (context) => ProfileSaveForm(
+        builder: (context, submit) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setModalState) => Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Zayıf konu ekle',
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
                   ),
-                  items: [
-                    ...selectedSubject.topics.map(
-                      (item) => DropdownMenuItem(
-                        value: item.id,
-                        child: Text(
-                          item.name,
-                          style: const TextStyle(fontSize: 13),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedSubject.storageId,
+                  dropdownColor: colors.surface,
+                  decoration: const InputDecoration(labelText: 'Ders'),
+                  items: subjects
+                      .map(
+                        (item) => DropdownMenuItem(
+                          value: item.storageId,
+                          child: Text(
+                            item.name,
+                            style: const TextStyle(fontSize: 13),
+                          ),
                         ),
-                      ),
-                    ),
-                    const DropdownMenuItem(
-                      value: manualTopicId,
-                      child: Text('Listede yok, kendim yazacağım'),
-                    ),
-                  ],
+                      )
+                      .toList(),
                   onChanged: (value) {
+                    if (value == null) return;
                     setModalState(() {
-                      selectedTopicId = value;
+                      selectedSubject = subjects.firstWhere(
+                        (item) => item.storageId == value,
+                      );
+                      selectedTopicId = null;
+                      topic = '';
                       topicError = null;
-                      if (value == manualTopicId) {
-                        topic = '';
-                      } else if (value != null) {
-                        topic = selectedSubject.topics
-                            .firstWhere((item) => item.id == value)
-                            .name;
-                      }
                     });
                   },
                 ),
-              if (selectedSubject.topics.isEmpty ||
-                  selectedTopicId == manualTopicId) ...[
+                const SizedBox(height: 10),
                 if (selectedSubject.topics.isNotEmpty)
-                  const SizedBox(height: 10),
-                TextField(
-                  key: ValueKey('manual_topic_${selectedSubject.storageId}'),
-                  decoration: InputDecoration(
-                    labelText: 'Konu',
-                    hintText: 'Konu adını yaz',
-                    errorText: topicError,
-                  ),
-                  onChanged: (value) {
-                    topic = value;
-                    if (topicError != null) {
-                      setModalState(() => topicError = null);
-                    }
-                  },
-                ),
-              ],
-              const SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Hata türü'),
-                onChanged: (v) => errorType = v,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Ne yapacaksın?'),
-                onChanged: (v) => action = v,
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final normalizedTopic = topic.trim();
-                    if (normalizedTopic.isEmpty) {
-                      setModalState(
-                        () => topicError = 'Bir konu seç veya konu adını yaz.',
-                      );
-                      return;
-                    }
-                    final now = DateTime.now();
-                    state.addWeakTopic(
-                      WeakTopic(
-                        id: 'wt_${now.microsecondsSinceEpoch}',
-                        date:
-                            '${now.day}.${now.month.toString().padLeft(2, '0')}.${now.year}',
-                        subject: selectedSubject.name,
-                        subjectId: selectedSubject.storageId,
-                        topic: normalizedTopic,
-                        topicId: selectedTopicId == manualTopicId
-                            ? null
-                            : selectedTopicId,
-                        errorType: errorType.trim(),
-                        errorCount: errorCount,
-                        action: action.trim(),
-                      ),
-                    );
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  DropdownButtonFormField<String>(
+                    key: ValueKey(selectedSubject.storageId),
+                    initialValue: selectedTopicId,
+                    dropdownColor: colors.surface,
+                    decoration: InputDecoration(
+                      labelText: 'Konu',
+                      hintText: 'Müfredattan konu seç',
+                      errorText: topicError,
                     ),
+                    items: [
+                      ...selectedSubject.topics.map(
+                        (item) => DropdownMenuItem(
+                          value: item.id,
+                          child: Text(
+                            item.name,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      ),
+                      const DropdownMenuItem(
+                        value: manualTopicId,
+                        child: Text('Listede yok, kendim yazacağım'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setModalState(() {
+                        selectedTopicId = value;
+                        topicError = null;
+                        if (value == manualTopicId) {
+                          topic = '';
+                        } else if (value != null) {
+                          topic = selectedSubject.topics
+                              .firstWhere((item) => item.id == value)
+                              .name;
+                        }
+                      });
+                    },
                   ),
-                  child: const Text('Kaydet'),
+                if (selectedSubject.topics.isEmpty ||
+                    selectedTopicId == manualTopicId) ...[
+                  if (selectedSubject.topics.isNotEmpty)
+                    const SizedBox(height: 10),
+                  TextField(
+                    key: ValueKey('manual_topic_${selectedSubject.storageId}'),
+                    decoration: InputDecoration(
+                      labelText: 'Konu',
+                      hintText: 'Konu adını yaz',
+                      errorText: topicError,
+                    ),
+                    onChanged: (value) {
+                      topic = value;
+                      if (topicError != null) {
+                        setModalState(() => topicError = null);
+                      }
+                    },
+                  ),
+                ],
+                const SizedBox(height: 10),
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Hata türü'),
+                  onChanged: (v) => errorType = v,
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 10),
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Ne yapacaksın?',
+                  ),
+                  onChanged: (v) => action = v,
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final normalizedTopic = topic.trim();
+                      if (normalizedTopic.isEmpty) {
+                        setModalState(
+                          () =>
+                              topicError = 'Bir konu seç veya konu adını yaz.',
+                        );
+                        return;
+                      }
+                      final now = DateTime.now();
+                      submit(
+                        () => state.addWeakTopic(
+                          WeakTopic(
+                            id: 'wt_${now.microsecondsSinceEpoch}',
+                            date:
+                                '${now.day}.${now.month.toString().padLeft(2, '0')}.${now.year}',
+                            subject: selectedSubject.name,
+                            subjectId: selectedSubject.storageId,
+                            topic: normalizedTopic,
+                            topicId: selectedTopicId == manualTopicId
+                                ? null
+                                : selectedTopicId,
+                            errorType: errorType.trim(),
+                            errorCount: errorCount,
+                            action: action.trim(),
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.primary,
+                      foregroundColor: colors.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Kaydet'),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
