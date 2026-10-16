@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/weak_topic.dart';
 import '../providers/app_state.dart';
+import '../widgets/app_primitives.dart';
 
 class WeakTopicsScreen extends StatelessWidget {
   const WeakTopicsScreen({super.key});
@@ -43,23 +44,11 @@ class WeakTopicsScreen extends StatelessWidget {
           ),
           body: state.weakTopics.isEmpty
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Henüz zayıf konu eklenmedi',
-                        style: TextStyle(color: colors.onSurfaceVariant),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Deneme veya soru çözerken hata yaptığın\nkonuları buraya ekle.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  child: const AppEmptyState(
+                    icon: Icons.flag_outlined,
+                    title: 'Henüz zayıf konu eklenmedi',
+                    message:
+                        'Deneme veya soru çözerken hata yaptığın konuları buraya ekle.',
                   ),
                 )
               : ListView(

@@ -6,6 +6,7 @@ import '../models/net_score.dart';
 import '../models/subject.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primitives.dart';
 
 class MockExamScreen extends StatefulWidget {
   const MockExamScreen({super.key});
@@ -64,29 +65,15 @@ class _MockExamScreenState extends State<MockExamScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Bu ekrandaki deneme kayıtları, Günlük Plan’daki deneme/analiz '
-                    'önerilerinden ayrıdır. Plan görevleri gerçek denemeyle otomatik '
-                    'eşleşmez; sonuçlarını burada kaydet.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onTertiaryContainer,
-                      height: 1.35,
-                    ),
-                  ),
+                const AppInfoBanner(
+                  margin: EdgeInsets.only(bottom: 16),
+                  message:
+                      'Bu ekrandaki deneme kayıtları, Günlük Plan’daki deneme/analiz '
+                      'önerilerinden ayrıdır. Plan görevleri gerçek denemeyle otomatik '
+                      'eşleşmez; sonuçlarını burada kaydet.',
                 ),
                 if (tytTrendCount >= 2 || aytTrendCount >= 2) ...[
-                  Text(
-                    'Net Trendi',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
+                  const AppSectionHeader(title: 'Net Trendi'),
                   const SizedBox(height: 12),
                   _buildTrendChart(
                     context,
@@ -104,10 +91,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   ),
                   const SizedBox(height: 20),
                 ],
-                Text(
-                  'Denemeler',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                const AppSectionHeader(title: 'Denemeler'),
                 const SizedBox(height: 12),
                 ...state.mockExams.map(
                   (exam) => _buildExamCard(context, state, exam),

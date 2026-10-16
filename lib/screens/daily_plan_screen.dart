@@ -5,6 +5,7 @@ import '../providers/app_state.dart';
 import 'settings_screen.dart';
 import 'weak_topics_screen.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primitives.dart';
 
 class DailyPlanScreen extends StatefulWidget {
   const DailyPlanScreen({super.key});
@@ -430,35 +431,12 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                             ),
 
                           if (hasDenemePlanText)
-                            Container(
+                            AppInfoBanner(
                               margin: const EdgeInsets.only(bottom: 8),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: colors.tertiaryContainer,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.info_outline_rounded,
-                                    size: 18,
-                                    color: colors.onTertiaryContainer,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Bu günlük plan satırı bir çalışma/analiz önerisidir. '
-                                      'Gerçek deneme günü ve netleri Deneme Takip ekranında '
-                                      'ayrı kaydedilir; kayıtlar otomatik eşleşmez.',
-                                      style: textTheme.bodySmall?.copyWith(
-                                        color: colors.onTertiaryContainer,
-                                        height: 1.35,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              message:
+                                  'Bu günlük plan satırı bir çalışma/analiz önerisidir. '
+                                  'Gerçek deneme günü ve netleri Deneme Takip ekranında '
+                                  'ayrı kaydedilir; kayıtlar otomatik eşleşmez.',
                             ),
 
                           // TYT content

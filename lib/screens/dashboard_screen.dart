@@ -6,6 +6,7 @@ import '../models/subject.dart';
 import '../models/daily_log.dart';
 import '../providers/app_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_primitives.dart';
 import '../data/achievements_data.dart';
 import 'subjects_screen.dart';
 import 'daily_plan_screen.dart';
@@ -83,20 +84,14 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                       ],
 
-                      Text(
-                        '📚 Ders İlerlemen',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
+                      const AppSectionHeader(title: '📚 Ders İlerlemen'),
                       const SizedBox(height: 12),
                       _buildSubjectProgress(context, state),
                       const SizedBox(height: 20),
                       _buildQuickAccess(context),
                       const SizedBox(height: 20),
                       if (state.nextUpcomingMockExam != null) ...[
-                        Text(
-                          '📅 Yaklaşan Deneme',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
+                        const AppSectionHeader(title: '📅 Yaklaşan Deneme'),
                         const SizedBox(height: 12),
                         _buildNextExam(context, state),
                       ],
@@ -225,21 +220,15 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '🎯 Aktif Hedefler',
-              style: Theme.of(context).textTheme.headlineSmall,
+        AppSectionHeader(
+          title: '🎯 Aktif Hedefler',
+          trailing: TextButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GoalsScreen()),
             ),
-            TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const GoalsScreen()),
-              ),
-              child: const Text('Tümü →'),
-            ),
-          ],
+            child: const Text('Tümü →'),
+          ),
         ),
         const SizedBox(height: 10),
         ...activeGoals.map(

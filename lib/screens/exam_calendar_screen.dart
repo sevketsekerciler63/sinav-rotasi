@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/mock_exam.dart';
 import '../models/net_score.dart';
 import '../providers/app_state.dart';
+import '../widgets/app_primitives.dart';
 
 class ExamCalendarScreen extends StatelessWidget {
   const ExamCalendarScreen({super.key});
@@ -16,34 +17,11 @@ class ExamCalendarScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: const Text('📅 Deneme Takvimi')),
           body: state.mockExams.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.event_note_outlined,
-                          size: 44,
-                          color: colors.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Henüz deneme takvimi yok',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: colors.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Planlanan denemeler burada görünür.',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+              ? const Center(
+                  child: AppEmptyState(
+                    icon: Icons.event_note_outlined,
+                    title: 'Henüz deneme takvimi yok',
+                    message: 'Planlanan denemeler burada görünür.',
                   ),
                 )
               : ListView.builder(
@@ -51,23 +29,13 @@ class ExamCalendarScreen extends StatelessWidget {
                   itemCount: state.mockExams.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colors.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Bu takvim kişisel hedef tarihine göre önerilen deneme günlerini gösterir; '
-                          'ÖSYM’nin resmî sınav tarihi değildir. Günlük Plan’daki deneme/analiz '
-                          'görevleriyle otomatik eşleşmez; gerçekleşen deneme ve netlerini '
-                          'Deneme Takip ekranında kaydet.',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colors.onTertiaryContainer,
-                            height: 1.35,
-                          ),
-                        ),
+                      return const AppInfoBanner(
+                        margin: EdgeInsets.only(bottom: 16),
+                        message:
+                            'Bu takvim kişisel hedef tarihine göre önerilen deneme günlerini gösterir; '
+                            'ÖSYM’nin resmî sınav tarihi değildir. Günlük Plan’daki deneme/analiz '
+                            'görevleriyle otomatik eşleşmez; gerçekleşen deneme ve netlerini '
+                            'Deneme Takip ekranında kaydet.',
                       );
                     }
                     final exam = state.mockExams[index - 1];
