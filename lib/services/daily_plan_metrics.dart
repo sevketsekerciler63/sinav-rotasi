@@ -190,6 +190,30 @@ class DailyPlanMetrics {
     }
   }
 
+  static void setSolvedQuestionsForLog({
+    required DailyLog log,
+    required List<QuestionEvent> questionEvents,
+    required String profileId,
+    required int targetCount,
+    required String Function() nextEventId,
+  }) {
+    final normalizedCount = targetCount < 0 ? 0 : targetCount;
+    final ids = log.progressIds;
+    final each = ids.isEmpty ? 0 : normalizedCount ~/ ids.length;
+    final remainder = ids.isEmpty ? 0 : normalizedCount % ids.length;
+    for (var index = 0; index < ids.length; index++) {
+      StudyHistoryMetrics.setSolvedQuestionsForProgressOn(
+        events: questionEvents,
+        profileId: profileId,
+        progressId: ids[index],
+        targetCount: each + (index < remainder ? 1 : 0),
+        studyDate: log.date,
+        nextEventId: nextEventId,
+      );
+    }
+    log.solvedQuestions = normalizedCount;
+  }
+
   static void applyPersistedProgress({
     required List<DailyLog> logs,
     required Map<String, dynamic> planEntries,

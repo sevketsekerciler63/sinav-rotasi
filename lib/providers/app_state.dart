@@ -1327,26 +1327,15 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     for (var log in dailyLogs) {
       if (log.dateKey == dateKey && !log.isRestDay) {
         if (solvedQuestions != null) {
-          final targetCount = solvedQuestions < 0 ? 0 : solvedQuestions;
-          final each = log.progressIds.isEmpty
-              ? 0
-              : targetCount ~/ log.progressIds.length;
-          final remainder = log.progressIds.isEmpty
-              ? 0
-              : targetCount % log.progressIds.length;
           final profileId = _activeProfile.id;
-          for (var index = 0; index < log.progressIds.length; index++) {
-            StudyHistoryMetrics.setSolvedQuestionsForProgressOn(
-              events: questionEvents,
-              profileId: profileId,
-              progressId: log.progressIds[index],
-              targetCount: each + (index < remainder ? 1 : 0),
-              studyDate: log.date,
-              nextEventId: () =>
-                  '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
-            );
-          }
-          log.solvedQuestions = targetCount;
+          DailyPlanMetrics.setSolvedQuestionsForLog(
+            log: log,
+            questionEvents: questionEvents,
+            profileId: profileId,
+            targetCount: solvedQuestions,
+            nextEventId: () =>
+                '${profileId}_q_${DateTime.now().microsecondsSinceEpoch}_${++_questionEventSequence}',
+          );
         }
         if (weakTopicNotes != null) log.weakTopicNotes = weakTopicNotes;
         log.activityAt = DateTime.now();
