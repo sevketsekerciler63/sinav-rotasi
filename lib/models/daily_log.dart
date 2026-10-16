@@ -52,10 +52,16 @@ class DailyLog {
   };
 
   void fromJson(Map<String, dynamic> json) {
-    isCompleted = json['isCompleted'] ?? false;
+    final completedValue = json['isCompleted'];
+    isCompleted = completedValue is bool ? completedValue : false;
     completedProgressCount = isCompleted ? 1 : 0;
-    solvedQuestions = json['solvedQuestions'] ?? 0;
-    weakTopicNotes = json['weakTopicNotes'] ?? '';
+    final questionValue = json['solvedQuestions'];
+    final questionCount = questionValue is num && questionValue.isFinite
+        ? questionValue.toInt()
+        : 0;
+    solvedQuestions = questionCount < 0 ? 0 : questionCount;
+    final notesValue = json['weakTopicNotes'];
+    weakTopicNotes = notesValue is String ? notesValue : '';
     completedAt = _readDate(json['completedAt']);
     activityAt = _readDate(json['activityAt']);
     reviewTopicId = json['reviewTopicId'] is String
