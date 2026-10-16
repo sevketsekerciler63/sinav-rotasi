@@ -72,3 +72,13 @@ Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel prof
 - Başarı kalıcı yazımdan sonra; çakışan görev/ilerleme, farklı olay içeriği, kopuk referans ve yabancı profil reddedilir.
 - Depo/yedek doğrulaması yeni grafiği ve profil kimliğini kontrol eder. 7 model + 12 depolama testi birlikte geçti; analiz temiz.
 - Kaynak ekranları şimdi bu API üzerine kuruluyor. Serbest deneme API'si ve ekranı, kapasite/plan geçmişi, kaynak ilerlemesinin rapor/timer bağı ve resmî ders takma adı AUD-12 henüz kapanmış değil. Bu dilim SOL-04'ün tamamı olarak işaretlenmedi.
+
+
+## LUNA-05 / SOL-04 · Kaynak ekranı gerçek kayda bağlandı
+
+- `StudyResourcesScreen`: kaynak/ders/birim/toplam/başlangıç ilerlemesi; görev aralığı, tahmini dakika ve isteğe bağlı hedef günü; kısmi çalışma, geçmişi koruyan geri alma ve arşivleme gerçek kalıcı API'yi kullanır.
+- Kaynaklarım ana sayfada öne alındı. Önceki video/çalışma rehberi yardım düğmesinden açılır. Görevin odak düğmesi Pomodoro'ya kalıcı görev kimliği taşır; süre kendiliğinden birim tamamlamaz.
+- Başarıdan önce pencere kapanmaz; hata taslağı korur, bekleyen yazımda düğmeler kilitlenir, profil değişirse eski form reddedilir. Arşivli kaynağa yeni görev/geri açma engellenir.
+- Ekran kabulünde bulunan çıkış animasyonunda erken controller dispose hatası düzeltildi: dialog rotasının tamamen kapanması beklenir.
+- `resource_screen_acceptance_test.dart`: gerçek depo hatası → taslağı koru → yeniden dene → görev ekle → 4/10 ilerleme → geri al → yeniden yükle akışı geçti. Önceki 28 test de bu dilim öncesinde geçti. Analiz sonucu ayrıca kaydedilecek.
+- **Açık:** kaynak görevlerini kapasiteye göre günlük plana yerleştirme, geçmiş plan beklentileri, rapor toplamları; serbest deneme ekranı/API'si, hareket sözleşmesi ve cihaz/yedek sağlayıcısı kabulü. Hedef günü şu anda yalnız kayıttır; ekranda otomatik plana eklenmediği açıkça yazılıdır.

@@ -221,3 +221,7 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 
 Durumlar: başlanmadı → çalışılıyor → uygulandı/inceleme bekliyor → düzeltme gerekli veya kabul edildi. Sonradan gelen inceleme mevcut kabulü geçersiz kılabilir. Bu dosyanın oluşturulması hiçbir uygulama görevini tamamlamaz.
 
+
+
+### Güncel kaynak ekranı teslimi
+LUNA-05 kaynak yarısı gerçek kalıcı API ile uygulandı; kaynak/görev/kısmi ilerleme/geri alma kabulü geçti. Serbest deneme yarısı ve kapasite/rapor entegrasyonu açık. Ayrıntı: [Sol ilerleme kaydı](sol-review-and-progress-2026-10-16.md).

@@ -60,8 +60,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   final Set<String> _savingMockExams = {};
   List<String> _recoveryDataKeys = [];
   late LearningWorkspace _learningWorkspace;
+  String? _learningWorkspaceError;
 
   LearningWorkspace get learningWorkspace => _learningWorkspace;
+  String? get learningWorkspaceError => _learningWorkspaceError;
 
   ExamProfile get activeProfile => _activeProfile;
   bool get isProfileTransitioning => _isProfileTransitioning;
@@ -327,6 +329,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // do not retain objects left over from the previous in-memory state.
     subjects = getAllSubjects();
     _learningWorkspace = LearningWorkspace.empty(profileId);
+    _learningWorkspaceError = null;
     _schedulePreferences = StudySchedulePreferences.defaults;
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
     mockExams = getExamCalendar(targetDate: _activeProfile.targetDate);
@@ -1629,6 +1632,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
       _clearWriteErrors(profileId, {errorKey});
       if (profileId == _activeProfile.id && !_isProfileTransitioning) {
+        _learningWorkspaceError = null;
         _learningWorkspace = LearningWorkspace.fromJson(
           Map<String, dynamic>.from(
             jsonDecode(saved['learning_workspace']!) as Map,
@@ -1638,6 +1642,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       return true;
     } catch (error) {
+      if (profileId == _activeProfile.id) {
+        _learningWorkspaceError = error is FormatException
+            ? error.message.toString()
+            : 'Kaynak verisi kaydedilemedi. Yeniden dene.';
+      }
       _recordWriteError(profileId, {errorKey}, error);
       return false;
     }

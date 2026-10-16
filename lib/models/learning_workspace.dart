@@ -274,6 +274,12 @@ class LearningWorkspace {
 
   LearningWorkspace saveTask(ResourceTask task) {
     final previous = _tasks[task.id];
+    final resource = _resources[task.resourceId];
+    if (resource != null &&
+        resource.archived &&
+        (previous == null || (previous.archived && !task.archived))) {
+      throw const FormatException('Önce kaynağı arşivden çıkar.');
+    }
     if (previous != null &&
         _events.values.any((event) => event.taskId == task.id) &&
         (previous.resourceId != task.resourceId ||

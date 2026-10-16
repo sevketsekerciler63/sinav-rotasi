@@ -14,7 +14,7 @@ import 'mock_exam_screen.dart';
 import 'score_calculator_screen.dart';
 import 'exam_calendar_screen.dart';
 import 'weak_topics_screen.dart';
-import 'resources_screen.dart';
+import 'study_resources_screen.dart';
 import 'stats_screen.dart';
 import 'pomodoro_screen.dart';
 import 'achievements_screen.dart';
@@ -1254,12 +1254,12 @@ class DashboardScreen extends StatelessWidget {
       ),
       _QuickItem(
         icon: Icons.menu_book_outlined,
-        label: 'Kaynaklar',
+        label: 'Kaynaklarım',
         accent: AppTheme.accentCyan,
         category: _QuickCategory.calis,
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ResourcesScreen()),
+          MaterialPageRoute(builder: (_) => const StudyResourcesScreen()),
         ),
       ),
       _QuickItem(
@@ -1304,8 +1304,11 @@ class DashboardScreen extends StatelessWidget {
       ),
     ];
 
-    final featured = items.first;
-    final frequentItems = items.skip(1).take(3).toList();
+    final featured = items.firstWhere((item) => item.label == 'Kaynaklarım');
+    final frequentItems = items
+        .where((item) => item != featured)
+        .take(3)
+        .toList();
 
     return Center(
       child: ConstrainedBox(
