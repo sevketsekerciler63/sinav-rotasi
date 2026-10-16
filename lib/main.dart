@@ -136,6 +136,7 @@ class _AppGateState extends State<AppGate> {
   bool _loaded = false;
   bool _checkingFirstLaunch = false;
   bool _recoveringFromBackup = false;
+  bool _exportingRecovery = false;
   String? _firstLaunchError;
   String? _backupRecoveryError;
 
@@ -213,7 +214,8 @@ class _AppGateState extends State<AppGate> {
           '${preview.profileNames.length} profil ve '
           '${preview.dataGroupCount} veri grubu yüklenecek:\n\n'
           '${preview.profileNames.map((name) => '• $name').join('\n')}\n\n'
-          'Cihazdaki profil listesi ve çalışma verileri bu yedekle değişecek.';
+          'Cihazdaki profil listesi ve çalışma verileri bu yedekle değişecek.'
+          '${preview.recoveryRecordCount == 0 ? '' : '\n\n${preview.recoveryRecordCount} sorunlu veri grubu ham arşiv olarak korunacak; çalışma kayıtlarına uygulanmayacak.'}';
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -249,6 +251,44 @@ class _AppGateState extends State<AppGate> {
       }
     } finally {
       if (mounted) setState(() => _recoveringFromBackup = false);
+    }
+  }
+
+  Future<void> _exportRecoveryFile() async {
+    if (_exportingRecovery || _recoveringFromBackup) return;
+    setState(() => _exportingRecovery = true);
+    try {
+      final backup = await ProfileStorage.instance.exportBackup();
+      final bytes = Uint8List.fromList(
+        utf8.encode(const JsonEncoder.withIndent('  ').convert(backup)),
+      );
+      final path = await FilePicker.saveFile(
+        dialogTitle: 'Sağlam kayıtları ve ham kurtarma arşivini kaydet',
+        fileName:
+            'sinav-rotasi-kurtarma-${DateTime.now().millisecondsSinceEpoch}.json',
+        type: FileType.custom,
+        allowedExtensions: const ['json'],
+        bytes: bytes,
+      );
+      if (!mounted || (path == null && !kIsWeb)) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            path == null
+                ? 'Kurtarma dosyası indirme isteği gönderildi; indirildiğini kontrol et.'
+                : 'Kurtarma dosyası dışa aktarıldı. Ham sorunlu kayıtlar etkinleştirilmedi.',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        setState(
+          () =>
+              _backupRecoveryError = 'Kurtarma dosyası oluşturulamadı: $error',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _exportingRecovery = false);
     }
   }
 
@@ -294,7 +334,7 @@ class _AppGateState extends State<AppGate> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Yerel kayıtlar silinmedi. Yeniden deneyebilir veya profilleri içeren tam JSON yedeğini seçerek kurtarmayı deneyebilirsin.',
+                    'Yerel kayıtlar silinmedi. Önce kurtarma dosyası oluşturabilir, yeniden deneyebilir veya tam JSON yedeğini yükleyebilirsin.',
                     textAlign: TextAlign.center,
                   ),
                   if (appState.loadErrorMessage != null) ...[
@@ -321,7 +361,18 @@ class _AppGateState extends State<AppGate> {
                     runSpacing: 8,
                     children: [
                       OutlinedButton.icon(
-                        onPressed: _recoveringFromBackup
+                        onPressed: _exportingRecovery || _recoveringFromBackup
+                            ? null
+                            : _exportRecoveryFile,
+                        icon: const Icon(Icons.save_alt_rounded),
+                        label: Text(
+                          _exportingRecovery
+                              ? 'Dosya hazırlanıyor…'
+                              : 'Kurtarma dosyası oluştur',
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: _recoveringFromBackup || _exportingRecovery
                             ? null
                             : _recoverFromBackupFile,
                         icon: _recoveringFromBackup
@@ -335,7 +386,9 @@ class _AppGateState extends State<AppGate> {
                         label: const Text('Yedek dosyasıyla kurtar'),
                       ),
                       FilledButton.icon(
-                        onPressed: appState.loadData,
+                        onPressed: _recoveringFromBackup || _exportingRecovery
+                            ? null
+                            : appState.loadData,
                         icon: const Icon(Icons.refresh_rounded),
                         label: const Text('Yeniden dene'),
                       ),
@@ -469,7 +522,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
     if (!mounted || shouldReload != true) return;
-    await context.read<AppState>().loadData();
+    await context.read<AppState>().discardUnsavedChangesAndReload();
   }
 
   @override
@@ -565,16 +618,6 @@ class _MainScreenState extends State<MainScreen> {
                                     ).colorScheme.onErrorContainer,
                                     fontSize: 12,
                                   ),
-                                ),
-                              ),
-                              IconButton(
-                                tooltip: 'Bildirimi kapat',
-                                onPressed: appState.dismissPersistenceError,
-                                icon: Icon(
-                                  Icons.close_rounded,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
                                 ),
                               ),
                             ],

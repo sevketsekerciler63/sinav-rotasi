@@ -55,12 +55,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   AppBootStatus _bootStatus = AppBootStatus.loading;
   Object? _loadError;
   String? _persistenceError;
+  final Map<String, String> _failedWriteErrors = {};
+  final Set<String> _savingMockExams = {};
+  List<String> _recoveryDataKeys = [];
 
   ExamProfile get activeProfile => _activeProfile;
   bool get isProfileTransitioning => _isProfileTransitioning;
   AppBootStatus get bootStatus => _bootStatus;
   String? get loadErrorMessage => _loadError?.toString();
   String? get persistenceError => _persistenceError;
+  List<String> get recoveryDataKeys => List.unmodifiable(_recoveryDataKeys);
   List<ExamProfile> get profiles => _profileStorage.profiles;
   List<Object?> get quarantinedGoalRecords =>
       List.unmodifiable(_quarantinedGoalRecords);
@@ -231,6 +235,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
     mockExams = getExamCalendar(targetDate: _activeProfile.targetDate);
     achievements = getDefaultAchievements();
+
     _scheduleMidnightPlanRefresh();
   }
 
@@ -330,6 +335,27 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     pomodoroTimerState = null;
     _questionEventSequence = 0;
     achievements = getDefaultAchievements();
+
+    _recoveryDataKeys = [];
+    final recoveryJson = await _profileStorage.readStringForProfile(
+      profileId,
+      'recovery_records',
+    );
+    if (!isCurrentRequest()) return;
+    if (recoveryJson != null) {
+      try {
+        final archive = jsonDecode(recoveryJson);
+        if (archive is Map && archive['records'] is List) {
+          _recoveryDataKeys = [
+            for (final record in archive['records'] as List)
+              if (record is Map && record['dataKey'] is String)
+                record['dataKey'] as String,
+          ];
+        }
+      } catch (_) {
+        // Inert bytes remain in storage; export can wrap a damaged archive.
+      }
+    }
 
     final curriculumJson = await _profileStorage.readStringForProfile(
       profileId,
@@ -554,7 +580,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (isCurrentRequest()) {
       _bootStatus = AppBootStatus.ready;
       _loadError = null;
-      _persistenceError = null;
+      _persistenceError = _failedWriteErrors.values.firstOrNull;
       _syncDailyReminder();
       notifyListeners();
     }
@@ -569,8 +595,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             'history': <String, dynamic>{},
           }),
       };
-      await _writeProfileData(profileId, recoveryData);
-      _dailyPlanQuarantineNeedsRewrite = false;
+      final saved = await _writeProfileData(profileId, recoveryData);
+      if (saved) _dailyPlanQuarantineNeedsRewrite = false;
     }
   }
 
@@ -681,64 +707,75 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   };
 
   Future<bool> recordStudySession(StudySession session) async {
+    final profileId = session.profileId;
     try {
-      final profileId = session.profileId;
-      List<StudySession> records;
-      if (profileId == _activeProfile.id) {
-        records = List<StudySession>.of(studySessions);
-      } else {
-        final saved = await _profileStorage.readStringForProfile(
-          profileId,
-          'study_sessions',
-        );
-        if (saved == null) {
-          records = [];
-        } else {
-          final decoded = jsonDecode(saved);
+      final validated = StudySession.fromJson(session.toJson());
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profileId,
+        {'study_sessions'},
+        (current) {
+          final raw = current['study_sessions'];
+          final decoded = raw == null ? <dynamic>[] : jsonDecode(raw);
           if (decoded is! List) {
             throw const FormatException('Odak oturumu kayıtları geçersiz.');
           }
-          records = decoded
+          final records = decoded
               .map(
                 (value) => StudySession.fromJson(
                   Map<String, dynamic>.from(value as Map),
                 ),
               )
               .toList();
-        }
-      }
-      if (records.any((item) => item.id == session.id)) return true;
-      records.add(session);
-      await _profileStorage.writeStringsForProfile(profileId, {
-        'study_sessions': jsonEncode(
-          records.map((item) => item.toJson()).toList(),
-        ),
-      });
+          if (records.any((item) => item.profileId != profileId)) {
+            throw const FormatException('Odak oturumu başka profile bağlı.');
+          }
+          final existing = records.where((item) => item.id == validated.id);
+          if (existing.isNotEmpty) {
+            if (jsonEncode(existing.single.toJson()) !=
+                jsonEncode(validated.toJson())) {
+              throw const FormatException(
+                'Oturum kimliği farklı bir kayıtta kullanılıyor.',
+              );
+            }
+          } else {
+            records.add(validated);
+          }
+          return {
+            'study_sessions': jsonEncode(
+              records.map((item) => item.toJson()).toList(),
+            ),
+          };
+        },
+      );
       if (profileId == _activeProfile.id && !_isProfileTransitioning) {
-        studySessions = records;
-        notifyListeners();
+        studySessions = (jsonDecode(saved['study_sessions']!) as List)
+            .map(
+              (value) => StudySession.fromJson(
+                Map<String, dynamic>.from(value as Map),
+              ),
+            )
+            .toList();
       }
-      if (_persistenceError != null) {
-        _persistenceError = null;
-        notifyListeners();
-      }
+      _clearWriteErrors(profileId, {'study_sessions:${session.id}'});
+      notifyListeners();
       return true;
     } catch (error) {
-      _persistenceError = error.toString();
-      notifyListeners();
+      _recordWriteError(profileId, {'study_sessions:${session.id}'}, error);
       return false;
     }
   }
 
-  Future<void> savePomodoroTimerState(PomodoroTimerState timerState) async {
-    if (_isProfileTransitioning) return;
-    await _writeProfileData(timerState.profileId, {
+  Future<bool> savePomodoroTimerState(PomodoroTimerState timerState) async {
+    if (_isProfileTransitioning) return false;
+    final saved = await _writeProfileData(timerState.profileId, {
       'pomodoro_state': jsonEncode(timerState.toJson()),
     });
+    if (!saved) return false;
     if (timerState.profileId == _activeProfile.id && !_isProfileTransitioning) {
       pomodoroTimerState = timerState;
       notifyListeners();
     }
+    return true;
   }
 
   void _restoreDailyPlanProgress(String logsJson) {
@@ -779,16 +816,19 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     required List<int> availableWeekdays,
     required int dailyStudyMinutes,
   }) async {
-    if (_isProfileTransitioning) return;
+    if (_isProfileTransitioning) {
+      throw StateError('Profil geçişi sürüyor; tercihlerini yeniden kaydet.');
+    }
     final updated = StudySchedulePreferences.fromJson({
       'version': 1,
       'availableWeekdays': availableWeekdays,
       'dailyStudyMinutes': dailyStudyMinutes,
     });
     final profileId = _activeProfile.id;
-    await _writeProfileData(profileId, {
+    final saved = await _writeProfileData(profileId, {
       'schedule_preferences': jsonEncode(updated.toJson()),
     });
+    if (!saved) throw StateError('Çalışma tercihleri cihaza kaydedilemedi.');
     if (profileId != _activeProfile.id) return;
     _schedulePreferences = updated;
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
@@ -1198,15 +1238,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
-  Future<void> _saveMockExams() async {
-    final profileId = _activeProfile.id;
-    final Map<String, dynamic> data = {};
-    for (var exam in mockExams) {
-      data[exam.id] = exam.toJson();
-    }
-    await _writeProfileData(profileId, {'mock_exams': jsonEncode(data)});
-  }
-
   Future<void> _saveWeakTopics() async {
     final profileId = _activeProfile.id;
     await _saveWeakTopicsForProfile(profileId, _weakTopicsJson());
@@ -1294,26 +1325,53 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     await _writeProfileData(profileId, {'achievements_data': jsonEncode(data)});
   }
 
-  Future<void> _writeProfileData(
+  Future<bool> _writeProfileData(
     String profileId,
     Map<String, String> values,
   ) async {
     try {
       await _profileStorage.writeStringsForProfile(profileId, values);
-      if (_persistenceError != null) {
-        _persistenceError = null;
-        notifyListeners();
-      }
+      _clearWriteErrors(profileId, values.keys);
+      return true;
     } catch (error) {
-      _persistenceError = error.toString();
-      notifyListeners();
+      _recordWriteError(profileId, values.keys, error);
+      return false;
     }
   }
 
+  void _recordWriteError(
+    String profileId,
+    Iterable<String> keys,
+    Object error,
+  ) {
+    for (final key in keys) {
+      _failedWriteErrors['$profileId::$key'] = error.toString();
+    }
+    _persistenceError = _failedWriteErrors.values.firstOrNull;
+    notifyListeners();
+  }
+
+  void _clearWriteErrors(String profileId, Iterable<String> keys) {
+    for (final key in keys) {
+      _failedWriteErrors.remove('$profileId::$key');
+    }
+    final previous = _persistenceError;
+    _persistenceError = _failedWriteErrors.values.firstOrNull;
+    if (previous != _persistenceError) notifyListeners();
+  }
+
   void dismissPersistenceError() {
-    if (_persistenceError == null) return;
+    // Acknowledging an error must not turn an unsaved change into a saved one.
+    if (_failedWriteErrors.isNotEmpty || _persistenceError == null) return;
     _persistenceError = null;
     notifyListeners();
+  }
+
+  Future<void> discardUnsavedChangesAndReload() async {
+    _failedWriteErrors.clear();
+    _persistenceError = null;
+    // Only old drafts were discarded. A new load/migration failure must remain.
+    await loadData();
   }
 
   // ─── Topic Actions ─────────────────────────────
@@ -1398,44 +1456,82 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ─── Mock Exam Actions ─────────────────────────
-  bool updateMockExam(
+  Future<bool> updateMockExam(
     String examId, {
     Map<String, double>? nets,
     bool? isCompleted,
     DateTime? completedAt,
-  }) {
+  }) async {
     if (_isProfileTransitioning) return false;
-    if (nets != null &&
-        !MockExamMetrics.areNetUpdatesValid(nets: nets, subjects: subjects)) {
-      return false;
-    }
-    for (var exam in mockExams) {
-      if (exam.id == examId) {
-        if (nets != null) exam.nets = nets;
-        if (isCompleted != null) {
-          final wasCompleted = exam.isCompleted;
-          exam.isCompleted = isCompleted;
-          if (!isCompleted) {
-            exam.completedAt = null;
-          } else if (completedAt != null) {
-            exam.completedAt = DateTime(
-              completedAt.year,
-              completedAt.month,
-              completedAt.day,
-            );
-          } else if (!wasCompleted && exam.completedAt == null) {
-            final now = DateTime.now();
-            exam.completedAt = DateTime(now.year, now.month, now.day);
+    final profileId = _activeProfile.id;
+    final saveKey = '$profileId::$examId';
+    if (!_savingMockExams.add(saveKey)) return false;
+    try {
+      final current = mockExams.where((exam) => exam.id == examId).firstOrNull;
+      if (current == null) return false;
+      if (nets != null &&
+          !MockExamMetrics.areNetUpdatesValid(nets: nets, subjects: subjects)) {
+        return false;
+      }
+      final candidate = MockExam(
+        id: current.id,
+        date: current.date,
+        dayName: current.dayName,
+        type: current.type,
+        scope: current.scope,
+        duration: current.duration,
+        targetNet: current.targetNet,
+        analysisMethod: current.analysisMethod,
+      )..fromJson(current.toJson());
+      if (nets != null) candidate.nets = MockExam.canonicalizeNets(nets);
+      if (isCompleted != null) {
+        candidate.isCompleted = isCompleted;
+        if (!isCompleted) {
+          candidate.completedAt = null;
+        } else if (completedAt != null) {
+          candidate.completedAt = DateTime(
+            completedAt.year,
+            completedAt.month,
+            completedAt.day,
+          );
+        } else if (!current.isCompleted && current.completedAt == null) {
+          final now = DateTime.now();
+          candidate.completedAt = DateTime(now.year, now.month, now.day);
+        }
+      }
+      candidate.updatedAt = DateTime.now();
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profileId,
+        {'mock_exams'},
+        (values) {
+          final raw = values['mock_exams'];
+          final decoded = raw == null ? <String, dynamic>{} : jsonDecode(raw);
+          if (decoded is! Map) {
+            throw const FormatException('Deneme kayıtları geçersiz.');
+          }
+          final data = Map<String, dynamic>.from(decoded);
+          data[examId] = candidate.toJson();
+          return {'mock_exams': jsonEncode(data)};
+        },
+      );
+      _clearWriteErrors(profileId, {'mock_exams:$examId'});
+      if (profileId == _activeProfile.id && !_isProfileTransitioning) {
+        final data = jsonDecode(saved['mock_exams']!) as Map;
+        for (final exam in mockExams) {
+          if (data[exam.id] is Map) {
+            exam.fromJson(Map<String, dynamic>.from(data[exam.id] as Map));
           }
         }
-        exam.updatedAt = DateTime.now();
-        _saveMockExams();
         checkAchievements();
         notifyListeners();
-        return true;
       }
+      return true;
+    } catch (error) {
+      _recordWriteError(profileId, {'mock_exams:$examId'}, error);
+      return false;
+    } finally {
+      _savingMockExams.remove(saveKey);
     }
-    return false;
   }
 
   // ─── Weak Topics Actions ───────────────────────

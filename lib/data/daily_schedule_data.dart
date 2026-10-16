@@ -1,3 +1,4 @@
+import 'exam_rules.dart';
 import '../models/daily_log.dart';
 import '../models/study_schedule_preferences.dart';
 
@@ -253,9 +254,9 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       date: DateTime(2026, 4, 13),
       dayName: 'Pazartesi',
       tytContent:
-          '📘 DENEME 1 — TYT tam (120 soru). Hedef yok, sadece ölç! Süre: 135 dk.',
+          '📘 DENEME 1 — TYT tam (120 soru). Hedef yok, sadece ölç! Süre: ${YksExamRules.tytLabel}.',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: 'İlk deneme! Stres yapma, sadece ne bildiğini gör.',
     ),
     DailyLog(
@@ -307,9 +308,9 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       date: DateTime(2026, 4, 19),
       dayName: 'Pazar',
       tytContent:
-          '📘 DENEME 2 — TYT tam. Hedef: D1\'den +3 net fazla. Süre: 135 dk.',
+          '📘 DENEME 2 — TYT tam. Hedef: D1\'den +3 net fazla. Süre: ${YksExamRules.tytLabel}.',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: 'D1 ile karşılaştır: hangi dersler yükseldi?',
     ),
     DailyLog(
@@ -371,7 +372,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       dayName: 'Pazar',
       tytContent: '📘 DENEME 3 — TYT tam. Hedef: TYT Toplam ~35 net.',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: 'Her dersin net grafiğini çiz (D1-D2-D3).',
     ),
     DailyLog(
@@ -436,7 +437,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       dayName: 'Pazar',
       tytContent: '📘 DENEME 4 — TYT tam. Hedef: TYT Toplam ~40 net.',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote:
           'Türkçede 30+ net tuttu mu? Mat hangi problem tipi hâlâ yanlış?',
     ),
@@ -502,7 +503,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       dayName: 'Pazar',
       tytContent: '📘 DENEME 5 — TYT tam + AYT kısa. Hedef: TYT ~43, AYT ~8.',
       aytContent: '—',
-      studyHours: '195 dk + analiz',
+      studyHours: '${YksExamRules.tytAndShortAytLabel} + analiz',
       motivationNote: 'İlk AYT denemesi! Sadece bildiğin konuları çöz.',
     ),
     DailyLog(
@@ -571,7 +572,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       dayName: 'Pazar',
       tytContent: '📘 DENEME 6 — TYT tam + AYT kısa. Hedef: TYT ~46, AYT ~12.',
       aytContent: '—',
-      studyHours: '195 dk + analiz',
+      studyHours: '${YksExamRules.tytAndShortAytLabel} + analiz',
       motivationNote: 'AYT netleri yükseliyor mu?',
     ),
     DailyLog(
@@ -636,7 +637,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 DENEME 7 — TYT tam + AYT TAM (180 dk). İlk tam AYT! Hedef: TYT ~48, AYT ~15.',
       aytContent: '—',
-      studyHours: '135+180 dk',
+      studyHours: YksExamRules.combinedLabel,
       motivationNote: 'AYT sırasını uygula: Bio → Kim → Fiz → Mat!',
     ),
     DailyLog(
@@ -674,7 +675,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 DENEME 8 — Sadece TYT. Hedef: ~50 net. Sabah erken başla!',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: '50 net geçti mi? Büyük baraj bu!',
     ),
     DailyLog(
@@ -738,7 +739,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 DENEME 10 — TYT tam. Hedef: ~52 net. 50 geçtiyse çok iyi!',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: '80. gün! 15 gün kaldı!',
     ),
     DailyLog(
@@ -766,7 +767,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 DENEME 11 — TYT TAM + AYT TAM. Tam gün sınav simülasyonu!',
       aytContent: '—',
-      studyHours: '135+180 dk',
+      studyHours: YksExamRules.combinedLabel,
       motivationNote: 'Tam simülasyon! Araya 1 saat mola ver.',
     ),
     DailyLog(
@@ -801,7 +802,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 DENEME 12 — TYT tam. Hedef: ~55 net. Bu haftanın son denemesi!',
       aytContent: '—',
-      studyHours: '135 dk + analiz',
+      studyHours: '${YksExamRules.tytLabel} + analiz',
       motivationNote: '55 net = hedefe ulaştın demek!',
     ),
     DailyLog(
@@ -828,7 +829,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       tytContent:
           '📘 SON DENEME (D13) — TYT + AYT tam. Hedef: TYT ~55, AYT ~20.',
       aytContent: '—',
-      studyHours: '135+180 dk',
+      studyHours: YksExamRules.combinedLabel,
       motivationNote: 'Son deneme! Başlangıçla karşılaştır 😊',
     ),
     DailyLog(

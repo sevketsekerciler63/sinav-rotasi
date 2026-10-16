@@ -20,6 +20,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
   final _netErrors = <String, String>{};
   final _attemptDates = <String, DateTime>{};
   final _explicitAttemptDates = <String>{};
+  final _savingExams = <String>{};
 
   String _netFieldKey(String sliderKey, String subject) =>
       '$sliderKey::$subject';
@@ -723,64 +724,87 @@ class _MockExamScreenState extends State<MockExamScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  final validationErrors = <String, String>{};
-                  for (final subject in examSubjects) {
-                    final key = MockExam.netKeyForSubject(
-                      subject.type,
-                      subject.name,
-                    );
-                    final fieldKey = _netFieldKey(sliderKey, key);
-                    final rawValue =
-                        _netControllers[fieldKey]?.text ??
-                        NetScore.format(_sliderValues[sliderKey]?[key] ?? 0);
-                    final error = NetScore.validationError(
-                      NetScore.parse(rawValue),
-                      subject.totalQuestions,
-                    );
-                    if (error != null) validationErrors[fieldKey] = error;
-                  }
-                  if (validationErrors.isNotEmpty) {
-                    setState(() {
-                      _netErrors
-                        ..clear()
-                        ..addAll(validationErrors);
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Netleri soru sayılarına göre düzelt.'),
-                      ),
-                    );
-                    return;
-                  }
-                  final nets = exam.normalizedNets;
-                  for (final subject in examSubjects) {
-                    final key = MockExam.netKeyForSubject(
-                      subject.type,
-                      subject.name,
-                    );
-                    nets[key] = _sliderValues[sliderKey]?[key] ?? 0;
-                  }
-                  final selectedDateIsKnown =
-                      !exam.isCompleted ||
-                      exam.completedAt != null ||
-                      _explicitAttemptDates.contains(sliderKey);
-                  final updated = state.updateMockExam(
-                    exam.id,
-                    nets: nets,
-                    isCompleted: true,
-                    completedAt: selectedDateIsKnown ? attemptDate : null,
-                  );
-                  if (!updated && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Netler kaydedilemedi; değer aralığını denetle.',
-                        ),
-                      ),
-                    );
-                  }
-                },
+                onPressed: _savingExams.contains(sliderKey)
+                    ? null
+                    : () async {
+                        final validationErrors = <String, String>{};
+                        for (final subject in examSubjects) {
+                          final key = MockExam.netKeyForSubject(
+                            subject.type,
+                            subject.name,
+                          );
+                          final fieldKey = _netFieldKey(sliderKey, key);
+                          final rawValue =
+                              _netControllers[fieldKey]?.text ??
+                              NetScore.format(
+                                _sliderValues[sliderKey]?[key] ?? 0,
+                              );
+                          final error = NetScore.validationError(
+                            NetScore.parse(rawValue),
+                            subject.totalQuestions,
+                          );
+                          if (error != null) validationErrors[fieldKey] = error;
+                        }
+                        if (validationErrors.isNotEmpty) {
+                          setState(() {
+                            _netErrors
+                              ..clear()
+                              ..addAll(validationErrors);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Netleri soru sayılarına göre düzelt.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        final nets = exam.normalizedNets;
+                        for (final subject in examSubjects) {
+                          final key = MockExam.netKeyForSubject(
+                            subject.type,
+                            subject.name,
+                          );
+                          nets[key] = _sliderValues[sliderKey]?[key] ?? 0;
+                        }
+                        final selectedDateIsKnown =
+                            !exam.isCompleted ||
+                            exam.completedAt != null ||
+                            _explicitAttemptDates.contains(sliderKey);
+                        setState(() => _savingExams.add(sliderKey));
+                        bool updated;
+                        try {
+                          updated = await state.updateMockExam(
+                            exam.id,
+                            nets: nets,
+                            isCompleted: true,
+                            completedAt: selectedDateIsKnown
+                                ? attemptDate
+                                : null,
+                          );
+                        } finally {
+                          if (mounted) {
+                            setState(() => _savingExams.remove(sliderKey));
+                          }
+                        }
+                        if (!context.mounted) return;
+                        if (!updated) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Netler kaydedilemedi. Girişlerin korunuyor; yeniden dene.',
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Deneme sonucu kaydedildi.'),
+                            ),
+                          );
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: exam.isCompleted
                       ? colors.secondary
@@ -794,7 +818,11 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 child: Text(
-                  exam.isCompleted ? 'Güncellendi' : 'Netleri Kaydet',
+                  _savingExams.contains(sliderKey)
+                      ? 'Kaydediliyor…'
+                      : exam.isCompleted
+                      ? 'Değişiklikleri kaydet'
+                      : 'Netleri Kaydet',
                 ),
               ),
             ),

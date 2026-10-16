@@ -4,29 +4,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 class BackupHistoryService {
   BackupHistoryService._();
 
-  static const _lastSuccessfulBackupKey = 'last_successful_backup_at';
+  // Do not migrate the old timestamp: it could refer only to clipboard text.
+  static const _lastFileExportKey = 'last_file_export_at';
 
-  static final ValueNotifier<DateTime?> lastSuccessfulBackupAt =
+  static final ValueNotifier<DateTime?> lastFileExportAt =
       ValueNotifier<DateTime?>(null);
 
   static Future<void> initialize() async {
     final preferences = await SharedPreferences.getInstance();
-    final savedAt = preferences.getString(_lastSuccessfulBackupKey);
-    lastSuccessfulBackupAt.value = savedAt == null
+    final savedAt = preferences.getString(_lastFileExportKey);
+    lastFileExportAt.value = savedAt == null
         ? null
         : DateTime.tryParse(savedAt)?.toLocal();
   }
 
-  static Future<void> recordSuccessfulBackup() async {
+  static Future<void> recordFileExport() async {
     final now = DateTime.now();
     final preferences = await SharedPreferences.getInstance();
     final saved = await preferences.setString(
-      _lastSuccessfulBackupKey,
+      _lastFileExportKey,
       now.toIso8601String(),
     );
     if (!saved) {
-      throw StateError('Son yedek zamanı kaydedilemedi.');
+      throw StateError('Dosya dışa aktarım zamanı kaydedilemedi.');
     }
-    lastSuccessfulBackupAt.value = now;
+    lastFileExportAt.value = now;
   }
 }

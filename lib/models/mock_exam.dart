@@ -69,6 +69,19 @@ class MockExam {
     return key;
   }
 
+  /// Migrate legacy aliases once, rejecting ambiguous scores before writing.
+  static Map<String, double> canonicalizeNets(Map<String, double> values) {
+    final result = <String, double>{};
+    for (final entry in values.entries) {
+      final key = normalizeNetKey(entry.key);
+      if (result.containsKey(key) && result[key] != entry.value) {
+        throw FormatException('$key için çelişen net değerleri var.');
+      }
+      result[key] = entry.value;
+    }
+    return result;
+  }
+
   double netForSubject(String type, String name) {
     final key = netKeyForSubject(type, name);
     final direct = nets[key];

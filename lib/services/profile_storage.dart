@@ -16,11 +16,13 @@ class BackupImportPreview {
   final bool isLegacy;
   final List<String> profileNames;
   final int dataGroupCount;
+  final int recoveryRecordCount;
 
   const BackupImportPreview({
     required this.isLegacy,
     required this.profileNames,
     required this.dataGroupCount,
+    this.recoveryRecordCount = 0,
   });
 }
 
@@ -45,12 +47,13 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 6;
+  static const int schemaVersion = 7;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const List<String> dataKeys = [
     'topics_data',
     'daily_logs',
     'daily_logs_quarantine',
+    'recovery_records',
     'question_history',
     'study_sessions',
     'mock_exams',
@@ -242,6 +245,40 @@ class ProfileStorage {
     });
   }
 
+  /// Reads and transforms the latest committed values inside the write queue.
+  /// The transform is synchronous and must not call another storage mutation.
+  Future<Map<String, String>> mutateStringsForProfile(
+    String profileId,
+    Set<String> keys,
+    Map<String, String> Function(Map<String, String?> current) transform,
+  ) async {
+    for (final key in keys) {
+      _ensureDataKey(key);
+    }
+    await initialize();
+    return _enqueueMutation(() async {
+      final profile = _profileForId(profileId);
+      final current = <String, String?>{
+        for (final key in keys)
+          key:
+              _prefs!.getString(_scopedKey(profile.id, key)) ??
+              (_isLegacyCompatible(profile) ? _prefs!.getString(key) : null),
+      };
+      final values = transform(Map.unmodifiable(current));
+      if (values.keys.any((key) => !keys.contains(key))) {
+        throw ArgumentError('İşlem kapsamı dışında veri yazılamaz.');
+      }
+      final updates = <String, Object?>{};
+      for (final entry in values.entries) {
+        _validateDataPayload(entry.key, jsonDecode(entry.value));
+        updates[_scopedKey(profile.id, entry.key)] = entry.value;
+        if (_isLegacyCompatible(profile)) updates[entry.key] = entry.value;
+      }
+      if (updates.isNotEmpty) await _applyPreferenceUpdates(updates);
+      return values;
+    });
+  }
+
   Future<void> addProfile(
     ExamProfile profile, {
     Map<String, String> initialData = const {},
@@ -314,30 +351,104 @@ class ProfileStorage {
 
   Future<Map<String, dynamic>> exportBackup() async {
     await initialize();
-    await _mutationQueue;
-    final profileData = <String, Map<String, dynamic>>{};
-    for (final profile in _profiles) {
-      final data = <String, dynamic>{};
-      for (final key in dataKeys) {
-        final value =
-            _prefs!.getString(_scopedKey(profile.id, key)) ??
-            (_isLegacyCompatible(profile) ? _prefs!.getString(key) : null);
-        if (value != null) {
-          data[key] = key == 'goals_data'
-              ? _exportableGoalsPayload(value)
-              : jsonDecode(value);
+    return _enqueueMutation(() async {
+      final profileData = <String, Map<String, dynamic>>{};
+      for (final profile in _profiles) {
+        final data = <String, dynamic>{};
+        final rawValues = <String, String>{};
+        final recovery = <Map<String, dynamic>>[];
+        void preserve(String key, Object error) {
+          final raw = rawValues[key];
+          if (raw == null) return;
+          data.remove(key);
+          recovery.add({
+            'dataKey': key,
+            'rawValue': raw,
+            'reason': error.toString(),
+            'capturedAt': DateTime.now().toUtc().toIso8601String(),
+          });
         }
-      }
-      profileData[profile.id] = data;
-    }
 
-    return {
-      'format': backupFormat,
-      'schemaVersion': schemaVersion,
-      'activeProfileId': _activeProfileId,
-      'profiles': _profiles.map((profile) => profile.toJson()).toList(),
-      'data': profileData,
-    };
+        for (final key in dataKeys) {
+          final raw =
+              _prefs!.getString(_scopedKey(profile.id, key)) ??
+              (_isLegacyCompatible(profile) ? _prefs!.getString(key) : null);
+          if (raw == null) continue;
+          rawValues[key] = raw;
+          try {
+            final payload = key == 'goals_data'
+                ? _exportableGoalsPayload(raw)
+                : jsonDecode(raw);
+            _validateDataPayload(key, payload);
+            _validateProfileRecordIds(profile.id, key, payload);
+            if (key == 'recovery_records') {
+              recovery.addAll(
+                (payload['records'] as List).map(
+                  (item) => Map<String, dynamic>.from(item as Map),
+                ),
+              );
+            } else {
+              data[key] = payload;
+            }
+          } catch (error) {
+            preserve(key, error);
+          }
+        }
+        try {
+          _validateWeakTopicReferences(data);
+        } catch (error) {
+          preserve('weak_topics', error);
+        }
+        try {
+          _validateNetScores(data);
+        } catch (error) {
+          preserve('mock_exams', error);
+        }
+        if (recovery.isNotEmpty) {
+          data['recovery_records'] = {'schemaVersion': 1, 'records': recovery};
+        }
+        profileData[profile.id] = data;
+      }
+      final backup = <String, dynamic>{
+        'format': backupFormat,
+        'schemaVersion': schemaVersion,
+        'createdAt': DateTime.now().toUtc().toIso8601String(),
+        'activeProfileId': _activeProfileId,
+        'profiles': _profiles.map((profile) => profile.toJson()).toList(),
+        'data': profileData,
+      };
+      // Never label an export as usable unless our importer can preview it.
+      _prepareBackup(backup);
+      return backup;
+    });
+  }
+
+  int _recoveryRecordCount(Map<String, Map<String, dynamic>> data) =>
+      data.values.fold(0, (total, values) {
+        final archive = values['recovery_records'];
+        return total +
+            (archive is Map && archive['records'] is List
+                ? (archive['records'] as List).length
+                : 0);
+      });
+
+  void _validateProfileRecordIds(
+    String profileId,
+    String key,
+    dynamic payload,
+  ) {
+    final records = key == 'question_history'
+        ? payload['events']
+        : key == 'study_sessions'
+        ? payload
+        : null;
+    if (records is List &&
+        records.any((record) => record['profileId'] != profileId)) {
+      _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
+    }
+    if (key == 'pomodoro_state' && payload['profileId'] != profileId) {
+      _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
+    }
   }
 
   Future<BackupImportPreview> previewBackup(Map<String, dynamic> backup) async {
@@ -346,6 +457,9 @@ class ProfileStorage {
     final prepared = _prepareBackup(backup);
     return BackupImportPreview(
       isLegacy: prepared.isLegacy,
+      recoveryRecordCount: prepared.isLegacy
+          ? 0
+          : _recoveryRecordCount(prepared.data),
       profileNames: prepared.isLegacy
           ? [activeProfile.name]
           : prepared.profiles.map((profile) => profile.name).toList(),
@@ -371,6 +485,7 @@ class ProfileStorage {
     }
     return BackupImportPreview(
       isLegacy: false,
+      recoveryRecordCount: _recoveryRecordCount(prepared.data),
       profileNames: prepared.profiles.map((profile) => profile.name).toList(),
       dataGroupCount: prepared.data.values.fold(
         0,
@@ -609,15 +724,16 @@ class ProfileStorage {
     for (final examEntry in exams.entries) {
       final exam = examEntry.value;
       if (exam is! Map || exam['nets'] is! Map) continue;
-      for (final netEntry in (exam['nets'] as Map).entries) {
-        if (netEntry.key is! String || netEntry.value is! num) continue;
-        final key = MockExam.normalizeNetKey(netEntry.key as String);
+      final canonical = MockExam.canonicalizeNets({
+        for (final entry in (exam['nets'] as Map).entries)
+          entry.key as String: (entry.value as num).toDouble(),
+      });
+      exam['nets'] = canonical;
+      for (final netEntry in canonical.entries) {
+        final key = netEntry.key;
         final questionCount = questionCounts[key];
         if (questionCount != null &&
-            !NetScore.isValid(
-              (netEntry.value as num).toDouble(),
-              questionCount,
-            )) {
+            !NetScore.isValid(netEntry.value, questionCount)) {
           _invalid(
             'mock_exams.${examEntry.key}.nets.$key',
             'soru sayısıyla uyumlu, çeyrek adımlı net',
@@ -915,6 +1031,22 @@ class ProfileStorage {
                 _invalid('$key.${entry.key}.nets.${net.key}', 'net değeri');
               }
             }
+          }
+        }
+      case 'recovery_records':
+        final archive = _record(value, key);
+        if (archive['schemaVersion'] != 1 || archive['records'] is! List) {
+          _invalid(key, 'desteklenen kurtarma arşivi');
+        }
+        for (final record in archive['records'] as List) {
+          final item = _record(record, '$key.records');
+          if (item['dataKey'] is! String ||
+              !dataKeys.contains(item['dataKey']) ||
+              item['rawValue'] is! String ||
+              item['reason'] is! String ||
+              item['capturedAt'] is! String ||
+              DateTime.tryParse(item['capturedAt'] as String) == null) {
+            _invalid(key, 'ham veri ve kaynak bilgisi içeren kurtarma kaydı');
           }
         }
       case 'daily_logs_quarantine':

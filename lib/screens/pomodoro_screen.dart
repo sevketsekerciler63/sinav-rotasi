@@ -40,6 +40,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   bool _restoreChecked = false;
   bool _isTimerActive = false;
   bool _phaseEndInProgress = false;
+  bool _timerSaveFailed = false;
   StudySessionStatus? _pendingSessionStatus;
   DateTime? _pendingSessionEndedAt;
   int? _pendingSessionActiveSeconds;
@@ -380,7 +381,18 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   Future<void> _persistTimerState({bool? activeOverride}) async {
     final snapshot = _timerStateSnapshot(activeOverride: activeOverride);
     if (snapshot == null) return;
-    await _appState?.savePomodoroTimerState(snapshot);
+    final saved = await _appState?.savePomodoroTimerState(snapshot) ?? false;
+    if (!saved && !_timerSaveFailed && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Zamanlayıcı durumu kaydedilemedi. Uygulama kapanırsa son değişiklik geri gelmeyebilir.',
+          ),
+          duration: Duration(seconds: 8),
+        ),
+      );
+    }
+    _timerSaveFailed = !saved;
   }
 
   String get _timeDisplay {

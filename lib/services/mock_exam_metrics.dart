@@ -25,10 +25,14 @@ class MockExamMetrics {
     required Map<String, double> nets,
     required Iterable<Subject> subjects,
   }) {
-    final normalized = <String, double>{};
-    for (final entry in nets.entries) {
-      if (!NetScore.isStorable(entry.value)) return false;
-      normalized[MockExam.normalizeNetKey(entry.key)] = entry.value;
+    final Map<String, double> normalized;
+    try {
+      normalized = MockExam.canonicalizeNets(nets);
+    } on FormatException {
+      return false;
+    }
+    if (normalized.values.any((value) => !NetScore.isStorable(value))) {
+      return false;
     }
     for (final subject in subjects) {
       final key = MockExam.netKeyForSubject(subject.type, subject.name);

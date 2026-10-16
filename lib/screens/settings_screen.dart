@@ -91,8 +91,19 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
+              if (state.recoveryDataKeys.isNotEmpty)
+                _settingsCard(
+                  context,
+                  icon: Icons.inventory_2_outlined,
+                  title: 'Kurtarma arşivi korunuyor',
+                  subtitle:
+                      '${state.recoveryDataKeys.length} sorunlu veri grubu '
+                      'etkin kayıtlara uygulanmadı. Ham verileri yedek dosyasına dahil edebilirsin.',
+                  color: AppTheme.accentOrange,
+                  onTap: () => _exportData(context),
+                ),
               ValueListenableBuilder<DateTime?>(
-                valueListenable: BackupHistoryService.lastSuccessfulBackupAt,
+                valueListenable: BackupHistoryService.lastFileExportAt,
                 builder: (context, lastBackupAt, _) => _settingsCard(
                   context,
                   icon: Icons.cloud_download,
@@ -100,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: lastBackupAt == null
                       ? 'JSON yedeğini panoya kopyala veya dosya olarak kaydet'
                       : 'JSON yedeğini panoya kopyala veya dosya olarak kaydet\n'
-                            'Son başarılı yedek: ${_formatDateTime(lastBackupAt)}',
+                            'Son dosya dışa aktarımı: ${_formatDateTime(lastBackupAt)}',
                   color: AppTheme.accentBlue,
                   onTap: () => _exportData(context),
                 ),
@@ -571,14 +582,19 @@ class SettingsScreen extends StatelessWidget {
       if (destination == null || !context.mounted) return;
 
       final export = await ProfileStorage.instance.exportBackup();
+      final preview = await ProfileStorage.instance.previewBackup(export);
       final jsonStr = const JsonEncoder.withIndent('  ').convert(export);
+      String message;
       if (destination == 'clipboard') {
         await Clipboard.setData(ClipboardData(text: jsonStr));
+        message =
+            'Veriler panoya kopyalandı. Kalıcı yedek için dosya olarak sakla.';
       } else {
         final now = DateTime.now();
         final bytes = Uint8List.fromList(utf8.encode(jsonStr));
         final savedPath = await FilePicker.saveFile(
-          dialogTitle: 'Sınav Rotası yedeğini kaydet',
+          dialogTitle:
+              'Yedeği cihaz dışında da erişebileceğin bir konuma kaydet',
           fileName:
               'sinav-rotasi-yedek-${now.year}-${_twoDigits(now.month)}-${_twoDigits(now.day)}-${_twoDigits(now.hour)}${_twoDigits(now.minute)}.json',
           type: FileType.custom,
@@ -586,25 +602,28 @@ class SettingsScreen extends StatelessWidget {
           bytes: bytes,
         );
         if (savedPath == null && !kIsWeb) return;
+        if (savedPath != null) {
+          message =
+              'Yedek dosyası dışa aktarıldı. Telefon kaybına karşı başka yerde de sakla.';
+          try {
+            await BackupHistoryService.recordFileExport();
+          } catch (_) {
+            message += ' Dışa aktarım zamanı kaydedilemedi.';
+          }
+        } else {
+          message =
+              'Dosya indirme isteği gönderildi. İndirildiğini kontrol et; telefon dışında da sakla.';
+        }
       }
-
-      try {
-        await BackupHistoryService.recordSuccessfulBackup();
-      } catch (error) {
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Yedek oluşturuldu; zamanı kaydedilemedi: $error'),
-            backgroundColor: AppTheme.accentRed,
-          ),
-        );
-        return;
+      if (preview.recoveryRecordCount > 0) {
+        message +=
+            ' ${preview.recoveryRecordCount} sorunlu veri grubu ham kurtarma arşivinde korundu.';
       }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Yedek başarıyla oluşturuldu.'),
-            backgroundColor: AppTheme.accentGreen,
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(seconds: 8),
           ),
         );
       }
@@ -642,7 +661,7 @@ class SettingsScreen extends StatelessWidget {
             _privacyDetail(
               dialogContext,
               'Yedek ne içerir?',
-              'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Yedeği panoya kopyalayabilir veya seçtiğin konuma dosya olarak kaydedebilirsin. İçe aktarmada JSON dosyası seçebilir ya da metni yapıştırabilirsin; önce profil/veri grubu özeti gösterilir. Güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir. Son başarılı dışa aktarma zamanı yalnız bu cihazda tutulur.',
+              'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Yedeği panoya kopyalayabilir veya seçtiğin konuma dosya olarak kaydedebilirsin. İçe aktarmada JSON dosyası seçebilir ya da metni yapıştırabilirsin; önce profil/veri grubu özeti gösterilir. Güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir. Son dosya dışa aktarım zamanı yalnız bu cihazda tutulur; panoya kopyalamak bu zamanı güncellemez. Dosya dışa aktarımı, buluta yüklendiğinin veya başka telefonda açılabileceğinin doğrulandığı anlamına gelmez. Sorunlu gruplar ham kurtarma arşivinde taşınır ve kendiliğinden çalışma kaydı olarak uygulanmaz.',
             ),
             _privacyDetail(
               dialogContext,
@@ -1280,6 +1299,9 @@ class SettingsScreen extends StatelessWidget {
           '${preview.profileNames.map((name) => '• $name').join('\n')}\n\n'
           'Bu işlem cihazdaki mevcut profil listesini ve çalışma verilerini '
           'yedekle değiştirir. Yedekte bulunmayan profil ve veriler kaldırılır.';
+      final recoveryDetails = preview.recoveryRecordCount == 0
+          ? ''
+          : '\n\n${preview.recoveryRecordCount} sorunlu veri grubu ham arşiv olarak korunacak; etkin çalışma kayıtlarına uygulanmayacak.';
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -1287,7 +1309,8 @@ class SettingsScreen extends StatelessWidget {
           scrollable: true,
           title: const Text('Yedek doğrulandı'),
           content: Text(
-            preview.isLegacy ? legacyDetails : profileDetails,
+            (preview.isLegacy ? legacyDetails : profileDetails) +
+                recoveryDetails,
             style: Theme.of(ctx).textTheme.bodyMedium,
           ),
           actions: [
