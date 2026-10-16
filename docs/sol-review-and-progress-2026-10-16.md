@@ -33,6 +33,23 @@ Luna dört pakette gerçek kod değişikliği yapmış; bütün kabul koşullar�
 
 - Fiziksel telefon, gerçek ekran okuyucu, platform dosya sağlayıcısı, hesap/OAuth ve farklı cihazdan kurtarma koşulları henüz uygulanmadı. Bunlar SOL-07 kabulünde ayrıca izlenecek.
 - Mevcut 8795 tarayıcı sayfası yenilenmesine rağmen eski motivasyon/sayaç sırasını gösteriyordu. Bu görünüm yeni kaynak için kabul kanıtı olarak kullanılmadı. Güncel uygulama için yeni derlemeyle çalışan sunucu ve taze sayfa ayrıca doğrulanacak.
-- SOL-01'in önceki `9878621` veri dilimi için depolama/hata/eşzamanlılık kontrolleri sırada; Luna incelemesinin bitmesi veri dilimini onaylamaz.
+- SOL-01'in önceki `9878621` veri dilimi için ilk 9 depolama/hata/eşzamanlılık kontrolü geçti; aşağıdaki sınırlar ve fiziksel cihaz kabulü açık.
 - Ardından SOL-02/03 kayıt ve plan açıkları, SOL-04/05 kalıcı kaynak/serbest deneme; bu modeller hazır olunca LUNA-05 ekranları. Hareket sözleşmesinden sonra LUNA-06.
 - Kullanıcıya ait `docs/research-audit-2026-10-16.md` içindeki mevcut değişiklik korunuyor, teslim commit'lerine katılmıyor.
+
+## SOL-01/02 · Veri kabulü ve acil arşiv, ikinci dilim
+
+Teslim: `bfd7b11`. `test/storage_recovery_test.dart` içinde 9 kontrol geçti; UI ile toplam 14 test geçti. Statik analiz temiz.
+
+- Eşzamanlı iki farklı odak kaydı korunuyor; aynı kayıt yeniden denenince çoğalmıyor, aynı kimlik/farklı içerik reddediliyor.
+- Çalışma tercihi yazımı başarısızsa eski bellek ve kalıcı değer korunuyor. İlgisiz başarılı kayıt hatayı gizlemiyor; ilgili başarılı yeniden deneme temizliyor.
+- Çelişen/eski net anahtarları, eşzamanlı farklı denemeler, başarısız deneme yazımı ve yeniden yükleme kontrol edildi.
+- Bekleyen kayıt sırasında yeni profile geçişte eski oturum eski profile yazılıyor, yeni profile sızmıyor.
+- Çok profilli yedek, bozuk ham grubun arşivi, iki export/import turu ve arşivin etkinleşmemesi kontrol edildi.
+- Sürüm 1–7 işaretleriyle temsilî tam yedek ve eski düz net yedeği okundu. Bu, bütün tarihsel sürümlerin gerçek cihaz yedekleriyle tam geçiş kabulü değildir.
+- Kesilmiş işlem günlüğü eski değeri geri yükleyerek açıldı.
+- Yeni hata bulundu/düzeltildi: `StudySchedulePreferences.fromJson` çağıranın veya const varsayılan gün listesini sıralayıp değiştirmeye çalışıyordu. Artık kopya sıralanıyor; varsayılan profille yeni profil oluşturma testi geçiyor.
+- Yeni `exportEmergencyArchive`: profil metadatası veya işlem günlüğü açılamasa da yalnız yönetilen ham tercihleri okumadan/değiştirmeden arşivler. Başlangıç ekranı normal export başarısızsa bu yola geçer. Ham arşiv normal importer tarafından kabul edilmez; ekranda doğrudan yüklenemeyeceği belirtilir.
+- Test izolasyonu için bağımsız ProfileStorage ve AppState depo enjeksiyonu eklendi. Üretimde varsayılan singleton akışı aynı.
+
+Açık: ham acil arşivden seçici insan denetimli onarım aracı; gerçek cihazda dosya seçici/Drive/iCloud sağlayıcısı; kaldırıp yeniden kurma/farklı cihaz; eski gerçek yedekler. Diğer iyimser konu/hedef/gün eylemlerinin kalıcı sonuç sözleşmesi SOL-02 içinde açık kalıyor.
