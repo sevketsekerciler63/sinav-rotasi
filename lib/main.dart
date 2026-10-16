@@ -15,7 +15,7 @@ import 'screens/mock_exam_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
-import 'services/notification_service.dart';
+import 'services/daily_reminder_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +39,7 @@ void main() async {
 
   // Initialize notifications (safe - won't crash if plugin not configured)
   try {
-    await NotificationService.initialize();
+    await DailyReminderService.initialize();
   } catch (_) {
     // Plugin not available on this platform, skip
   }

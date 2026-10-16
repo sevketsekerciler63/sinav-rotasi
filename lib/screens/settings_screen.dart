@@ -6,6 +6,7 @@ import '../providers/app_state.dart';
 import '../providers/theme_state.dart';
 import '../models/study_schedule_preferences.dart';
 import '../services/profile_storage.dart';
+import '../widgets/daily_reminder_settings_card.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -55,6 +56,8 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _schedulePreferencesCard(context, state),
+              const SizedBox(height: 12),
+              DailyReminderSettingsCard(profile: state.activeProfile),
               const SizedBox(height: 12),
 
               // Theme toggle
@@ -551,6 +554,11 @@ class SettingsScreen extends StatelessWidget {
               dialogContext,
               'Yedek ne içerir?',
               'JSON yedeği profilleri ve onlar için saklanan çalışma verilerini içerir. Dışa aktarma panoya kopyalar. İçe aktarmada önce profil/veri grubu özeti gösterilir; güncel biçim yedeği mevcut profil listesini ve çalışma verisini değiştirir.',
+            ),
+            _privacyDetail(
+              dialogContext,
+              'Hatırlatıcı ne saklar?',
+              'Android/iOS günlük hatırlatıcısı varsayılan olarak kapalıdır. Açarsan izin, saat ve tek bir günlük yerel bildirim bu cihazda tutulur; JSON yedeğine eklenmez. Kilit ekranında etkin profil adı ve kişisel plan hedefi görünebilir. Profil veya hedef tarih değiştiğinde bildirim yeniden planlanır.',
             ),
             _privacyDetail(
               dialogContext,

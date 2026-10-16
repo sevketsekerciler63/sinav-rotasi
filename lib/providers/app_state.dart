@@ -19,6 +19,7 @@ import '../data/daily_schedule_data.dart';
 import '../data/exam_calendar_data.dart';
 import '../data/achievements_data.dart';
 import '../services/profile_storage.dart';
+import '../services/daily_reminder_service.dart';
 
 enum AppBootStatus { loading, ready, error }
 
@@ -131,6 +132,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         return;
       }
       _activeProfile = _profileStorage.activeProfile;
+      _syncDailyReminder();
       if (validatedSchedulePreferences != null) {
         _schedulePreferences = validatedSchedulePreferences;
       }
@@ -248,6 +250,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
     _refreshDailyScheduleForCurrentDate();
+    _syncDailyReminder();
     // Recalculate from the current local clock in case the device timezone or
     // clock changed while the app was suspended.
     _scheduleMidnightPlanRefresh();
@@ -518,8 +521,18 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (isCurrentRequest()) {
       _bootStatus = AppBootStatus.ready;
       _loadError = null;
+      _syncDailyReminder();
       notifyListeners();
     }
+  }
+
+  void _syncDailyReminder() {
+    unawaited(
+      DailyReminderService.syncForProfile(
+        profileName: _activeProfile.name,
+        targetDate: _activeProfile.targetDate,
+      ).catchError((Object _) {}),
+    );
   }
 
   Future<void> _saveTopics() async {
