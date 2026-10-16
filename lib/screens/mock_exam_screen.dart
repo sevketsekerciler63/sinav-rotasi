@@ -876,6 +876,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
     final max = safeQuestionCount > 0 ? safeQuestionCount.toDouble() : 1.0;
     final value = val.clamp(minimum, max).toDouble();
     final fieldKey = _netFieldKey(sliderKey, subject);
+    final isSaving = _savingExams.contains(sliderKey);
     final controller = _netControllers.putIfAbsent(
       fieldKey,
       () => TextEditingController(text: NetScore.format(val)),
@@ -909,7 +910,9 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 min: minimum,
                 max: max,
                 divisions: safeQuestionCount > 0 ? safeQuestionCount * 5 : 4,
-                onChanged: safeQuestionCount == 0
+                semanticFormatterCallback: (nextValue) =>
+                    '$subject neti: ${NetScore.format(nextValue)} net',
+                onChanged: isSaving || safeQuestionCount == 0
                     ? null
                     : (v) {
                         final nextValue = (v * 4).round() / 4.0;
@@ -930,42 +933,46 @@ class _MockExamScreenState extends State<MockExamScreen> {
           ),
           SizedBox(
             width: 78,
-            child: TextField(
-              controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: val == 0 ? colors.onSurfaceVariant : colors.primary,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-              decoration: InputDecoration(
-                isDense: true,
-                labelText: 'Net',
-                errorText: _netErrors[fieldKey],
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 8,
+            child: Semantics(
+              label: '$subject neti',
+              child: TextField(
+                controller: controller,
+                readOnly: isSaving,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
                 ),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: val == 0 ? colors.onSurfaceVariant : colors.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: 'Net',
+                  errorText: _netErrors[fieldKey],
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 8,
+                  ),
+                ),
+                onChanged: (rawValue) {
+                  final parsed = NetScore.parse(rawValue);
+                  final error = NetScore.validationError(
+                    parsed,
+                    safeQuestionCount,
+                  );
+                  setState(() {
+                    if (error == null && parsed != null) {
+                      _sliderValues[sliderKey]?[subject] = parsed;
+                      _netErrors.remove(fieldKey);
+                    } else {
+                      _netErrors[fieldKey] = error!;
+                    }
+                  });
+                },
               ),
-              onChanged: (rawValue) {
-                final parsed = NetScore.parse(rawValue);
-                final error = NetScore.validationError(
-                  parsed,
-                  safeQuestionCount,
-                );
-                setState(() {
-                  if (error == null && parsed != null) {
-                    _sliderValues[sliderKey]?[subject] = parsed;
-                    _netErrors.remove(fieldKey);
-                  } else {
-                    _netErrors[fieldKey] = error!;
-                  }
-                });
-              },
             ),
           ),
         ],
