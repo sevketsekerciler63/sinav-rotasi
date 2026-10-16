@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Sınav Rotası — hedefe giden çalışma yolu</title>
+  <rect width="512" height="512" fill="#0D1B20"/>
+  <circle cx="256" cy="256" r="231" fill="#14272D" stroke="#304A4E" stroke-width="4"/>
+  <path d="M145 367c0-48 27-70 77-70 45 0 68-15 68-45 0-38-28-49-28-74 0-23 25-43 93-33" fill="none" stroke="#64D7C0" stroke-linecap="round" stroke-linejoin="round" stroke-width="24"/>
+  <circle cx="145" cy="367" r="26" fill="#C5DE78" stroke="#14272D" stroke-width="8"/>
+  <circle cx="145" cy="367" r="8" fill="#0D1B20"/>
+  <circle cx="268" cy="252" r="25" fill="#14272D" stroke="#C5DE78" stroke-width="9"/>
+  <circle cx="268" cy="252" r="7" fill="#C5DE78"/>
+  <circle cx="355" cy="145" r="37" fill="#14272D" stroke="#E3A63C" stroke-width="9"/>
+  <path d="m355 121 7 15 17 2-12 11 4 17-16-9-15 9 3-17-12-11 17-2z" fill="#E3A63C"/>
+</svg>
