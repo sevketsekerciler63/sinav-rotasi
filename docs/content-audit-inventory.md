@@ -9,9 +9,9 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 | TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 4 | 103 konu için kaynak ve sürüm bağı eksik |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
-| Kimya formül kartları | 10 | 3 | pOH, denge sabiti ve tepkime entalpisi etiketli; kaynak içeriği yine kontrol edilmeli |
+| Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
 | Biyoloji formül/kısa bilgi kartları | 8 | 0 | Kaynak eşlemesi ve koşul denetimi açık |
-| **Toplam formül kartı** | **44** | **29** | **15 kartta kaynak alanı yok** |
+| **Toplam formül kartı** | **44** | **36** | **8 kartta kaynak alanı yok** |
 
 Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtlarının statik sayımıdır. Özel kullanıcı içeriği, kapsam doğruluğu veya sınav müfredatına uygunluk sonucu değildir.
 
@@ -21,14 +21,14 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 | --- | --- | --- |
 | Matematik (14) | Pisagor Teoremi; İkinci Dereceden Denklem; Aritmetik Dizi Toplamı; Geometrik Dizi Toplamı; Permütasyon; Kombinasyon; Binom Açılımı; Daire Alanı; Küre Hacmi; Silindir Hacmi; Koni Hacmi; Logaritma Kuralı; Türev Kuralı; İntegral Kuralı | 14 kartın tümü MEB OGM kaynağına etiketli; kaynak eşlemesi formülün tam kapsamını ve müfredat uygunluğunu tek başına kanıtlamaz |
 | Fizik (12) | Newton'ın 2. Yasası; Kinetik Enerji; Potansiyel Enerji; İş; Hız Formülü; Yer Değiştirme Formülü; Ohm Yasası; Güç; Coulomb Yasası; Dalga Hızı; Esneklik Potansiyel Enerjisi; Tork (Kuvvet Momenti) | 12 kartın tümü MEB OGM kaynağına etiketli; her kaynak ve koşul uzman incelemesi bekliyor |
-| Kimya (10) | Mol Hesabi; Ideal Gaz; Molarite; Molalite; pH Hesabi; pOH Hesabi; Denge Sabiti; Avogadro; Gibbs Serbest Enerjisi; Tepkime Entalpisi | pOH, denge sabiti ve tepkime entalpisi kaynaklı; kalan 7 kartta kaynak alanı yok |
-| Biyoloji (8) | Fotosentez; Solunum; DNA Baz Eslesmesi; Chargaff Kurali; Hardy-Weinberg; Osmotik Basinc; Hücresel Solunumda ATP; Mitoz | Hepsinde kaynak alanı yok |
+| Kimya (10) | Mol Hesabi; Ideal Gaz; Molarite; Molalite; pH Hesabi; pOH Hesabi; Denge Sabiti; Avogadro; Gibbs Serbest Enerjisi; Tepkime Entalpisi | 10 kartın tümü MEB OGM/IUPAC kaynağına etiketli; kaynak eşlemesi tam kapsamı ve güncel YKS uygunluğunu tek başına kanıtlamaz |
+| Biyoloji (8) | Fotosentez; Solunum; DNA Baz Eslesmesi; Chargaff Kurali; Hardy-Weinberg; Osmotik Basinc; Hücresel Solunumda ATP; Mitoz | Hepsinde kaynak alanı yok; kaynak eşlemesi ve koşul denetimi açık |
 
 ## Öncelikli koşul ve anlam denetimi
 
 - **Matematik:** logaritma çarpım kartında `a > 0`, `a ≠ 1`, `x,y > 0`; ikinci derece denklemde `a ≠ 0` ve gerçek kök için `Δ ≥ 0`; geometrik toplamda `r = 1` özel durumu; permütasyon/kombinasyonda `n,r ∈ ℕ`, `r ≤ n` ve sıralama farkı; binomda pozitif tam sayı üssü; türevde pozitif tam sayı kuvveti; integralde `n ∈ ℚ`, `n ≠ −1` ve integral sabiti belirtiliyor. Matematik 14/14 kartın MEB OGM kaynağı eklendi; kaynakların içerik uzmanı tarafından ve güncel YKS kapsamına göre gözden geçirilmesi açık.
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
-- **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar.
+- **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** hücresel solunumdaki ATP miktarının modele bağlılığı; Hardy–Weinberg varsayımları; ozmotik basınçta ideal/seyreltik çözelti; mitozda ana hücrenin kromozom yapısı ve yavru hücre sonucu.
 - **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Dört kaynak etiketi bütün kataloğun doğrulandığı anlamına gelmez.
 
@@ -57,6 +57,13 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - Coulomb yasası: [MEB OGM Materyal · Fizik 9, Kazanım Kavrama Etkinlik Kitabı](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kazanim_kavrama/pdf/9/fizik.pdf).
 - Dalga hızı: [MEB OGM Materyal · Fen Lisesi Fizik 10, s. 14](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/10/unite3/files/basic-html/page14.html).
 - Tork ve dik moment kolu: [MEB OGM Materyal · Fen Lisesi Fizik 12, s. 43](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesifizik/12/unite1/files/basic-html/page43.html).
+- Mol hesabı `n = m/M`: [MEB OGM Materyal · Kimya 10, s. 27](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/10/elazig/unite1/files/basic-html/page27.html).
+- İdeal gaz bağıntısı ve gaz sabiti: [MEB OGM Materyal · Kimya 11, s. 20](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/11/kimya11_2unite/files/basic-html/page20.html).
+- Molarite tanımı ve çözelti hacmi: [MEB OGM Materyal · Fen Lisesi Kimya 11, s. 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite3/files/basic-html/page11.html).
+- Molalite tanımı ve çözücü kütlesi: [MEB OGM Materyal · Fen Lisesi Kimya 11, s. 13](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite3/files/basic-html/page13.html).
+- pH ve hidrojen iyonu derişimi: [MEB OGM Materyal · Fen Lisesi Kimya 11, s. 34](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite6/files/basic-html/page34.html).
+- Avogadro sabiti, mol başına tanecik sayısı: [MEB OGM Materyal · Defterim Kimya 10, s. 25](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/kimya/files/basic-html/page25.html).
+- Gibbs enerjisinin entalpi ve entropi bağıntısı: [IUPAC Gold Book · Gibbs energy](https://goldbook.iupac.org/terms/view/G02629).
 
 ## Kapanış ölçütü
 

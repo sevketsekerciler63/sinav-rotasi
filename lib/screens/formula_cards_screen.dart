@@ -227,21 +227,44 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
     ],
     'Kimya': [
       FormulaItem(
-        'Mol Hesabi',
+        'Mol Hesabı',
         'n = m / M',
-        'n: mol, m: kutle, M: mol kutlesi',
+        'Saf madde; m: kütle, M: mol kütlesi.',
+        sourceLabel: 'MEB OGM Materyal · Kimya 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/10/elazig/unite1/files/basic-html/page27.html',
       ),
-      FormulaItem('Ideal Gaz', 'PV = nRT', 'R = 0.082 L.atm/mol.K'),
-      FormulaItem('Molarite', 'M = n / V(L)', 'Cozelti derismesi'),
+      FormulaItem(
+        'İdeal Gaz',
+        'PV = nRT',
+        'İdeal gaz modeli; P: atm, V: L, T: K için R = 0,082 L·atm/(mol·K).',
+        sourceLabel: 'MEB OGM Materyal · Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/11/kimya11_2unite/files/basic-html/page20.html',
+      ),
+      FormulaItem(
+        'Molarite',
+        'M = n / V_çözelti(L)',
+        'n: çözünen molü; V: son çözeltinin hacmi. Sıcaklığa bağlıdır.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite3/files/basic-html/page11.html',
+      ),
       FormulaItem(
         'Molalite',
-        'm = n / m_cozucu(kg)',
-        'Cozucu kutlesi cinsinden',
+        'm = n / m_çözücü(kg)',
+        'n: çözünen molü; paydada çözücünün kg cinsinden kütlesi.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite3/files/basic-html/page13.html',
       ),
       FormulaItem(
-        'pH Hesabi',
-        'pH = -log[H+]',
-        '[H+]: hidrojen iyon derismesi',
+        'pH Hesabı',
+        'pH = −log[H⁺]',
+        'Seyreltik sulu çözeltilerde derişim yaklaşımı; [H⁺] mol/L.',
+        sourceLabel: 'MEB OGM Materyal · Fen Lisesi Kimya 11',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite6/files/basic-html/page34.html',
       ),
       FormulaItem(
         'pOH Hesabi',
@@ -259,11 +282,20 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page111.html',
       ),
-      FormulaItem('Avogadro', '1 mol = 6.022 x 10^23', 'Avogadro sayisi'),
+      FormulaItem(
+        'Avogadro Sayısı',
+        '1 mol ≈ 6,02 × 10²³ tanecik',
+        'Tanecik türü; atom, molekül, iyon veya başka tanecik olabilir.',
+        sourceLabel: 'MEB OGM Materyal · Kimya 10',
+        sourceUrl:
+            'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/defterim/10/kimya/files/basic-html/page25.html',
+      ),
       FormulaItem(
         'Gibbs Serbest Enerjisi',
-        '\u0394G = \u0394H - T\u0394S',
-        'Sabit sıcaklık ve basınçta; T mutlak sıcaklıktır.',
+        'ΔG = ΔH − TΔS',
+        'T sabit ve mutlak sıcaklık (K); G, H ve S aynı sistem değişimleridir.',
+        sourceLabel: 'IUPAC Gold Book · Gibbs energy',
+        sourceUrl: 'https://goldbook.iupac.org/terms/view/G02629',
       ),
       FormulaItem(
         'Tepkime Entalpisi',
