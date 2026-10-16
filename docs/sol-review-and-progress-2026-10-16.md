@@ -115,3 +115,8 @@ Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel prof
 - Gerçek cihaz jest/performance ve eski iyimser eylemler için kapsam açık; yeni hareket sözleşmesi bunların tamamlandığı anlamına gelmez.
 
 Son ortak kabul: 43 test geçti; `flutter analyze --no-pub` temiz.
+
+
+## SOL-07 · Android veri ayrımı ve dış kabul engelleri
+
+Android yedek kuralları ve ayrı cihaz tercihi deposu uygulandı; hatırlatıcı snapshot/hata düzeltmesi ve iki kontrol geçti. Debug APK derlendi. [Yapılanlar ve somut cihaz/OAuth/iOS/yayın engelleri](platform-backup-acceptance.md). CI tanımı eklendi, uzak CI çalışması iddia edilmiyor. Tam proje veya gerçek cihaz kurtarma tamamlandı sayılmıyor.

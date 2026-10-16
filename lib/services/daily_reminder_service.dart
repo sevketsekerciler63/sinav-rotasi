@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'device_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -56,12 +57,44 @@ class DailyReminderService {
   }
 
   static Future<DailyReminderSettings> readSettings() async {
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await DevicePreferences.open();
+    final raw = await preferences.getString(DevicePreferences.reminderKey);
+    if (raw != null) {
+      final json = jsonDecode(raw);
+      if (json is! Map ||
+          json['enabled'] is! bool ||
+          json['hour'] is! int ||
+          json['minute'] is! int ||
+          json['hour'] < 0 ||
+          json['hour'] > 23 ||
+          json['minute'] < 0 ||
+          json['minute'] > 59) {
+        throw const FormatException('Hatırlatıcı tercihi bozuk.');
+      }
+      return DailyReminderSettings(
+        enabled: json['enabled'],
+        hour: json['hour'],
+        minute: json['minute'],
+      );
+    }
     return DailyReminderSettings(
-      enabled: preferences.getBool(_enabledKey) ?? false,
-      hour: preferences.getInt(_hourKey) ?? 20,
-      minute: preferences.getInt(_minuteKey) ?? 0,
+      enabled: await preferences.getBool(_enabledKey) ?? false,
+      hour: await preferences.getInt(_hourKey) ?? 20,
+      minute: await preferences.getInt(_minuteKey) ?? 0,
     );
+  }
+
+  static Future<void> _saveSettings(bool enabled, int hour, int minute) async {
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      throw const FormatException('Hatırlatıcı saati geçersiz.');
+    }
+    final preferences = await DevicePreferences.open();
+    if (!await preferences.setString(
+      DevicePreferences.reminderKey,
+      jsonEncode({'enabled': enabled, 'hour': hour, 'minute': minute}),
+    )) {
+      throw StateError('Hatırlatıcı tercihi kaydedilemedi.');
+    }
   }
 
   static Future<bool?> notificationsAllowed() async {
@@ -99,12 +132,7 @@ class DailyReminderService {
         profileName: profileName,
         targetDate: targetDate,
       );
-      final preferences = await SharedPreferences.getInstance();
-      final saved =
-          await preferences.setBool(_enabledKey, true) &&
-          await preferences.setInt(_hourKey, hour) &&
-          await preferences.setInt(_minuteKey, minute);
-      if (!saved) throw StateError('Hatırlatıcı tercihi kaydedilemedi.');
+      await _saveSettings(true, hour, minute);
       return true;
     } catch (_) {
       await _plugin.cancel(_notificationId);
@@ -113,9 +141,8 @@ class DailyReminderService {
   }
 
   static Future<void> disable() async {
-    final preferences = await SharedPreferences.getInstance();
-    final removed = await preferences.setBool(_enabledKey, false);
-    if (!removed) throw StateError('Hatırlatıcı tercihi kaydedilemedi.');
+    final settings = await readSettings();
+    await _saveSettings(false, settings.hour, settings.minute);
     if (isSupportedPlatform) {
       await initialize();
       await _plugin.cancel(_notificationId);
@@ -130,9 +157,7 @@ class DailyReminderService {
   }) async {
     final settings = await readSettings();
     if (!settings.enabled) {
-      final preferences = await SharedPreferences.getInstance();
-      await preferences.setInt(_hourKey, hour);
-      await preferences.setInt(_minuteKey, minute);
+      await _saveSettings(false, hour, minute);
       return;
     }
 
@@ -146,11 +171,7 @@ class DailyReminderService {
       profileName: profileName,
       targetDate: targetDate,
     );
-    final preferences = await SharedPreferences.getInstance();
-    final saved =
-        await preferences.setInt(_hourKey, hour) &&
-        await preferences.setInt(_minuteKey, minute);
-    if (!saved) throw StateError('Hatırlatıcı saati kaydedilemedi.');
+    await _saveSettings(true, hour, minute);
   }
 
   /// Refresh the repeating notification after a profile/date/time-zone change.
@@ -161,7 +182,11 @@ class DailyReminderService {
   }) async {
     if (!isSupportedPlatform) return;
     final settings = await readSettings();
-    if (!settings.enabled) return;
+    if (!settings.enabled) {
+      await initialize();
+      await _plugin.cancel(_notificationId);
+      return;
+    }
     await initialize();
     if (await notificationsAllowed() != true) {
       await _plugin.cancel(_notificationId);

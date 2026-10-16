@@ -651,7 +651,7 @@ class SettingsScreen extends StatelessWidget {
             _privacyDetail(
               dialogContext,
               'Nerede saklanır?',
-              'Profil, hedef, ders/konu ilerlemesi ve notları, günlük plan, soru ve odak kayıtları, denemeler, zayıf konular, rozetler ve görünüm tercihi uygulamanın yerel profil deposunda tutulur. Uygulamada hesap, bulut eşitleme veya çalışma verilerini gönderen bir servis yoktur.',
+              'Profil, hedef, ders/konu ilerlemesi ve notları, günlük plan, soru ve odak kayıtları, denemeler, zayıf konular, rozetler ve görünüm tercihi uygulamanın yerel profil deposunda tutulur. Uygulamada hesap veya bulut eşitleme yoktur. Android sistem yedeği açıksa işletim sistemi çalışma deposunu kendi yedek sağlayıcısına aktarabilir; uygulama bunun gerçekleştiğini doğrulayamaz.',
             ),
             _privacyDetail(
               dialogContext,
@@ -667,6 +667,11 @@ class SettingsScreen extends StatelessWidget {
               dialogContext,
               'Hatırlatıcı ne saklar?',
               'Android/iOS günlük hatırlatıcısı varsayılan olarak kapalıdır. Açarsan izin, saat ve tek bir günlük yerel bildirim bu cihazda tutulur; JSON yedeğine eklenmez. Kilit ekranında etkin profil adı ve kişisel plan hedefi görünebilir. Profil veya hedef tarih değiştiğinde bildirim yeniden planlanır.',
+            ),
+            _privacyDetail(
+              dialogContext,
+              'Android cihaz yedeği',
+              'Android’de çalışma deposu sistem yedeği ve cihaz aktarımı kapsamına alınmıştır. Bildirim tercihleri ve son dosya dışa aktarım bilgisi ayrı dosyada tutulur, bu kapsama girmez. Bu sürüme ilk geçişte hatırlatıcı kapalı başlar; yeniden açabilirsin. Sistem yedeği cihaz, hesap, şifreleme, kota ve ayarlara bağlıdır; telefon kaybına karşı ayrı bir konuma JSON yedeği sakla. iOS ve gerçek cihaz geri yükleme kabulü henüz tamamlanmadı.',
             ),
             _privacyDetail(
               dialogContext,

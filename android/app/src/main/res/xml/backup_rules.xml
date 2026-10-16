@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Study/profile data, transaction journal and theme only. -->
+    <include domain="sharedpref" path="FlutterSharedPreferences.xml" />
+    <exclude domain="sharedpref" path="sinav_rotasi_device.xml" />
+</full-backup-content>

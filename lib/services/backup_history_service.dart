@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'device_preferences.dart';
 
 class BackupHistoryService {
   BackupHistoryService._();
@@ -11,8 +11,8 @@ class BackupHistoryService {
       ValueNotifier<DateTime?>(null);
 
   static Future<void> initialize() async {
-    final preferences = await SharedPreferences.getInstance();
-    final savedAt = preferences.getString(_lastFileExportKey);
+    final preferences = await DevicePreferences.open();
+    final savedAt = await preferences.getString(_lastFileExportKey);
     lastFileExportAt.value = savedAt == null
         ? null
         : DateTime.tryParse(savedAt)?.toLocal();
@@ -20,7 +20,7 @@ class BackupHistoryService {
 
   static Future<void> recordFileExport() async {
     final now = DateTime.now();
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await DevicePreferences.open();
     final saved = await preferences.setString(
       _lastFileExportKey,
       now.toIso8601String(),
