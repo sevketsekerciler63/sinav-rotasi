@@ -6,7 +6,7 @@ Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifa
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |
 | --- | ---: | ---: | --- |
-| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 93 | TYT Matematik 25/25, TYT Türkçe 17/17, TYT Fizik 7/7, TYT Kimya 7/7, TYT Biyoloji 6/6, TYT Sosyal 14/14, AYT Matematik 10/10 ve AYT Fizik 7/7 kaynaklı; AYT Kimya/Biyoloji toplam 14 kayıtta kaynak bağı eksik |
+| TYT + AYT konu açıklamaları (`subjects_data.dart`) | 107 | 107 | TYT 76/76, AYT Matematik 10/10, AYT Fizik 7/7, AYT Kimya 6/6 ve AYT Biyoloji 8/8 kayıtlarında kaynak bağı var; bu, kapsam veya uzman onayı değildir |
 | Matematik formül kartları | 14 | 14 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; kapsam ve uzman incelemesi açık |
 | Fizik formül kartları | 12 | 12 | Tüm kartlara MEB OGM kaynak etiketi/URL'si eklendi; konu kapsamı ve alan uzmanı incelemesi açık |
 | Kimya formül kartları | 10 | 10 | Tüm kartlar MEB OGM/IUPAC kaynaklarına bağlandı; koşul ve kapsam uzman incelemesi açık |
@@ -30,7 +30,7 @@ Sayılar kaynak kodundaki `Topic(`, `FormulaItem(` ve `sourceLabel:` kayıtları
 - **Fizik:** Newton kartı bileşke/net kuvveti `ΣF = ma` ile gösteriyor. İş formülünde sabit kuvvet ve açı; hareket denklemlerinde sabit ivme ve yer değiştirme; Coulomb yasasında noktasal yükler, ayırma uzaklığı ve ortam sabiti; güçte ortalama büyüklük; torkta dik moment kolu belirtiliyor. Fizik kartları 12/12 kaynak etiketli; konu kapsamı ve uzman incelemesi açık.
 - **Kimya:** molarite/molalite birimleri; ideal gaz varsayımı ve gaz sabiti birimleri; pH/pOH etkinlik ve okul düzeyi derişim yaklaşımı; `pKw` sıcaklık bağı; denge ifadesinde saf katı/sıvıların dışarıda kalması; standart oluşum entalpisi ve katsayılar; Gibbs bağıntısında mutlak sıcaklık ve aynı sistem değişimleri. Bu koşullar ilgili kart açıklamalarında belirtildi, 10/10 karta kaynak eklendi; güncel YKS kapsamı ve alan uzmanı incelemesi açık.
 - **Biyoloji:** oksijenli ve oksijensiz solunum ayrımı; hücresel solunum ATP miktarının modele bağlılığı; Hardy–Weinberg'in büyük popülasyon ve kuvvetlerin yokluğu varsayımları; ozmotik basınçta seyreltik ideal çözelti ve osmotik etkin tanecik derişimi; mitozda diploit ana hücre için kromozom sayısı ve yavru hücre sonucu. İlgili koşullar açıklamalara işlendi, 8/8 karta kaynak eklendi. Hardy–Weinberg'in hedef YKS kohortuna uygulanabilirliği ayrı kapsam kararı bekliyor.
-- **Konu açıklamaları:** 107 başlığın tamamı için ders, sınıf, güncel sınav kapsamı, kaynak adı/sayfası ve inceleme durumu satır bazında eşleştirilmeli. Şu an 93 kayıt kaynaklı; bu, kaynakların tüm içerik iddialarını veya güncel YKS kapsamını doğruladığı anlamına gelmez. TYT 76/76, AYT Matematik 10/10 ve AYT Fizik 7/7 kayıt kaynaklı; AYT Kimya/Biyoloji'de 14 kaydın kaynak bağı eksik.
+- **Konu açıklamaları:** 107 başlığın hepsinde kaynak adı ve bağlantısı var; bu, içerik iddialarının bütünüyle doğrulandığı veya hedef YKS kapsamının tamamlandığı anlamına gelmez. TYT 76/76, AYT Matematik 10/10, AYT Fizik 7/7, AYT Kimya 6/6 ve AYT Biyoloji 8/8 satırları kaynaklı.
 
 ## TYT Matematik konu kaynak turu — 2026-10-16
 
@@ -258,3 +258,37 @@ AYT Fizik kataloğundaki 7/7 kayıt MEB OGM veya Fen Lisesi Fizik kaynağına ba
 - [Dört Dörtlük AYT Fizik içindekiler, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/fizik/files/basic-html/page6.html) vektörler, bağıl hareket, bir/iki boyutta sabit ivme, enerji, itme-momentum, tork-denge, basit makineler, elektrik, çembersel/açısal hareket, basit harmonik hareket, dalgalar ve modern fizik alanlarında 26 başlık listeliyor. Uygulamadaki 7 kart bu alanların bir bölümünü bir araya getiriyor; her resmi alt başlığın hangi karta ve hangi çalışma görevine girdiği satır bazında eşlenmedi.
 - 7 kartın `questionCount` toplamı 14 ve branş toplamı da 14. Bu eşitlik kart başına soru adetlerinin güncel ÖSYM dağılımını yansıttığını kanıtlamaz. Hedef YKS kohortu ve seçilen sınav kitapçığına göre kapsam/soru ağırlığı kabulü açık.
 - “Dalgalar ve Optik” başlığındaki mercek bağıntısı için optik kaynak ve hedef kohort kapsamı ayrıca kontrol edilmeli; OGM AYT Matematik/Fizik içerik dizininde dalga optiği belirgin, fakat geometrik optik alt konusu TYT veya başka resmi program yerleşimiyle karışabilir.
+
+## AYT Kimya konu kaynak turu — 2026-10-16
+
+AYT Kimya kataloğundaki 6/6 kayda MEB OGM kaynağı eklendi. Gaz hacmi için sıcaklık-basınç koşulu, Kw sıcaklığı, denge sabiti ifadesi ve saf faz istisnaları, elektrot tepkimeleri, hidrokarbon genel formüllerinin sınırları ve termodinamik sıcaklık/birim koşulları açıklığa kavuşturuldu. Bu kitabın HTML sayfa dizini ile basılı sayfa numarası iki sayfa farklı; bağlantılar konu başlığı ve içerikten kontrol edildi.
+
+| Topic ID | Konu | MEB OGM / kurumsal kaynak |
+| --- | --- | --- |
+| `ayt_kim_1` | Mol hesabı ve ideal gaz | [Dört Dörtlük AYT Kimya, Gaz Yasaları ve İdeal Gaz, s. 49](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page51.html) · [Kimya 10, sınırlayıcı bileşen, s. 63](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/10/elazig/unite1/files/basic-html/page63.html) · [Yüzde verim, s. 67](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/10/elazig/unite1/files/basic-html/page67.html) |
+| `ayt_kim_2` | Sulu çözeltide asit-baz dengesi | [Dört Dörtlük AYT Kimya, Sulu Çözelti Dengeleri, s. 227](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page229.html) |
+| `ayt_kim_3` | Kimyasal denge | [Dört Dörtlük AYT Kimya, Kimyasal Denge ve Dengeyi Etkileyen Faktörler, s. 211](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page213.html) |
+| `ayt_kim_4` | Elektrokimya | [Dört Dörtlük AYT Kimya, Elektrokimyasal Hücreler, s. 283](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page285.html) · [Kimya 12, galvanik ve elektrolitik hücre farkları, s. 49](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kimya/12/unite1/files/basic-html/page49.html) |
+| `ayt_kim_5` | Organik kimya temeli | [Dört Dörtlük AYT Kimya, Hidrokarbonlar, s. 361](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page363.html) · [Organik bileşik sınıfları, s. 393](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page393.html) |
+| `ayt_kim_6` | Tepkime ısısı ve termodinamik | [Dört Dörtlük AYT Kimya, tepkime entalpisi ve Hess yasası, s. 137](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page139.html) · [IUPAC Gold Book, Gibbs enerjisi](https://goldbook.iupac.org/terms/view/G02629) |
+
+### AYT Biyoloji konu kaynakları
+
+| Konu ID | Konu | Kaynak |
+|---|---|---|
+| `ayt_bio_1` | Hücre Bölünmesi — Mitoz | [Dört Dörtlük 10. Sınıf Biyoloji, Mitoz ve Eşeysiz Üreme, basılı s. 10](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page12.html) |
+| `ayt_bio_2` | Mayoz Bölünme | [Dört Dörtlük 10. Sınıf Biyoloji, Mayoz ve Eşeyli Üreme, basılı s. 24](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page26.html) |
+| `ayt_bio_3` | Kalıtım — Mendel Genetiği | [Dört Dörtlük 10. Sınıf Biyoloji, Mendel İlkeleri ve Çaprazlamalar, basılı s. 38](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page40.html) |
+| `ayt_bio_4` | Kan Grupları ve Cinsiyete Bağlı Kalıtım | [Dört Dörtlük 10. Sınıf Biyoloji, Kan Grupları, basılı s. 54](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page56.html) · [Eşeye Bağlı Kalıtım, basılı s. 66](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page68.html) |
+| `ayt_bio_5` | Sinir Sistemi | [Dört Dörtlük AYT Biyoloji, Sinir Sistemi, s. 9](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page9.html) |
+| `ayt_bio_6` | Hormonal Sistem | [Dört Dörtlük AYT Biyoloji, Endokrin Sistem, s. 24](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page24.html) |
+| `ayt_bio_7` | Fotosentez Detay (AYT) | [Dört Dörtlük AYT Biyoloji, Fotosentez ve Kemosentez, s. 207](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page207.html) |
+| `ayt_bio_8` | Solunum Detay (AYT) | [Dört Dörtlük AYT Biyoloji, Hücresel Solunum ve Fermantasyon, s. 221](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page221.html) |
+
+### Sonraki kapsam işi — kart kataloğu ve termodinamik
+
+- [Dört Dörtlük AYT Kimya içindekiler, s. 8](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page8.html) 17 başlık listeliyor. Uygulamadaki 6 geniş karta ayrıca kuantum atom modeli, periyodik özellikler, gaz karışımları/gerçek gazlar, çözelti-derişim ve koligatif özellikler, tepkime hızı, Lewis/hibritleşme, organik sınıflar ve enerji kaynakları gibi alt kapsamlar eşlenmeli.
+- Altı kartın `questionCount` toplamı 13 ve branş toplamı 13; bu yalnız aritmetik tutarlılık sağlar, güncel ÖSYM konu/soru dağılımını kanıtlamaz. Hedef YKS kohortu ve seçilen kitapçıkla kart/görev eşlemesi açık.
+- Dört Dörtlük AYT Kimya içindekilerinde tepkime ısısı, oluşum entalpisi ve Hess yasası var; entropy ve Gibbs ifadesi aynı dizinde görünmüyor. Uygulamadaki `ΔG=ΔH−TΔS` ve ilgili formül kartı bilimsel bağıntı olarak kaynaklı olsa da hedef YKS kohortundaki kapsamı uzman/program incelemesi bekliyor.
+- [Dört Dörtlük AYT Biyoloji içindekiler, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page6.html) ile soru dağılımı, s. 8, 20 başlık listeliyor; uygulamada 8 geniş kart bulunuyor. Duyu organları, destek-hareket, sindirim, dolaşım, bağışıklık, solunum/üriner/üreme sistemleri, ekoloji, nükleik asitler/protein sentezi, biyoteknoloji ve bitki biyolojisinin alt başlıkları ayrı kartlara veya açık eşlemeye ihtiyaç duyuyor. Başlıktaki soru adetleri uygulama ağırlığına aktarılmadı; bu kitap tek başına hedef 2026/2027 YKS kapsam belgesi değildir.
+- Mitoz/mayoz ve Mendel içerikleri MEB'in 10. sınıf materyalinde yer alıyor; AYT kartı olarak hangi derinlikte çalışma görevi gerektirdikleri hedef kohort ve alan uzmanı tarafından ayrıca kabul edilmeli. Fotosentez kartının önceki C₃/C₄ karşılaştırması kaynakta teyit edilmediği için kaldırıldı; gerekirse uygun ders kitabı ve kapsamla yeniden eşleştirilecek.

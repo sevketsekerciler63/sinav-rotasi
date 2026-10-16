@@ -1400,7 +1400,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_1',
           name: 'Mol Hesabı — AYT',
           description:
-              'n=m/M. 1 mol=22.4L (STP gaz). Sınırlayıcı reaktif. Yüzde verim: gerçek/teorik×100.',
+              'Mol sayısı n=m/M ile bulunur. İdeal gazlar için PV=nRT; 0 °C ve 1 atm koşullarında yaklaşık 22,4 L gaz 1 mol eder, bu değeri başka koşullarda sabit alma. Sınırlayıcı bileşen dengelenmiş tepkimeye göre belirlenir; yüzde verim=(gerçek ürün/kuramsal ürün)×100.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, İdeal Gaz Yasası',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page51.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1410,7 +1414,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_2',
           name: 'Asit-Baz Dengesi (AYT)',
           description:
-              'pH=-log[H⁺]. Kw=10⁻¹⁴. Güçlü/zayıf asit. Titrasyon. Tampon çözeltiler.',
+              'Seyreltik sulu çözeltilerde pH≈−log[H₃O⁺]. Suyun iyon çarpımı Kw=[H₃O⁺][OH⁻] sıcaklığa bağlıdır ve 25 °C’de yaklaşık 1,0×10⁻¹⁴’tür. Güçlü/zayıf asit-baz ayrımı, titrasyon ve tampon hesaplarında derişim ile tepkime koşullarını birlikte değerlendir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, Sulu Çözelti Dengeleri',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page229.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1420,7 +1428,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_3',
           name: 'Kimyasal Denge',
           description:
-              'Kc=[ürünler]/[reaktifler]. Le Chatelier prensibi. Basınç, sıcaklık, konsantrasyon etkisi.',
+              'aA+bB⇌cC+dD için denge derişimleriyle Kc=[C]ᶜ[D]ᵈ/([A]ᵃ[B]ᵇ); saf katı ve sıvılar ifadeye yazılmaz. Derişim ve basınç değişimleri denge konumunu etkileyebilir; basınç etkisi gaz mol sayılarına bağlıdır. Sıcaklık denge sabitini değiştirir; katalizör denge konumunu değiştirmez.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, Kimyasal Denge',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page213.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1430,7 +1442,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_4',
           name: 'Elektrokimya',
           description:
-              'Oksidasyon: elektron verir. İndirgeme: elektron alır. Galvanik hücre. Elektroliz. Anot/Katot.',
+              'Yükseltgenme elektron verme, indirgenme elektron almadır. Her iki hücre türünde de yükseltgenme anotta, indirgenme katotta gerçekleşir; galvanik hücre kendiliğinden tepkimeyle elektrik üretir, elektroliz dışarıdan elektrik enerjisi gerektirir. Elektrot kutupları hücre türüne göre değişir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, Elektrokimyasal Hücreler',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page285.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1440,7 +1456,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_5',
           name: 'Organik Kimya Temeli',
           description:
-              'Alkan: CₙH₂ₙ₊₂. Alken: CₙH₂ₙ. Alkin: CₙH₂ₙ₋₂. Fonksiyonlu gruplar. İzomeri.',
+              'Açık zincirli, tek bağ içeren alkanlar CₙH₂ₙ₊₂; bir çift bağ içeren alkenler CₙH₂ₙ; bir üçlü bağ içeren alkinler CₙH₂ₙ₋₂ genel formülündedir. Bu formüller halkalı veya birden fazla doymamış bağ içeren yapılara doğrudan uygulanmaz. Fonksiyonel grupları ve yapı izomerliğini ayırt et.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, Hidrokarbonlar',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page363.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟡 ORTA',
@@ -1450,7 +1470,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_kim_6',
           name: 'Termodinamik Temeli',
           description:
-              'Entalpi (ΔH): ekzotermik (<0), endotermik (>0). Hess kanunu. Entropi. Gibbs: ΔG=ΔH-TΔS.',
+              'Ekzotermik süreçte ΔH<0, endotermik süreçte ΔH>0; Hess yasasında tepkime denklemleri toplanırken entalpi değişimleri de toplanır. ΔG=ΔH−TΔS bağıntısında T mutlak sıcaklık (K), enerji birimleri tutarlı olmalıdır. Sabit sıcaklık ve basınçta ΔG<0 ileri yöndeki sürecin istemli olduğunu gösterir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Kimya, Tepkime Isıları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/kimya/files/basic-html/page139.html',
           questionCount: 1,
           difficulty: '🔴 Zor',
           priority: '🟡 ORTA',
@@ -1474,7 +1498,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_1',
           name: 'Hücre Bölünmesi — Mitoz',
           description:
-              'Profaz→Metafaz→Anafaz→Telofaz→Sitokinez. Sonuç: 2 diploid (2n). Büyüme, onarım, eşeysiz üreme.',
+              'Profaz, metafaz, anafaz ve telofazı sitokinez izler. Diploit ana hücrede DNA eşlenmesini bir mitoz izlerse genetik açıdan ana hücreyle aynı iki diploit hücre oluşur; büyüme, onarım ve bazı eşeysiz üreme biçimlerinde görev alır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük 10. Sınıf Biyoloji, Mitoz ve Eşeysiz Üreme',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page12.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1484,7 +1512,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_2',
           name: 'Mayoz Bölünme',
           description:
-              'Mayoz I: homologlar ayrılır (2n→n). Crossing-over: genetik çeşitlilik. Mayoz II: mitoz gibi. Sonuç: 4 haploid (n).',
+              'Mayoz I’de homolog kromozomlar ayrılır ve ploidlik yarıya iner; profaz I’de crossing-over çeşitliliğe katkı verir. Mayoz II kardeş kromatitleri ayırır. Mayoz, haploit ürünler oluşturur; oogenezde sitoplazma bölünmesi eşit olmadığından tek büyük yumurta ve kutup hücreleri gelişir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük 10. Sınıf Biyoloji, Mayoz ve Eşeyli Üreme',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page26.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1494,7 +1526,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_3',
           name: 'Kalıtım — Mendel Genetiği',
           description:
-              'Dominant (AA/Aa): görünür. Resesif (aa). Monohibrit: Aa×Aa → 3:1. Test çaprazı. Dihybrid: 9:3:3:1.',
+              'Tam baskınlıkta Aa×Aa monohibrit çaprazının fenotip oranı 3:1, genotip oranı 1:2:1’dir. Bağımsız dağılım ve diğer Mendel varsayımları sağlanırsa AaBb×AaBb çaprazında 9:3:3:1 fenotip oranı beklenir. Test çaprazı baskın fenotipli bireyin genotipini ayırt etmeye yardım eder.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük 10. Sınıf Biyoloji, Kalıtımın Genel Esasları',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page40.html',
           questionCount: 3,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1504,7 +1540,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_4',
           name: 'Kan Grupları ve Cinsiyete Bağlı Kalıtım',
           description:
-              'A ve B kodominant, O resesif. Cinsiyete bağlı: X\'e bağlı kalıtım (renk körlüğü).',
+              'ABO sisteminde A ve B alelleri eş baskın, O aleli bu ikisine çekiniktir. X’e bağlı kalıtım, cinsiyete bağlı kalıtımın örneklerinden biridir; renk körlüğü bu örneklerdendir. Genotip ve olasılık yorumlarında ebeveyn genotipleri açıkça kurulmalıdır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük 10. Sınıf Biyoloji, Kan Grupları ve Eşeye Bağlı Kalıtım',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/10/biyoloji/files/basic-html/page56.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🔴 ÇOK KRİTİK',
@@ -1514,7 +1554,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_5',
           name: 'Sinir Sistemi',
           description:
-              'Nöron: dendrit+akson. SSS: beyin+omurilik. PNS. Otonom: sempatik/parasempatik. Refleks yayı.',
+              'Nöronlar dendrit, hücre gövdesi ve aksonla uyarı iletir. Merkezî sinir sistemi beyin ve omurilikten; çevresel sinir sistemi somatik ve otonom bölümlerden oluşur. Otonom sistem sempatik ve parasempatik kısımları içerir; refleks yayında omurilik rol alabilir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Biyoloji, Sinir Sistemi',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page9.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1524,7 +1568,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_6',
           name: 'Hormonal Sistem',
           description:
-              'Hipofiz, tiroit (tiroksin), paratiroit, adrenal, pankreas (insülin/glukagon). Diyabet.',
+              'Endokrin bezler hormonlarını kana verir. Hipofiz, tiroit, paratiroit, böbrek üstü bezleri ve pankreasın endokrin bölümü hormon örnekleridir; insülin ve glukagon kan glikozunun düzenlenmesinde zıt etkiler gösterir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Biyoloji, Endokrin Sistem',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page24.html',
           questionCount: 2,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1534,7 +1582,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_7',
           name: 'Fotosentez Detay (AYT)',
           description:
-              'Işık reaksiyonları (tilakoid). Calvin Döngüsü (stroma). C₃ vs C₄ bitkiler.',
+              'Bitki kloroplastında ışığa bağımlı tepkimeler tilakoit zarında; Calvin döngüsü stromada gerçekleşir. Işık tepkimelerinin ATP ve NADPH ürünleri karbon bağlama basamaklarında kullanılır; Calvin döngüsü ışığı doğrudan kullanmasa da bu ürünlere bağlıdır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Biyoloji, Fotosentez ve Kemosentez',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page207.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
@@ -1544,7 +1596,11 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_8',
           name: 'Solunum Detay (AYT)',
           description:
-              'Glikoliz→pirüvat oksidasyonu→Krebs→ETS. ATP verimi hücreye ve hesaplama modeline göre değişir; tek bir sabit toplam gibi sunulmaz. Anaerobik süreçte son ürün organizmaya ve koşullara bağlıdır.',
+              'Ökaryot hücrelerde glikoliz sitoplazmada; pirüvat oksidasyonu ve Krebs döngüsü mitokondri matriksinde; oksidatif fosforilasyon iç zarda gerçekleşir. ATP verimi hücreye ve hesaplama modeline göre değişir; fermantasyon ürünleri organizmaya ve koşullara bağlıdır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Biyoloji, Hücresel Solunum ve Fermantasyon',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page221.html',
           questionCount: 1,
           difficulty: '🟡 Orta',
           priority: '🟠 ÖNEMLİ',
