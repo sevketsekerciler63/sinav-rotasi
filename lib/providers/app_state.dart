@@ -1735,44 +1735,11 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   int get legacyUnattributedQuestionCount =>
       StudyHistoryMetrics.legacyUnattributedQuestionCount(questionEvents);
 
-  List<LegacyDailyActivity> get legacyDailyActivities {
-    final templateDateKeys = getDailySchedule()
-        .map((log) => log.dateKey)
-        .toSet();
-    final activities = <LegacyDailyActivity>[];
-    for (final entry in _dailyLogHistory.entries) {
-      if (templateDateKeys.contains(entry.key) || entry.value is! Map) {
-        continue;
-      }
-      final progress = Map<String, dynamic>.from(entry.value as Map);
-      final questions = (progress['solvedQuestions'] as num?)?.toInt() ?? 0;
-      final isCompleted = progress['isCompleted'] == true;
-      final notes = progress['weakTopicNotes'] is String
-          ? progress['weakTopicNotes'] as String
-          : '';
-      if (!isCompleted && questions <= 0 && notes.isEmpty) continue;
-      activities.add(
-        LegacyDailyActivity(
-          sourceDateKey: entry.key,
-          date: DateTime.tryParse(entry.key),
-          solvedQuestions: questions < 0 ? 0 : questions,
-          isCompleted: isCompleted,
-          weakTopicNotes: notes,
-        ),
+  List<LegacyDailyActivity> get legacyDailyActivities =>
+      StudyHistoryMetrics.legacyDailyActivities(
+        _dailyLogHistory,
+        getDailySchedule(),
       );
-    }
-    activities.sort((first, second) {
-      final firstDate = first.date;
-      final secondDate = second.date;
-      if (firstDate != null && secondDate != null) {
-        return secondDate.compareTo(firstDate);
-      }
-      if (firstDate != null) return -1;
-      if (secondDate != null) return 1;
-      return second.sourceDateKey.compareTo(first.sourceDateKey);
-    });
-    return List.unmodifiable(activities);
-  }
 
   int completedStudySessionsOn(DateTime date) {
     return StudyHistoryMetrics.completedSessionsOn(studySessions, date);

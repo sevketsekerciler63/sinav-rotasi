@@ -1,4 +1,5 @@
 import '../models/daily_log.dart';
+import '../models/legacy_daily_activity.dart';
 import '../models/question_event.dart';
 import '../models/study_session.dart';
 
@@ -41,6 +42,46 @@ class StudyHistoryMetrics {
       events
           .where((event) => event.isLegacyUnattributed)
           .fold(0, (sum, event) => sum + event.questionCount);
+
+  static List<LegacyDailyActivity> legacyDailyActivities(
+    Map<String, dynamic> dailyLogHistory,
+    Iterable<DailyLog> templateLogs,
+  ) {
+    final templateDateKeys = templateLogs.map((log) => log.dateKey).toSet();
+    final activities = <LegacyDailyActivity>[];
+    for (final entry in dailyLogHistory.entries) {
+      if (templateDateKeys.contains(entry.key) || entry.value is! Map) {
+        continue;
+      }
+      final progress = Map<String, dynamic>.from(entry.value as Map);
+      final questions = (progress['solvedQuestions'] as num?)?.toInt() ?? 0;
+      final isCompleted = progress['isCompleted'] == true;
+      final notes = progress['weakTopicNotes'] is String
+          ? progress['weakTopicNotes'] as String
+          : '';
+      if (!isCompleted && questions <= 0 && notes.isEmpty) continue;
+      activities.add(
+        LegacyDailyActivity(
+          sourceDateKey: entry.key,
+          date: DateTime.tryParse(entry.key),
+          solvedQuestions: questions < 0 ? 0 : questions,
+          isCompleted: isCompleted,
+          weakTopicNotes: notes,
+        ),
+      );
+    }
+    activities.sort((first, second) {
+      final firstDate = first.date;
+      final secondDate = second.date;
+      if (firstDate != null && secondDate != null) {
+        return secondDate.compareTo(firstDate);
+      }
+      if (firstDate != null) return -1;
+      if (secondDate != null) return 1;
+      return second.sourceDateKey.compareTo(first.sourceDateKey);
+    });
+    return List.unmodifiable(activities);
+  }
 
   static int completedSessionsOn(
     Iterable<StudySession> sessions,
