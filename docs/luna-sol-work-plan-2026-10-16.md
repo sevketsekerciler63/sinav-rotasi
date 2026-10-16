@@ -225,3 +225,7 @@ Durumlar: başlanmadı → çalışılıyor → uygulandı/inceleme bekliyor →
 
 ### Güncel kaynak ekranı teslimi
 LUNA-05 kaynak yarısı gerçek kalıcı API ile uygulandı; kaynak/görev/kısmi ilerleme/geri alma kabulü geçti. Serbest deneme yarısı ve kapasite/rapor entegrasyonu açık. Ayrıntı: [Sol ilerleme kaydı](sol-review-and-progress-2026-10-16.md).
+
+
+### SOL devamı: LUNA-05 iki ekran dilimi
+Kaynak/görev/ilerleme ekranı, kapasite ve gün beklentisi, serbest TYT/AYT/YDT deneme defteri uygulandı. Eski takvim kayıtları korunur. Sonraki dilim SOL-06 hareket sözleşmesi / LUNA-06; gerçek cihaz, OAuth ve eski gerçek yedek kabulü ayrıca açık. [Kanıtlar ve sınırlar](sol-review-and-progress-2026-10-16.md).

@@ -107,7 +107,7 @@ void main() {
       ),
     ];
     try {
-      await pumpScreen(tester, state, const MockExamScreen());
+      await pumpScreen(tester, state, const MockExamScreen(showLegacy: true));
       final field = find.byType(TextField).first;
       await tester.ensureVisible(field);
       await tester.tap(field);

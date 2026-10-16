@@ -14,6 +14,7 @@ import '../models/mock_exam.dart';
 import '../models/flashcard_review.dart';
 import '../models/weak_topic.dart';
 import '../models/learning_workspace.dart';
+import '../models/exam_attempt.dart';
 
 class BackupImportPreview {
   final bool isLegacy;
@@ -53,7 +54,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 10;
+  static const int schemaVersion = 11;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
@@ -73,6 +74,7 @@ class ProfileStorage {
     'schedule_preferences',
     'pomodoro_state',
     'learning_workspace',
+    'exam_attempts',
   ];
 
   static const String _schemaKey = 'profile_schema_version';
@@ -478,7 +480,9 @@ class ProfileStorage {
         records.any((record) => record['profileId'] != profileId)) {
       _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
     }
-    if ((key == 'pomodoro_state' || key == 'learning_workspace') &&
+    if ((key == 'pomodoro_state' ||
+            key == 'learning_workspace' ||
+            key == 'exam_attempts') &&
         payload['profileId'] != profileId) {
       _invalid('$key.profileId', 'içinde bulunduğu profil kimliğiyle eşleşen');
     }
@@ -931,6 +935,8 @@ class ProfileStorage {
 
   void _validateDataPayload(String key, dynamic value) {
     switch (key) {
+      case 'exam_attempts':
+        ExamAttemptBook.fromJson(_record(value, key));
       case 'learning_workspace':
         LearningWorkspace.fromJson(_record(value, key));
       case 'topics_data':

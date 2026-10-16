@@ -33,6 +33,16 @@ class WeeklyReportScreen extends StatelessWidget {
         final focusSessionCount = report.focusSessions;
         final focusMinutes = report.focusSeconds ~/ 60;
         final examsThisWeek = report.exams;
+        final recordedAttempts = state.examAttemptBook.attempts
+            .where(
+              (attempt) =>
+                  !attempt.archived &&
+                  !DateTime.parse(attempt.date).isBefore(weekStart) &&
+                  !DateTime.parse(
+                    attempt.date,
+                  ).isAfter(DateTime(now.year, now.month, now.day)),
+            )
+            .toList();
         final motivationMessage = totalDaysThisWeek == 0
             ? 'Hedef tarihine göre yeni bir plan dönemi bekleniyor.'
             : report.todayPlanIsOngoing && report.missedScheduledDays == 0
@@ -86,6 +96,28 @@ class WeeklyReportScreen extends StatelessWidget {
                     padding: EdgeInsets.only(bottom: 12),
                     child: Text(
                       'Kaynak planına geçişten sonraki günler kaydedilmiş beklentiye göre değerlendirilir. Soru birimindeki kaynak ilerlemesi soru toplamına katılır; aynı çalışmayı ayrıca elle girme.',
+                    ),
+                  ),
+                if (recordedAttempts.isNotEmpty)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bu hafta kaydedilen serbest denemeler: ${recordedAttempts.length}',
+                            style: textTheme.titleMedium,
+                          ),
+                          for (final attempt in recordedAttempts)
+                            Text(
+                              '${attempt.date} · ${attempt.title} · ${attempt.session}${attempt.area.isEmpty ? '' : ' ${attempt.area.toUpperCase()}'} · ${attempt.totalNet.toStringAsFixed(2)} net',
+                            ),
+                          const Text(
+                            'Farklı oturumların netleri toplanmaz. Karşılaştırmayı Denemelerim ekranında aynı alan ve dil içinde görebilirsin.',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 // Stats grid

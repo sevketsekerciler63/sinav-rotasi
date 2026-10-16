@@ -10,6 +10,7 @@ import '../models/pomodoro_timer_state.dart';
 import '../models/legacy_daily_activity.dart';
 import '../models/learning_workspace.dart';
 import '../models/mock_exam.dart';
+import '../models/exam_attempt.dart';
 import '../models/weak_topic.dart';
 import '../models/goal.dart';
 import '../models/exam_profile.dart';
@@ -59,6 +60,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   final Map<String, String> _failedWriteErrors = {};
   final Set<String> _savingMockExams = {};
   List<String> _recoveryDataKeys = [];
+  late ExamAttemptBook _examAttemptBook;
+  String? _examAttemptError;
+  ExamAttemptBook get examAttemptBook => _examAttemptBook;
+  String? get examAttemptError => _examAttemptError;
   late LearningWorkspace _learningWorkspace;
   String? _learningWorkspaceError;
 
@@ -238,6 +243,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   AppState({ProfileStorage? profileStorage})
     : _profileStorage = profileStorage ?? ProfileStorage.instance {
     _learningWorkspace = LearningWorkspace.empty(_activeProfile.id);
+    _examAttemptBook = ExamAttemptBook(_activeProfile.id, []);
     WidgetsBinding.instance.addObserver(this);
     subjects = getAllSubjects();
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
@@ -329,6 +335,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     // do not retain objects left over from the previous in-memory state.
     subjects = getAllSubjects();
     _learningWorkspace = LearningWorkspace.empty(profileId);
+    _examAttemptBook = ExamAttemptBook(profileId, []);
+    _examAttemptError = null;
     _learningWorkspaceError = null;
     _schedulePreferences = StudySchedulePreferences.defaults;
     dailyLogs = _buildDailySchedule(_activeProfile.targetDate);
@@ -387,6 +395,20 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         throw const FormatException(
           'Kaynak çalışma alanı başka bir profile bağlı.',
         );
+      }
+    }
+
+    final attemptJson = await _profileStorage.readStringForProfile(
+      profileId,
+      'exam_attempts',
+    );
+    if (!isCurrentRequest()) return;
+    if (attemptJson != null) {
+      _examAttemptBook = ExamAttemptBook.fromJson(
+        Map<String, dynamic>.from(jsonDecode(attemptJson) as Map),
+      );
+      if (_examAttemptBook.profileId != profileId) {
+        throw const FormatException('Deneme defteri başka profile bağlı.');
       }
     }
 
@@ -1652,6 +1674,69 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  Future<bool> _changeExamAttempts(
+    String identity,
+    ExamAttemptBook Function(ExamAttemptBook) change,
+  ) async {
+    if (_isProfileTransitioning) return false;
+    final profileId = activeProfile.id;
+    final errorKey = 'exam_attempts:$identity';
+    try {
+      final saved = await _profileStorage.mutateStringsForProfile(
+        profileId,
+        {'exam_attempts'},
+        (values) {
+          final raw = values['exam_attempts'];
+          final book = raw == null
+              ? ExamAttemptBook(profileId, [])
+              : ExamAttemptBook.fromJson(
+                  Map<String, dynamic>.from(jsonDecode(raw) as Map),
+                );
+          if (book.profileId != profileId) {
+            throw const FormatException('Deneme defteri başka profile bağlı.');
+          }
+          return {'exam_attempts': jsonEncode(change(book).toJson())};
+        },
+      );
+      _clearWriteErrors(profileId, {errorKey});
+      if (activeProfile.id == profileId && !_isProfileTransitioning) {
+        _examAttemptBook = ExamAttemptBook.fromJson(
+          Map<String, dynamic>.from(jsonDecode(saved['exam_attempts']!) as Map),
+        );
+        _examAttemptError = null;
+        notifyListeners();
+      }
+      return true;
+    } catch (error) {
+      if (activeProfile.id == profileId) {
+        _examAttemptError = error is FormatException
+            ? error.message.toString()
+            : 'Deneme kaydedilemedi. Yeniden dene.';
+      }
+      _recordWriteError(profileId, {errorKey}, error);
+      return false;
+    }
+  }
+
+  Future<bool> saveExamAttempt(ExamAttempt attempt) =>
+      _changeExamAttempts(attempt.id, (book) {
+        final today = DateTime.now().toIso8601String().substring(0, 10);
+        if (attempt.date.compareTo(today) > 0) {
+          throw const FormatException(
+            'Çözülmüş deneme için gelecek tarih girilemez.',
+          );
+        }
+        return book.save(attempt);
+      });
+  Future<bool> archiveExamAttempt(String id, bool archived) =>
+      _changeExamAttempts(id, (book) {
+        final attempt = book.attempts
+            .where((attempt) => attempt.id == id)
+            .firstOrNull;
+        if (attempt == null) throw const FormatException('Deneme bulunamadı.');
+        return book.save(attempt.withArchived(archived));
+      });
+
   Future<bool> rebuildResourcePlan() {
     final target = activeProfile.targetDate;
     final preferences = schedulePreferences;
@@ -2079,7 +2164,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   int get totalSolvedQuestions =>
       StudyHistoryMetrics.totalSolvedQuestions(reportQuestionEvents);
-  int get completedExams => MockExamMetrics.completedCount(mockExams);
+  int get completedExams =>
+      MockExamMetrics.completedCount(mockExams) +
+      examAttemptBook.attempts.where((attempt) => !attempt.archived).length;
   MockExam? get nextUpcomingMockExam =>
       MockExamMetrics.nextUpcoming(mockExams, now: DateTime.now());
 

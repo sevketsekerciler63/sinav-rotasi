@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:yks_study_app/models/exam_profile.dart';
+import 'exam_attempt_test.dart' show attempt;
 import 'package:yks_study_app/models/study_schedule_preferences.dart';
 import 'package:yks_study_app/models/study_session.dart';
 import 'package:yks_study_app/models/daily_log.dart';
@@ -571,6 +572,47 @@ void main() {
             .firstWhere((log) => log.dateKey == day.date)
             .isCompleted,
         isFalse,
+      );
+    },
+  );
+  test(
+    'free attempts merge, preserve failed draft state and survive profile backup',
+    () async {
+      expect(
+        await Future.wait([
+          state.saveExamAttempt(attempt('one')),
+          state.saveExamAttempt(attempt('two', area: 'say')),
+        ]),
+        [true, true],
+      );
+      store.failSuffix = '__exam_attempts';
+      expect(await state.saveExamAttempt(attempt('three')), isFalse);
+      expect(state.examAttemptBook.attempts.length, 2);
+      expect(await state.saveExamAttempt(attempt('three')), isTrue);
+      expect(state.examAttemptBook.attempts.length, 3);
+      final profile = state.activeProfile.id;
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.examAttemptBook.attempts.length, 3);
+      expect(state.completedExams, 3);
+      await state.createYksProfile(
+        name: 'İkinci',
+        scoreType: 'say',
+        startingLevel: 'basic',
+        targetDate: DateTime.now().add(const Duration(days: 100)),
+        schedulePreferences: StudySchedulePreferences.defaults,
+      );
+      expect(state.examAttemptBook.attempts, isEmpty);
+      await state.switchActiveProfile(profile);
+      expect(state.examAttemptBook.attempts.length, 3);
+      expect(await state.archiveExamAttempt('one', true), isTrue);
+      expect(state.completedExams, 2);
+      final corrupted = jsonDecode(jsonEncode(backup)) as Map<String, dynamic>;
+      corrupted['data'][profile]['exam_attempts']['profileId'] = 'foreign';
+      await expectLater(
+        storage.previewBackup(corrupted),
+        throwsFormatException,
       );
     },
   );

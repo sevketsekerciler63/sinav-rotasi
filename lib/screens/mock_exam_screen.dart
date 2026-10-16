@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/mock_exam.dart';
+import 'exam_attempts_screen.dart';
+import 'exam_comparison_screen.dart';
 import '../models/net_score.dart';
 import '../models/subject.dart';
 import '../providers/app_state.dart';
@@ -9,7 +11,8 @@ import '../theme/app_theme.dart';
 import '../widgets/app_primitives.dart';
 
 class MockExamScreen extends StatefulWidget {
-  const MockExamScreen({super.key});
+  final bool showLegacy;
+  const MockExamScreen({super.key, this.showLegacy = false});
 
   @override
   State<MockExamScreen> createState() => _MockExamScreenState();
@@ -28,6 +31,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.showLegacy) return const ExamAttemptsScreen();
     return Consumer<AppState>(
       builder: (context, state, _) {
         final completedExams =
@@ -59,7 +63,22 @@ class _MockExamScreenState extends State<MockExamScreen> {
             .length;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Deneme Takip')),
+          appBar: AppBar(
+            title: const Text('Eski deneme takvimi'),
+            actions: [
+              IconButton(
+                tooltip: 'Eski kayıtları karşılaştır',
+                icon: const Icon(Icons.compare_arrows),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const ExamComparisonScreen(showLegacy: true),
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(

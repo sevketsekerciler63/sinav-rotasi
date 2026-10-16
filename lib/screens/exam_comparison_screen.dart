@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/mock_exam.dart';
+import 'exam_attempts_screen.dart';
 import '../models/net_score.dart';
 import '../models/subject.dart';
 import '../providers/app_state.dart';
 
 class ExamComparisonScreen extends StatefulWidget {
-  const ExamComparisonScreen({super.key});
+  final bool showLegacy;
+  const ExamComparisonScreen({super.key, this.showLegacy = false});
 
   @override
   State<ExamComparisonScreen> createState() => _ExamComparisonScreenState();
@@ -19,6 +21,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.showLegacy)
+      return const ExamAttemptsScreen(comparisonOnly: true);
     return Consumer<AppState>(
       builder: (context, state, _) {
         final colors = Theme.of(context).colorScheme;

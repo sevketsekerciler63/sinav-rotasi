@@ -94,3 +94,14 @@ Teslim: `ee3f45d`. [API ve ekran sözleşmesi](resource-api-v1.md). Güncel prof
 - İlk kaynak planı gününden sonraki rapor/seri beklentileri kaydedilmiş kaynak planından alınır; önceki tarihli eski başarılar korunur. Soru birimindeki ilerleme soru toplamlarına türetilmiş olay olarak katılır, ayrıca kalıcı sayaç kopyalanmaz. Sayfa/test/video sayısı soru sayısı varsayılmaz. Aynı çalışma ayrıca elle girilmemeli.
 - 4 kapasite/geçmiş model kontrolü ve depo hata/yeniden deneme/export-import kabulü eklendi. 34 test geçti; ardından 320 px / yüzde 200 yazıda gerçek plan tamamlama ve kaynak formu kontrolü de geçti (toplam 35). Son analiz yeniden çalıştırılacak.
 - **Açık/sınır:** eski hazır şablonun sıkıştırma motoru kişisel kapasite kabulü sayılmıyor; eski kayıtlar için korunuyor. Otomatik gece yeniden dağıtımı yok, kullanıcı geleceği günceller. Önceden tutulan beklentisi olmayan eski sürüm günleri için kaçırılan görev geçmişi geriye dönük hesaplanamaz. Serbest denemeler, hareket ve gerçek cihaz/provider kabulü sırada.
+
+
+## SOL-05 / LUNA-05 · Serbest deneme defteri
+
+- `exam_attempts` v1 / profil şeması 11: öğrencinin istediği sayıda gerçek denemesi; ad/yayınevi/gün, ayrı TYT/AYT/YDT, AYT SAY/EA/SÖZ ve YDT dil alanı. Önceki 13 takvim kaydı ayrı tarihçe bağlantısında korunur.
+- Doğrudan net veya doğru/yanlış/boş. Soru sınırı, çeyrek net, doğru+yanlış+boş toplamı, tarih ve oturum/test kimlikleri doğrulanır. AYT kaydı TYT gerektirmez. SÖZ din muafiyetinde 18 felsefe/0 din seçimi bulunur.
+- Kalıcı yazımdan sonra başarı; başarısız kayıtta taslak korunur, profil değişimi eski formu durdurur. Arşiv geri açılabilir. Eşzamanlı farklı denemeler son veriye birleşir; yedek/import profil kimliği denetlenir.
+- Ana deneme ve karşılaştırma girişleri yeni deftere yönlendirildi. Aynı katalog/oturum/alan/dil/muafiyet grubunda son iki sonuç ve ders farkları karşılaştırılır; SAY/EA/YDT toplamı tek trende karıştırılmaz. Haftalık rapor yeni denemeleri ayrıca gösterir; genel tamamlanan deneme sayısına katılır.
+- Resmî katalog sürümü `yks-2026-v1`. Kaynak: [ÖSYM 2026 YKS başvuru kılavuzu](https://dokuman.osym.gov.tr/pdfdokuman/2026/YKS/basvuru_kilavuz06022026.pdf), PDF s. 50 / basılı s. 46 Tablo 1A–1B; süreler PDF s. 2. Gelecek yılın kuralları doğrulanmış gibi etiketlenmez.
+- 3 model kabulü (EA/SÖZ/YDT ayrılığı, sayım/net/tarih sınırları, 20 kayıt/retry/arşiv), gerçek depo hata/eşzamanlılık/profil/yedek kontrolü ve 320px yüzde 200 yazıda AYT-only 20,5 net + başarısız yazım sonrası taslağı yeniden kaydetme geçti. Toplam 40 test bekleniyor; tam son çalışma aşağıda güncellenecek.
+- **Açık:** eski net isimlerinin tüm tarihsel/custom ders varyasyonlarını birleştiren AUD-12 geçişi; YKS dışı sınav adaptörleri; gerçek öğrenci/device kabulü. Eski takvim grafiklerinde serbest kayıtlar varmış gibi gösterilmiyor; yeni defter kendi doğrulanmış gruplarını karşılaştırıyor.
