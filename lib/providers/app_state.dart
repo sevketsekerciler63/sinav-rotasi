@@ -1567,13 +1567,10 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       totalTopics == 0 ? 0 : completedTopics / totalTopics;
 
   int get completedDays => completedStudyDates.length;
-  int get totalDays {
-    final dates = {
-      ...completedStudyDateKeys,
-      ...dailyLogs.where((log) => !log.isRestDay).map((log) => log.dateKey),
-    };
-    return dates.length;
-  }
+  int get totalDays => DailyPlanMetrics.totalStudyDays(
+    completedDateKeys: completedStudyDateKeys,
+    logs: dailyLogs,
+  );
 
   Set<String> get completedStudyDateKeys =>
       StudyHistoryMetrics.completedStudyDateKeys(
@@ -1630,14 +1627,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   DailyLog? get todayLog {
-    final now = DateTime.now();
-    final todayKey =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    try {
-      return dailyLogs.firstWhere((l) => l.dateKey == todayKey);
-    } catch (_) {
-      return null;
-    }
+    return DailyPlanMetrics.logForDate(dailyLogs, DateTime.now());
   }
 
   /// Returns the next unfinished core task for a combined daily plan, or the

@@ -158,6 +158,25 @@ class DailyPlanMetrics {
     return null;
   }
 
+  static DailyLog? logForDate(Iterable<DailyLog> logs, DateTime date) {
+    for (final log in logs) {
+      if (log.date.year == date.year &&
+          log.date.month == date.month &&
+          log.date.day == date.day) {
+        return log;
+      }
+    }
+    return null;
+  }
+
+  static int totalStudyDays({
+    required Iterable<String> completedDateKeys,
+    required Iterable<DailyLog> logs,
+  }) => {
+    ...completedDateKeys,
+    ...logs.where((log) => !log.isRestDay).map((log) => log.dateKey),
+  }.length;
+
   static void saveLogProgress({
     required Map<String, dynamic> planEntries,
     required DailyLog changedLog,
