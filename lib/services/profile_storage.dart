@@ -12,6 +12,7 @@ import '../models/pomodoro_timer_state.dart';
 import '../models/net_score.dart';
 import '../models/mock_exam.dart';
 import '../models/flashcard_review.dart';
+import '../models/weak_topic.dart';
 
 class BackupImportPreview {
   final bool isLegacy;
@@ -51,7 +52,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 7;
+  static const int schemaVersion = 8;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
@@ -1111,6 +1112,7 @@ class ProfileStorage {
           _optionalDate(item, 'nextReviewAt', path);
           _optionalInt(item, 'reviewRepetitions', path, min: 0, max: 10000);
           _optionalInt(item, 'reviewIntervalDays', path, min: 0, max: 30);
+          WeakTopic.fromJson(item);
         });
       case 'goals_data':
         if (value is! List) _invalid(key, 'hedef listesi');

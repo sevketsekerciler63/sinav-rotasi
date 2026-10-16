@@ -520,7 +520,33 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       );
       final removedOrphans = _removeOrphanedWeakTopicReferences();
       final attachedIds = _attachWeakTopicCatalogIds();
-      if (removedOrphans || attachedIds || migratedReviewDates) {
+      var registeredLegacyReviews = false;
+      for (final entry in _dailyPlanEntries.entries) {
+        final value = entry.value;
+        if (!entry.key.startsWith('review_') ||
+            value is! Map ||
+            value['isCompleted'] != true ||
+            value['reviewTopicId'] is! String) {
+          continue;
+        }
+        final topic = weakTopics
+            .where((topic) => topic.id == value['reviewTopicId'])
+            .firstOrNull;
+        if (topic == null) continue;
+        final at =
+            DateTime.tryParse(value['completedAt'] as String? ?? '') ??
+            DateTime.now();
+        registeredLegacyReviews =
+            topic.registerLegacyReview(
+              _planReviewEventId(entry.key, topic.id),
+              at,
+            ) ||
+            registeredLegacyReviews;
+      }
+      if (removedOrphans ||
+          attachedIds ||
+          migratedReviewDates ||
+          registeredLegacyReviews) {
         await _saveWeakTopicsForProfile(profileId, _weakTopicsJson());
         if (!isCurrentRequest()) return;
       }
@@ -649,6 +675,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> _saveDailyLogs(
     DailyLog changedLog, {
     bool? completedOverride,
+    bool includeWeakTopics = false,
   }) async {
     final profileId = _activeProfile.id;
     final ids = changedLog.progressIds;
@@ -666,6 +693,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }),
       'daily_logs_quarantine': _dailyPlanQuarantineJson(),
       'question_history': jsonEncode(_questionHistoryJson()),
+      if (includeWeakTopics) 'weak_topics': _weakTopicsJson(),
     });
   }
 
@@ -1409,6 +1437,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ─── Daily Log Actions ─────────────────────────
+  String _planReviewEventId(String progressId, String topicId) =>
+      'plan:$progressId:$topicId';
+
   void toggleDayCompleted(String dateKey) {
     if (_isProfileTransitioning) return;
     final log = DailyPlanMetrics.toggleCompletionForDate(
@@ -1417,13 +1448,26 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       changedAt: DateTime.now(),
     );
     if (log == null) return;
-    if (log.isCompleted &&
-        log.progressIds.length == 1 &&
+    var reviewChanged = false;
+    if (log.progressIds.length == 1 &&
         log.progressIds.single.startsWith('review_') &&
         log.reviewTopicId != null) {
-      _recordWeakTopicReview(log.reviewTopicId!, fromPlanTask: true);
+      final topic = weakTopics
+          .where((topic) => topic.id == log.reviewTopicId)
+          .firstOrNull;
+      if (topic != null) {
+        final eventId = _planReviewEventId(log.progressIds.single, topic.id);
+        reviewChanged = log.isCompleted
+            ? topic.scheduleNextReview(DateTime.now(), eventId: eventId)
+            : topic.undoReview(eventId);
+      }
     }
-    _saveDailyLogs(log, completedOverride: log.isCompleted);
+    _saveDailyLogs(
+      log,
+      completedOverride: log.isCompleted,
+      includeWeakTopics: reviewChanged,
+    );
+    _applyWeakTopicReviews();
     checkAchievements();
     notifyListeners();
   }
@@ -1547,9 +1591,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void toggleWeakTopicStudied(String id) {
     if (_isProfileTransitioning) return;
     final topic = weakTopics.firstWhere((t) => t.id == id);
-    topic.isStudied = !topic.isStudied;
     if (topic.isStudied) {
-      topic.needsRepeat = false;
+      topic.setReviewFlags(DateTime.now(), isStudied: false);
+    } else {
       topic.scheduleNextReview(DateTime.now());
     }
     _applyWeakTopicReviews();
@@ -1561,27 +1605,23 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void toggleWeakTopicRepeat(String id) {
     if (_isProfileTransitioning) return;
     final topic = weakTopics.firstWhere((t) => t.id == id);
-    topic.needsRepeat = !topic.needsRepeat;
+    topic.setReviewFlags(DateTime.now(), needsRepeat: !topic.needsRepeat);
     _applyWeakTopicReviews();
     _saveWeakTopics();
     notifyListeners();
   }
 
   void completeWeakTopicReview(String id) {
-    _recordWeakTopicReview(id, fromPlanTask: false);
+    _recordWeakTopicReview(id);
   }
 
-  void _recordWeakTopicReview(String id, {required bool fromPlanTask}) {
+  void _recordWeakTopicReview(String id) {
     if (_isProfileTransitioning) return;
     final topic = weakTopics.firstWhere((t) => t.id == id);
     final now = DateTime.now();
-    if (!fromPlanTask &&
-        (!topic.isStudied ||
-            (!topic.needsRepeat && !topic.isReviewDueOn(now)))) {
+    if (!topic.isStudied || (!topic.needsRepeat && !topic.isReviewDueOn(now))) {
       return;
     }
-    topic.isStudied = true;
-    topic.needsRepeat = false;
     topic.scheduleNextReview(now);
     _applyWeakTopicReviews();
     _saveWeakTopics();

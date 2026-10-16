@@ -8,6 +8,8 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 import 'package:yks_study_app/models/exam_profile.dart';
 import 'package:yks_study_app/models/study_schedule_preferences.dart';
 import 'package:yks_study_app/models/study_session.dart';
+import 'package:yks_study_app/models/daily_log.dart';
+import 'package:yks_study_app/models/weak_topic.dart';
 import 'package:yks_study_app/providers/app_state.dart';
 import 'package:yks_study_app/services/profile_storage.dart';
 
@@ -345,5 +347,42 @@ void main() {
     await reopened.initialize();
     expect(prefs.getString(key), previous);
     expect(prefs.containsKey('profile_data_transaction'), isFalse);
+  });
+
+  test('plan review completion undo redo persists one review event', () async {
+    final now = DateTime.now();
+    final topic = WeakTopic(
+      id: 'review-test',
+      date: now.toIso8601String(),
+      subject: 'TYT Matematik',
+      topic: 'Test',
+      errorType: 'Test',
+      errorCount: 1,
+      action: 'Tekrar',
+      isStudied: true,
+      needsRepeat: true,
+    );
+    state.weakTopics = [topic];
+    final log = DailyLog(
+      date: now,
+      dayName: 'Kontrol',
+      tytContent: 'Tekrar',
+      aytContent: '',
+      studyHours: '30 dk',
+      motivationNote: '',
+      progressIds: ['review_${now.toIso8601String().substring(0, 10)}'],
+      reviewTopicId: topic.id,
+    );
+    state.dailyLogs = [log];
+    state.toggleDayCompleted(log.dateKey);
+    state.toggleDayCompleted(log.dateKey);
+    state.toggleDayCompleted(log.dateKey);
+    expect(topic.reviewRepetitions, 1);
+    expect(topic.reviewIntervalDays, 1);
+    final backup = await storage.exportBackup();
+    await storage.importBackup(backup);
+    await state.loadData();
+    expect(state.weakTopics.single.reviewRepetitions, 1);
+    expect(state.weakTopics.single.reviewIntervalDays, 1);
   });
 }
