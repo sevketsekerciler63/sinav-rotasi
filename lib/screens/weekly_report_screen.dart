@@ -4,6 +4,7 @@ import '../models/daily_log.dart';
 import '../models/mock_exam.dart';
 import '../models/net_score.dart';
 import '../providers/app_state.dart';
+import '../services/weekly_report_metrics.dart';
 import '../theme/app_theme.dart';
 
 class WeeklyReportScreen extends StatelessWidget {
@@ -15,58 +16,26 @@ class WeeklyReportScreen extends StatelessWidget {
       builder: (context, state, _) {
         final colors = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
-        // Calculate this week's stats
         final now = DateTime.now();
-        final weekStart = now.subtract(Duration(days: now.weekday - 1));
-        final today = DateTime(now.year, now.month, now.day);
-        final normalizedWeekStart = DateTime(
-          weekStart.year,
-          weekStart.month,
-          weekStart.day,
+        final report = WeeklyReportMetrics.current(
+          now: now,
+          logs: state.dailyLogs,
+          completedStudyDates: state.completedStudyDates,
+          questionEvents: state.questionEvents,
+          studySessions: state.studySessions,
+          mockExams: state.mockExams,
         );
-        final thisWeekLogs = state.dailyLogs.where((log) {
-          final date = DateTime(log.date.year, log.date.month, log.date.day);
-          return !date.isBefore(normalizedWeekStart) && !date.isAfter(today);
-        }).toList();
-        final completedDaysThisWeek = state.completedStudyDates
-            .where(
-              (date) =>
-                  !date.isBefore(normalizedWeekStart) && !date.isAfter(today),
-            )
-            .toList();
-        final scheduledDateKeys = thisWeekLogs
-            .where((log) => !log.isRestDay)
-            .map((log) => log.dateKey)
-            .toSet();
-        scheduledDateKeys.addAll(
-          completedDaysThisWeek.map(
-            (date) =>
-                '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
-          ),
-        );
-        final daysCompleted = completedDaysThisWeek.length;
-        final totalDaysThisWeek = scheduledDateKeys.length;
-        final todayKey =
-            '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-        final completedDateKeys = completedDaysThisWeek
-            .map(
-              (date) =>
-                  '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
-            )
-            .toSet();
-        final missedScheduledDays = scheduledDateKeys
-            .where(
-              (dateKey) =>
-                  dateKey.compareTo(todayKey) < 0 &&
-                  !completedDateKeys.contains(dateKey),
-            )
-            .length;
-        final todayPlanIsOngoing =
-            scheduledDateKeys.contains(todayKey) &&
-            !completedDateKeys.contains(todayKey);
+        final weekStart = report.weekStart;
+        final daysCompleted = report.daysCompleted;
+        final totalDaysThisWeek = report.totalDays;
+        final dailyBreakdown = report.dailyBreakdown;
+        final questionsThisWeek = report.questions;
+        final focusSessionCount = report.focusSessions;
+        final focusMinutes = report.focusSeconds ~/ 60;
+        final examsThisWeek = report.exams;
         final motivationMessage = totalDaysThisWeek == 0
             ? 'Hedef tarihine göre yeni bir plan dönemi bekleniyor.'
-            : todayPlanIsOngoing && missedScheduledDays == 0
+            : report.todayPlanIsOngoing && report.missedScheduledDays == 0
             ? 'Bugünün planı gün içinde tamamlanabilir; haftalık durum gün sonunda güncellenecek.'
             : daysCompleted >= totalDaysThisWeek
             ? 'Şu ana kadarki planlı günleri tamamladın; haftanın kalan planına devam et.'
@@ -74,74 +43,9 @@ class WeeklyReportScreen extends StatelessWidget {
             ? 'İyi gidiyorsun! Kalan günlerde planına devam et.'
             : 'Önceki plan günlerinden biri eksik kaldı; bugün bir sonraki adıma odaklan.';
         final legacyActivities = state.legacyDailyActivities;
-        final dailyBreakdown =
-            <
-              ({
-                DateTime date,
-                DailyLog? log,
-                bool completed,
-                int questions,
-                int sessions,
-                int minutes,
-              })
-            >[];
-        for (
-          var date = normalizedWeekStart;
-          !date.isAfter(today);
-          date = DateTime(date.year, date.month, date.day + 1)
-        ) {
-          DailyLog? log;
-          for (final candidate in thisWeekLogs) {
-            if (candidate.date.year == date.year &&
-                candidate.date.month == date.month &&
-                candidate.date.day == date.day) {
-              log = candidate;
-              break;
-            }
-          }
-          final questions = state.solvedQuestionsOn(date);
-          final sessions = state.completedStudySessionsOn(date);
-          final minutes = state.studyMinutesOn(date);
-          final completed = completedDaysThisWeek.any(
-            (completedDate) =>
-                completedDate.year == date.year &&
-                completedDate.month == date.month &&
-                completedDate.day == date.day,
-          );
-          if (log != null || completed || questions > 0 || sessions > 0) {
-            dailyBreakdown.add((
-              date: date,
-              log: log,
-              completed: completed,
-              questions: questions,
-              sessions: sessions,
-              minutes: minutes,
-            ));
-          }
-        }
-        final questionsThisWeek = dailyBreakdown.fold<int>(
-          0,
-          (total, day) => total + day.questions,
-        );
-        final focusSessionCount = state.completedStudySessionsBetween(
-          normalizedWeekStart,
-          today,
-        );
-        final focusMinutes =
-            state.studySecondsBetween(normalizedWeekStart, today) ~/ 60;
 
         // Total curriculum progress; Topic does not record a completion date.
         final topicsCompleted = state.completedTopics;
-
-        // This week's exams
-        final weekEndExclusive = normalizedWeekStart.add(
-          const Duration(days: 7),
-        );
-        final examsThisWeek = state.mockExams.where((e) {
-          final d = e.displayDate;
-          return !d.isBefore(normalizedWeekStart) &&
-              d.isBefore(weekEndExclusive);
-        }).toList();
 
         return Scaffold(
           appBar: AppBar(title: const Text('📈 Haftalık Rapor')),
