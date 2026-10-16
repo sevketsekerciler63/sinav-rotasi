@@ -92,6 +92,14 @@ class _MockExamScreenState extends State<MockExamScreen> {
                       'önerilerinden ayrıdır. Plan görevleri gerçek denemeyle otomatik '
                       'eşleşmez; sonuçlarını burada kaydet.',
                 ),
+                for (final exam in state.mockExams.where(
+                  (exam) => exam.unmappedNets.isNotEmpty,
+                ))
+                  AppInfoBanner(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    message:
+                        '${exam.id}: Eski ders adı eşleşmiyor; bu netler toplama katılmıyor ve yedekte korunuyor: ${exam.unmappedNets.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ')}. Doğru sonucu bildiğinde ilgili ders alanına yeniden gir.',
+                  ),
                 if (tytTrendCount >= 2 || aytTrendCount >= 2) ...[
                   const AppSectionHeader(title: 'Net Trendi'),
                   const SizedBox(height: 12),
@@ -422,14 +430,15 @@ class _MockExamScreenState extends State<MockExamScreen> {
       if (exam.type.contains('AYT')) ...aytSubjects,
     ];
     final tytKeys = officialTytSubjects
-        .map((subject) => MockExam.netKeyForSubject(subject.type, subject.name))
+        .map((subject) => MockExam.scoreKeyForSubject(subject))
         .toList();
     final aytKeys = officialAytSubjects
-        .map((subject) => MockExam.netKeyForSubject(subject.type, subject.name))
+        .map((subject) => MockExam.scoreKeyForSubject(subject))
         .toList();
-    final extraKeys = [...extraTytSubjects, ...trackedExtraAytSubjects]
-        .map((subject) => MockExam.netKeyForSubject(subject.type, subject.name))
-        .toList();
+    final extraKeys = [
+      ...extraTytSubjects,
+      ...trackedExtraAytSubjects,
+    ].map((subject) => MockExam.scoreKeyForSubject(subject)).toList();
     final sliderKey = '${state.activeProfile.id}:${exam.id}';
     final attemptDate = _attemptDates.putIfAbsent(sliderKey, () {
       final defaultDate =
@@ -441,11 +450,8 @@ class _MockExamScreenState extends State<MockExamScreen> {
     _sliderValues.putIfAbsent(sliderKey, () {
       final m = exam.normalizedNets;
       for (final subject in examSubjects) {
-        final key = MockExam.netKeyForSubject(subject.type, subject.name);
-        m.putIfAbsent(
-          key,
-          () => exam.netForSubject(subject.type, subject.name),
-        );
+        final key = MockExam.scoreKeyForSubject(subject);
+        m.putIfAbsent(key, () => exam.netForCatalogSubject(subject));
       }
       return m;
     });
@@ -453,11 +459,8 @@ class _MockExamScreenState extends State<MockExamScreen> {
     // Keep newly added profile subjects available when the screen is already open.
     final examValues = _sliderValues[sliderKey]!;
     for (final subject in examSubjects) {
-      final key = MockExam.netKeyForSubject(subject.type, subject.name);
-      examValues.putIfAbsent(
-        key,
-        () => exam.netForSubject(subject.type, subject.name),
-      );
+      final key = MockExam.scoreKeyForSubject(subject);
+      examValues.putIfAbsent(key, () => exam.netForCatalogSubject(subject));
     }
 
     return Container(
@@ -614,7 +617,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
               (subject) => _netSlider(
                 context,
                 sliderKey,
-                MockExam.netKeyForSubject(subject.type, subject.name),
+                MockExam.scoreKeyForSubject(subject),
                 subject.totalQuestions,
               ),
             ),
@@ -633,7 +636,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 (subject) => _netSlider(
                   context,
                   sliderKey,
-                  MockExam.netKeyForSubject(subject.type, subject.name),
+                  MockExam.scoreKeyForSubject(subject),
                   subject.totalQuestions,
                 ),
               ),
@@ -655,7 +658,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 (subject) => _netSlider(
                   context,
                   sliderKey,
-                  MockExam.netKeyForSubject(subject.type, subject.name),
+                  MockExam.scoreKeyForSubject(subject),
                   subject.totalQuestions,
                 ),
               ),
@@ -674,7 +677,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   (subject) => _netSlider(
                     context,
                     sliderKey,
-                    MockExam.netKeyForSubject(subject.type, subject.name),
+                    MockExam.scoreKeyForSubject(subject),
                     subject.totalQuestions,
                   ),
                 ),
@@ -735,10 +738,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                     : () async {
                         final validationErrors = <String, String>{};
                         for (final subject in examSubjects) {
-                          final key = MockExam.netKeyForSubject(
-                            subject.type,
-                            subject.name,
-                          );
+                          final key = MockExam.scoreKeyForSubject(subject);
                           final fieldKey = _netFieldKey(sliderKey, key);
                           final rawValue =
                               _netControllers[fieldKey]?.text ??
@@ -768,10 +768,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                         }
                         final nets = exam.normalizedNets;
                         for (final subject in examSubjects) {
-                          final key = MockExam.netKeyForSubject(
-                            subject.type,
-                            subject.name,
-                          );
+                          final key = MockExam.scoreKeyForSubject(subject);
                           nets[key] = _sliderValues[sliderKey]?[key] ?? 0;
                         }
                         final selectedDateIsKnown =
@@ -874,8 +871,16 @@ class _MockExamScreenState extends State<MockExamScreen> {
     int questionCount,
   ) {
     final colors = Theme.of(context).colorScheme;
+    final catalogSubject = context
+        .read<AppState>()
+        .subjects
+        .where((item) => MockExam.scoreKeyForSubject(item) == subject)
+        .firstOrNull;
+    final displayLabel = catalogSubject == null
+        ? subject
+        : '${catalogSubject.type} ${catalogSubject.name.replaceFirst('${catalogSubject.type} ', '')}';
     final textTheme = Theme.of(context).textTheme;
-    final shortName = subject.replaceFirst(RegExp(r'^(TYT|AYT) '), '');
+    final shortName = displayLabel.replaceFirst(RegExp(r'^(TYT|AYT) '), '');
     final val = _sliderValues[sliderKey]?[subject] ?? 0;
     final safeQuestionCount = questionCount < 0 ? 0 : questionCount;
     final minimum = NetScore.minimumForQuestionCount(safeQuestionCount);
@@ -917,7 +922,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                 max: max,
                 divisions: safeQuestionCount > 0 ? safeQuestionCount * 5 : 4,
                 semanticFormatterCallback: (nextValue) =>
-                    '$subject neti: ${NetScore.format(nextValue)} net',
+                    '$displayLabel neti: ${NetScore.format(nextValue)} net',
                 onChanged: isSaving || safeQuestionCount == 0
                     ? null
                     : (v) {
@@ -940,7 +945,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
           SizedBox(
             width: 78,
             child: Semantics(
-              label: '$subject neti',
+              label: '$displayLabel neti',
               child: TextField(
                 controller: controller,
                 readOnly: isSaving,

@@ -80,8 +80,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                   (subject.type != 'AYT' ||
                       (exam1.type.contains('AYT') &&
                           exam2.type.contains('AYT'))) &&
-                  exam1.hasNetForSubject(subject.type, subject.name) &&
-                  exam2.hasNetForSubject(subject.type, subject.name),
+                  exam1.hasNetForCatalogSubject(subject) &&
+                  exam2.hasNetForCatalogSubject(subject),
             )
             .toList();
         double radarValue(MockExam exam, Subject subject) {
@@ -89,7 +89,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
           if (questionCount <= 0) return 0;
           final minimum = NetScore.minimumForQuestionCount(questionCount);
           final possibleRange = questionCount - minimum;
-          final position = exam.netForSubject(subject.type, subject.name);
+          final position = exam.netForCatalogSubject(subject);
           return ((position - minimum) / possibleRange * 100)
               .clamp(0, 100)
               .toDouble();
@@ -97,8 +97,8 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
 
         final radarAccessibleSummary = comparisonSubjects
             .map((subject) {
-              final exam1Net = exam1.netForSubject(subject.type, subject.name);
-              final exam2Net = exam2.netForSubject(subject.type, subject.name);
+              final exam1Net = exam1.netForCatalogSubject(subject);
+              final exam2Net = exam2.netForCatalogSubject(subject);
               final difference = exam2Net - exam1Net;
               final differenceLabel =
                   '${difference >= 0 ? '+' : ''}${NetScore.format(difference)} net';
@@ -389,22 +389,10 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
                         ),
                       ),
                       ...subjects.map((subject) {
-                        final hasN1 = exam1.hasNetForSubject(
-                          subject.type,
-                          subject.name,
-                        );
-                        final hasN2 = exam2.hasNetForSubject(
-                          subject.type,
-                          subject.name,
-                        );
-                        final n1 = exam1.netForSubject(
-                          subject.type,
-                          subject.name,
-                        );
-                        final n2 = exam2.netForSubject(
-                          subject.type,
-                          subject.name,
-                        );
+                        final hasN1 = exam1.hasNetForCatalogSubject(subject);
+                        final hasN2 = exam2.hasNetForCatalogSubject(subject);
+                        final n1 = exam1.netForCatalogSubject(subject);
+                        final n2 = exam2.netForCatalogSubject(subject);
                         final diff = hasN1 && hasN2 ? n2 - n1 : null;
                         return Container(
                           padding: const EdgeInsets.symmetric(

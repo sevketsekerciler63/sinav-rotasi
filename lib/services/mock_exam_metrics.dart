@@ -27,7 +27,7 @@ class MockExamMetrics {
   }) {
     final Map<String, double> normalized;
     try {
-      normalized = MockExam.canonicalizeNets(nets);
+      normalized = MockExam.canonicalizeNetsForCatalog(nets, subjects);
     } on FormatException {
       return false;
     }
@@ -35,7 +35,7 @@ class MockExamMetrics {
       return false;
     }
     for (final subject in subjects) {
-      final key = MockExam.netKeyForSubject(subject.type, subject.name);
+      final key = MockExam.scoreKeyForSubject(subject);
       final value = normalized[key];
       if (value != null && !NetScore.isValid(value, subject.totalQuestions)) {
         return false;

@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:yks_study_app/models/exam_profile.dart';
+import 'package:yks_study_app/models/mock_exam.dart';
 import 'package:yks_study_app/models/goal.dart';
 import 'exam_attempt_test.dart' show attempt;
 import 'package:yks_study_app/models/study_schedule_preferences.dart';
@@ -161,18 +162,24 @@ void main() {
         [true, true],
       );
       await state.loadData();
-      expect(state.mockExams[0].nets, {'TYT Türkçe': 20.25});
-      expect(state.mockExams[1].nets, {'TYT Matematik': 12.5});
+      expect(state.mockExams[0].netForSubject('TYT', 'Türkçe'), 20.25);
+      expect(state.mockExams[1].netForSubject('TYT', 'Matematik'), 12.5);
       store.failSuffix = '__mock_exams';
       expect(
         await state.updateMockExam(first.id, nets: {'TYT Türkçe': 30}),
         isFalse,
       );
-      expect(state.mockExams[0].nets, {'TYT Türkçe': 20.25});
+      expect(state.mockExams[0].netForSubject('TYT', 'Türkçe'), 20.25);
       expect(
         (jsonDecode((await storage.readString('mock_exams'))!)
             as Map)[first.id]['nets'],
-        {'TYT Türkçe': 20.25},
+        {
+          MockExam.scoreKeyForSubject(
+            state.subjects.firstWhere(
+              (subject) => subject.name == 'TYT Türkçe',
+            ),
+          ): 20.25,
+        },
       );
     },
   );
@@ -284,7 +291,7 @@ void main() {
       expect((await storage.previewBackup(legacy)).isLegacy, isTrue);
       await storage.importBackup(legacy);
       await state.loadData();
-      expect(state.mockExams.first.nets, {'TYT Türkçe': 12.25});
+      expect(state.mockExams.first.netForSubject('TYT', 'Türkçe'), 12.25);
     },
   );
 
@@ -936,6 +943,81 @@ void main() {
             .firstWhere((badge) => badge.id == 'topic_1')
             .isUnlocked,
         isTrue,
+      );
+    },
+  );
+  test(
+    'reserved official aliases cannot be created and old ambiguous nets stay inert through backup',
+    () async {
+      for (final name in ['Turkce', 'Türkçe', ' TURKCE ', 'tyt türkçe']) {
+        await expectLater(
+          state.addCustomSubject(name: name, type: 'TYT', totalQuestions: 20),
+          throwsStateError,
+        );
+      }
+      final profile = state.activeProfile.id;
+      await storage.writeStringsForProfile(profile, {
+        'custom_curriculum': jsonEncode({
+          'version': 1,
+          'customSubjects': [
+            {
+              'id': 'custom_subject_123',
+              'name': 'Turkce',
+              'type': 'TYT',
+              'emoji': '',
+              'totalQuestions': 20,
+              'topics': [],
+            },
+          ],
+          'customTopics': [],
+        }),
+        'mock_exams': jsonEncode({
+          state.mockExams.first.id: {
+            'isCompleted': true,
+            'nets': {'TYT Turkce': 20},
+          },
+        }),
+      });
+      await state.loadData();
+      expect(
+        state.mockExams.first.totalForSubjects(
+          state.tytSubjects.where((subject) => !subject.isCustom),
+        ),
+        0,
+      );
+      expect(state.mockExams.first.unmappedNets, {'TYT Turkce': 20});
+      expect(
+        (await storage.readString('mock_exams'))!,
+        contains('legacy-unmapped:TYT Turkce'),
+      );
+      final custom = state.subjects.firstWhere((subject) => subject.isCustom);
+      expect(
+        await state.updateMockExam(
+          state.mockExams.first.id,
+          nets: {MockExam.scoreKeyForSubject(custom): 12},
+        ),
+        isTrue,
+      );
+      expect(state.mockExams.first.netForCatalogSubject(custom), 12);
+      expect(
+        state.mockExams.first.totalForSubjects(
+          state.tytSubjects.where((subject) => !subject.isCustom),
+        ),
+        0,
+      );
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
+      await state.loadData();
+      expect(state.mockExams.first.unmappedNets, {'TYT Turkce': 20});
+      expect(
+        (await storage.readString('mock_exams'))!,
+        contains('legacy-unmapped:TYT Turkce'),
+      );
+      expect(
+        state.mockExams.first.netForCatalogSubject(
+          state.subjects.firstWhere((subject) => subject.isCustom),
+        ),
+        12,
       );
     },
   );

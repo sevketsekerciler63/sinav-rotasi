@@ -150,3 +150,12 @@ Eski şablonda gün tamamlama, soru sayımı ve bağlı tekrar olayı artık son
 - Rozetler ayrı aday listesinde hesaplanır, son kalıcı rozetlerle birleştirilir; yazılamayan rozet açılmış görünmez ve başarı başlığı yayımlanmaz. Kaynak günü, yeni serbest deneme ve zayıf konu başarısı da rozet hesabını tetikler. Eski 13 takvim rozetinin adı, sınırsız yeni denemeler bitmiş gibi anlaşılmayacak şekilde açıklandı.
 - Gerçek kart ekranında ikinci grup yazımı hatası → kart değişmedi → aynı değerlendirmeyi yeniden yaz → sonraki kart kabulü geçti. Rozet disk hatası → temel konu kaydı korunur fakat rozet kapalı → kalıcı retry → yeniden açılış kabulü geçti.
 - Odaklı 22 test geçti (21 depolama + 1 kart ekranı). Tam son çalışma/derlemeler ayrıca yapılacak. AUD-12 eski görünen ad net kimlikleri sonraki kaynak işi.
+
+
+## 17 Ekim · AUD-12 eski net adlarının ders kimliğine geçişi
+
+- Profil şeması 12. Eski takvim sonuçları da `subject:<storageId>` ile saklanır; gösterim adı değişmez kimliğin yerine kullanılmaz. Kişisel ders alanı, karşılaştırma, resmî toplam ve yedek doğrulaması aynı kimliği kullanır. Gösterilen etiketler okunur ders adıdır.
+- Yeni özel derste Türkçe/ASCII, boşluk, harf ve oturum öneki varyasyonları resmî adla çakışıyorsa ekleme reddedilir.
+- Eski belirsiz özel/resmî ad değerleri `legacy-unmapped:<eski anahtar>` altında korunur, resmî/kişisel toplamlara katılmaz. Eski takvim ekranı eşleştirilemeyen netleri açıkça listeler. Kullanıcı doğru sonucu biliyorsa ilgili kimlikli alana yeniden girebilir; ham eski değer yedekte kalır. Hangi derse ait olduğu bilinmeyen eski değer tahminle dağıtılmaz.
+- Açılışta son kalıcı deneme haritası kuyruk içinde dönüştürülür; hata işaretlenir ve eski ham değer kaybolmaz. Backup/import da aynı adaptörü kullanır. Deneme geçmişi bağlı kişisel dersin silinmesi engellenir.
+- Alias/çelişki sınırları, eşzamanlı iki deneme, eski düz yedek, gerçek etiket semantiği ve belirsiz özel ders → ID ile yeni net → export/import kabulü geçti. **Toplam 55 test geçti; analiz temiz.**

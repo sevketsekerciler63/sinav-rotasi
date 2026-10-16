@@ -15,6 +15,7 @@ import '../models/flashcard_review.dart';
 import '../models/weak_topic.dart';
 import '../models/learning_workspace.dart';
 import '../models/exam_attempt.dart';
+import '../models/subject.dart';
 
 class BackupImportPreview {
   final bool isLegacy;
@@ -54,7 +55,7 @@ class ProfileStorage {
 
   static final ProfileStorage instance = ProfileStorage._();
 
-  static const int schemaVersion = 11;
+  static const int schemaVersion = 12;
   static const String backupFormat = 'sinav-rotasi-backup';
   static const String emergencyArchiveFormat = 'sinav-rotasi-emergency-archive';
   static const List<String> dataKeys = [
@@ -737,36 +738,44 @@ class ProfileStorage {
   }
 
   void _validateNetScores(Map<String, dynamic> profileValues) {
-    final questionCounts = <String, int>{
-      for (final subject in getAllSubjects())
-        MockExam.netKeyForSubject(subject.type, subject.name):
-            subject.totalQuestions,
-    };
+    final catalog = getAllSubjects();
     final curriculum = profileValues['custom_curriculum'];
     if (curriculum is Map && curriculum['customSubjects'] is List) {
-      for (final subjectValue in curriculum['customSubjects'] as List) {
-        if (subjectValue is! Map ||
-            subjectValue['type'] is! String ||
-            subjectValue['name'] is! String ||
-            subjectValue['totalQuestions'] is! int) {
-          continue; // The curriculum validator reports malformed definitions.
+      for (final raw in curriculum['customSubjects']) {
+        if (raw is! Map ||
+            raw['id'] is! String ||
+            raw['type'] is! String ||
+            raw['name'] is! String ||
+            raw['totalQuestions'] is! int) {
+          continue;
         }
-        final type = subjectValue['type'] as String;
-        final name = subjectValue['name'] as String;
-        questionCounts[MockExam.netKeyForSubject(type, name)] =
-            subjectValue['totalQuestions'] as int;
+        catalog.add(
+          Subject(
+            id: raw['id'],
+            isCustom: true,
+            name: raw['name'],
+            emoji: '',
+            type: raw['type'],
+            totalQuestions: raw['totalQuestions'],
+            topics: [],
+          ),
+        );
       }
     }
+    final questionCounts = {
+      for (final subject in catalog)
+        MockExam.scoreKeyForSubject(subject): subject.totalQuestions,
+    };
 
     final exams = profileValues['mock_exams'];
     if (exams is! Map) return;
     for (final examEntry in exams.entries) {
       final exam = examEntry.value;
       if (exam is! Map || exam['nets'] is! Map) continue;
-      final canonical = MockExam.canonicalizeNets({
+      final canonical = MockExam.canonicalizeNetsForCatalog({
         for (final entry in (exam['nets'] as Map).entries)
           entry.key as String: (entry.value as num).toDouble(),
-      });
+      }, catalog);
       exam['nets'] = canonical;
       for (final netEntry in canonical.entries) {
         final key = netEntry.key;

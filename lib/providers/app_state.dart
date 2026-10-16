@@ -542,6 +542,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       for (var exam in mockExams) {
         if (data.containsKey(exam.id)) {
           exam.fromJson(data[exam.id]);
+          exam.applySubjectCatalog(subjects);
           if (exam.isCompleted && exam.completedAt == null) {
             final original = originalDates[exam.id];
             if (original != null) {
@@ -552,6 +553,41 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             }
           }
         }
+      }
+    }
+
+    if (examsJson != null) {
+      final catalog = List<Subject>.of(subjects);
+      Map<String, dynamic> migrate(String raw) {
+        final data = Map<String, dynamic>.from(jsonDecode(raw) as Map);
+        for (final record in data.values) {
+          if (record is Map && record['nets'] is Map) {
+            record['nets'] = MockExam.canonicalizeNetsForCatalog({
+              for (final entry in (record['nets'] as Map).entries)
+                entry.key as String: (entry.value as num).toDouble(),
+            }, catalog);
+          }
+        }
+        return data;
+      }
+
+      final migrated = migrate(examsJson);
+      if (jsonEncode(migrated) != examsJson) {
+        try {
+          await _profileStorage.mutateStringsForProfile(
+            profileId,
+            {'mock_exams'},
+            (values) => {
+              'mock_exams': jsonEncode(
+                migrate(values['mock_exams'] ?? examsJson),
+              ),
+            },
+          );
+          _clearWriteErrors(profileId, {'mock_exams:migration'});
+        } catch (error) {
+          _recordWriteError(profileId, {'mock_exams:migration'}, error);
+        }
+        if (!isCurrentRequest()) return;
       }
     }
 
@@ -1134,6 +1170,22 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             'Kaynak geçmişi bağlı olan ders silinemez.',
           );
         }
+        final removedSubjects = original.where(
+          (subject) => !remainingSubjects.contains(subject.storageId),
+        );
+        if (removedSubjects.any(
+          (subject) => mockExams.any(
+            (exam) =>
+                exam.nets.containsKey(MockExam.scoreKeyForSubject(subject)) ||
+                exam.nets.containsKey(
+                  MockExam.netKeyForSubject(subject.type, subject.name),
+                ),
+          ),
+        )) {
+          throw const FormatException(
+            'Deneme sonucu bağlı olan ders silinemez.',
+          );
+        }
         final remainingTopics = subjects
             .expand((subject) => subject.topics)
             .map((topic) => topic.id)
@@ -1223,7 +1275,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final existingNetLabel = subject.name.startsWith('$type ')
             ? subject.name
             : '$type ${subject.name}';
-        return existingNetLabel.toLowerCase() == netLabel.toLowerCase();
+        return MockExam.foldedSubjectKey(type, existingNetLabel) ==
+            MockExam.foldedSubjectKey(type, netLabel);
       })) {
         throw ArgumentError('Bu ders zaten listede var.');
       }
@@ -1797,7 +1850,14 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         targetNet: current.targetNet,
         analysisMethod: current.analysisMethod,
       )..fromJson(current.toJson());
-      if (nets != null) candidate.nets = MockExam.canonicalizeNets(nets);
+      if (nets != null) {
+        candidate.nets = {
+          for (final entry in current.nets.entries)
+            if (entry.key.startsWith('legacy-unmapped:'))
+              entry.key: entry.value,
+          ...MockExam.canonicalizeNetsForCatalog(nets, subjects),
+        };
+      }
       if (isCompleted != null) {
         candidate.isCompleted = isCompleted;
         if (!isCompleted) {
@@ -2095,8 +2155,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         _applyWeakTopicReviews();
       },
     );
-    if (saved && profile == activeProfile.id && !isProfileTransitioning)
+    if (saved && profile == activeProfile.id && !isProfileTransitioning) {
       await checkAchievements();
+    }
     return saved;
   }
 
