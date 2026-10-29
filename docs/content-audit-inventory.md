@@ -321,10 +321,12 @@ AYT Edebiyat, Tarih-1, Coğrafya-1, Tarih-2 ve Coğrafya-2 için 40 hazır konu 
 | AYT Tarih-2 (11 soru, SÖZ) | `ayt_tar2_1`–`5` | Aynı kitap — "İki Savaş Arasındaki Dönem"den "21. Yüzyılın Eşiği"ne kadar |
 | AYT Coğrafya-1 (6 soru, EA/SÖZ) | `ayt_cog1_1`–`6` | [Dört Dörtlük AYT Coğrafya, s. 8](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/cografya/files/basic-html/page8.html) — ilk dokuz ünite |
 | AYT Coğrafya-2 (11 soru, SÖZ) | `ayt_cog2_1`–`6` | Aynı kitap — son dokuz ünite |
+| AYT Felsefe grubu (12 soru, SÖZ; din muafında 18) | `ayt_fel_1`–`12` | Kavram öğretimi çalışma listeleri, s. 5: [Felsefe 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/felsefe/files/basic-html/page5.html) (5 ünite), [Psikoloji 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/psikoloji/files/basic-html/page5.html) (4 ünite), [Sosyoloji 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/sosyoloji/files/basic-html/page5.html) (6 ünite), [Mantık 11](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11/mantik/files/basic-html/page5.html) (4 ünite) |
 
 Açık noktalar (doğrulanacak):
 
 - Tarih-1/Tarih-2 ve Coğrafya-1/Coğrafya-2 ayrımı kitap ünitelerinin sınıf düzeyine göre yapıldı; Tarih-2 ve Coğrafya-2 testleri 1. testlerin kapsamını da içerir. Ayrımın güncel ÖSYM kapsamıyla birebir uyumu alan uzmanınca doğrulanmadı.
 - Konu `questionCount` değerleri planlama ağırlığıdır; ÖSYM soru dağılımı değildir. Tarih-2 ve Coğrafya-2'de konu toplamı test uzunluğundan azdır, çünkü testin kalanı 1. test kapsamından gelir.
-- Felsefe grubu ve Din kültürü için MEB OGM'de AYT "Dört Dörtlük" kitabı bulunamadı (`konu-pekistirme/ayt/` altında yalnızca TYT Felsefe var); bu iki ders için kaynaksız konu yazılmadı.
+- Felsefe grubu için AYT "Dört Dörtlük" kitabı yok; konular MEB OGM 11. sınıf Felsefe, Psikoloji, Sosyoloji ve Mantık kavram öğretimi kitaplarının ünite listelerinden alındı (ünite başlığı düzeyinde). Ders sisteminde `totalQuestions` 12'dir; din kültüründen muaf öğrencinin 18 soruluk testi eski deneme ekranında 12 ile sınırlanır (yeni deneme defteri muafiyeti doğru hesaplar).
+- Din kültürü için MEB OGM'de AYT'ye uygun kitap bulunamadı; TYMM sitesindeki 12. sınıf ders kitabının 2027 YKS kapsamıyla uyumu belirsiz olduğu için kaynaksız konu yazılmadı.
 - Açıklamalar yaygın ders kitabı bilgisinden yazıldı ve alan uzmanı onayı almadı.

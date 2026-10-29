@@ -525,7 +525,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     'ea' =>
       'AYT konuları EA kapsamına göre gösteriliyor: Matematik, Edebiyat, Tarih-1 ve Coğrafya-1. Bu rehber tam alan müfredatı değildir; eksik gördüğün konuyu kendin ekleyebilirsin.',
     'soz' =>
-      'AYT konuları SÖZ kapsamına göre gösteriliyor: Edebiyat, Tarih-1/2 ve Coğrafya-1/2. Felsefe grubu ve Din kültürü için hazır konu henüz yok; Kaynaklarım’da kendi konu/görevlerini ekleyebilirsin.',
+      'AYT konuları SÖZ kapsamına göre gösteriliyor: Edebiyat, Tarih-1/2, Coğrafya-1/2 ve Felsefe grubu. Din kültürü için hazır konu henüz yok; Kaynaklarım’da kendi konu/görevlerini ekleyebilirsin.',
     'dil' =>
       'Hazır konu rehberi TYT kapsamındadır. YDT için Kaynaklarım’da dilini seçip kendi konu/görevlerini ekleyebilirsin.',
     _ => null,

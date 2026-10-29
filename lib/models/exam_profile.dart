@@ -11,7 +11,7 @@ class ExamProfile {
   final String curriculumVersion;
   static const referenceCurriculumVersion = 'yks-reference-2026-v1';
   static const contentScope =
-      'Hazır konu rehberi: TYT, AYT SAY ve AYT EA/SÖZ (Edebiyat, Tarih, Coğrafya) için 2026 referansı. Felsefe grubu, Din kültürü ve YDT için kişisel kaynak ve deneme takibi kullanılabilir; bu dersler için hazır konu rehberi henüz yok.';
+      'Hazır konu rehberi: TYT, AYT SAY ve AYT EA/SÖZ (Edebiyat, Tarih, Coğrafya, Felsefe grubu) için 2026 referansı. Din kültürü ve YDT için kişisel kaynak ve deneme takibi kullanılabilir; bu dersler için hazır konu rehberi henüz yok.';
   String get contentNotice =>
       '$contentScope ${examYear == 2026 ? '' : 'Seçilen sınav yılı için içerik uygunluğu henüz doğrulanmadı.'}';
 

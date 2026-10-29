@@ -3,8 +3,8 @@ import '../models/topic.dart';
 
 // EA/SÖZ AYT dersleri. Kimlikler Kaynaklarım'daki ders bağlarıyla aynıdır
 // (yks_course_<test>); böylece önceden eklenen kaynaklar bu derslere bağlanır.
-// Konu başlıkları MEB OGM yardımcı kaynaklarının içindekiler sayfalarından
-// alındı. Soru sayıları ÖSYM dağılımı değil, planlama ağırlığıdır.
+// Konu başlıkları MEB OGM yardımcı kaynaklarının içindekiler/çalışma listesi
+// sayfalarından alındı. Soru sayıları ÖSYM dağılımı değil, planlama ağırlığıdır.
 
 const _tdeUrl =
     'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/tde/files/basic-html/page6.html';
@@ -15,6 +15,18 @@ const _tarihLabel = 'MEB OGM Materyal · Dört Dörtlük AYT Tarih';
 const _cografyaUrl =
     'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/cografya/files/basic-html/page8.html';
 const _cografyaLabel = 'MEB OGM Materyal · Dört Dörtlük AYT Coğrafya';
+const _kavramBase =
+    'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/kavram_calismalari/11';
+const _felsefeUrl = '$_kavramBase/felsefe/files/basic-html/page5.html';
+const _felsefeLabel = 'MEB OGM Materyal · Felsefe 11 Kavram Öğretimi Kitabı';
+const _psikolojiUrl = '$_kavramBase/psikoloji/files/basic-html/page5.html';
+const _psikolojiLabel =
+    'MEB OGM Materyal · Psikoloji 11 Kavram Öğretimi Kitabı';
+const _sosyolojiUrl = '$_kavramBase/sosyoloji/files/basic-html/page5.html';
+const _sosyolojiLabel =
+    'MEB OGM Materyal · Sosyoloji 11 Kavram Öğretimi Kitabı';
+const _mantikUrl = '$_kavramBase/mantik/files/basic-html/page5.html';
+const _mantikLabel = 'MEB OGM Materyal · Mantık 11 Kavram Öğretimi Kitabı';
 
 List<Subject> getAytSocialSubjects() {
   return [
@@ -608,6 +620,174 @@ List<Subject> getAytSocialSubjects() {
           difficulty: '🟢 Kolay',
           priority: '🟡 ORTA',
           estimatedDays: 1,
+        ),
+      ],
+    ),
+
+    // ═══════════════════════════════════════════════
+    // AYT FELSEFE GRUBU — 12 Konu, 12 Soru (SÖZ)
+    // Felsefe, Psikoloji, Sosyoloji ve Mantık (11. sınıf)
+    // ═══════════════════════════════════════════════
+    Subject(
+      id: 'yks_course_ayt_felsefe',
+      name: 'AYT Felsefe grubu',
+      emoji: '🦉',
+      type: 'AYT',
+      totalQuestions: 12,
+      areas: const {'soz'},
+      tip:
+          'Felsefe tarihini dönem dönem filozof ve görüş tablosuyla çalış; psikoloji, sosyoloji ve mantıkta kavramları örnekle eşleştir. Din kültüründen muaf olanlarda bu test 18 sorudur. Soru ağırlıkları planlama tahminidir.',
+      topics: [
+        Topic(
+          id: 'ayt_fel_1',
+          name: 'MÖ 6. Yüzyıl–MS 2. Yüzyıl Felsefesi',
+          description:
+              'İlk filozoflar varlığın ilk nedenini (arkhe) arar: Thales su, Anaksimandros apeiron, Anaksimenes hava der. Herakleitos değişimi, Parmenides değişmezliği savunur. Sofistler bilginin göreceliğini (Protagoras: "İnsan her şeyin ölçüsüdür"), Sokrates evrensel doğruyu savunur. Platon idealar kuramını, Aristoteles töz ve mantık anlayışını geliştirir.',
+          sourceLabel: '$_felsefeLabel, Çalışma Listesi: 1. Ünite',
+          sourceUrl: _felsefeUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🔴 ÇOK KRİTİK',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_2',
+          name: 'MS 2. Yüzyıl–MS 15. Yüzyıl Felsefesi',
+          description:
+              'Bu dönemde inanç ile akıl ilişkisi temel sorundur. Hristiyan felsefesinde Augustinus ve Thomas Aquinas, İslam felsefesinde Farabi, İbn Sina, Gazali ve İbn Rüşd öne çıkar. Tanrı\'nın varlığının kanıtlanması ve evrenin yaratılışı gibi problemler tartışılır.',
+          sourceLabel: '$_felsefeLabel, Çalışma Listesi: 2. Ünite',
+          sourceUrl: _felsefeUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_3',
+          name: '15. Yüzyıl–17. Yüzyıl Felsefesi',
+          description:
+              'Rönesans ve bilimsel gelişmelerle insan ve doğa merkeze alınır. Descartes rasyonalizmi ("Düşünüyorum, öyleyse varım") ve yöntemli şüpheyi, Francis Bacon deneye dayalı bilgiyi ve idolleri ortaya koyar. Siyaset felsefesinde Machiavelli ve Hobbes devletin dayanağını tartışır.',
+          sourceLabel: '$_felsefeLabel, Çalışma Listesi: 3. Ünite',
+          sourceUrl: _felsefeUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_4',
+          name: '18. Yüzyıl–19. Yüzyıl Felsefesi',
+          description:
+              'Aydınlanma döneminde akıl ve özgürlük öne çıkar. Hume deneyciliği, Kant aklın sınırlarını inceleyen eleştirel felsefeyi geliştirir. Hegel diyalektik düşünceyi, Marx diyalektik materyalizmi savunur. Comte pozitivizmi, Mill faydacılığı, Nietzsche değerlerin yeniden değerlendirilmesini öne sürer.',
+          sourceLabel: '$_felsefeLabel, Çalışma Listesi: 4. Ünite',
+          sourceUrl: _felsefeUrl,
+          questionCount: 1,
+          difficulty: '🔴 Zor',
+          priority: '🔴 ÇOK KRİTİK',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_5',
+          name: '20. Yüzyıl Felsefesi',
+          description:
+              'Fenomenoloji (Husserl) bilince görüneni, hermeneutik (Gadamer) anlama ve yorumlamayı, varoluşçuluk (Sartre: "Varoluş özden önce gelir") bireyin özgürlüğünü inceler. Bilim felsefesinde Kuhn paradigma kavramını, Popper yanlışlanabilirlik ölçütünü ortaya koyar; metafiziğin gerekliliği de bu dönemde tartışılır.',
+          sourceLabel: '$_felsefeLabel, Çalışma Listesi: 5. Ünite',
+          sourceUrl: _felsefeUrl,
+          questionCount: 1,
+          difficulty: '🔴 Zor',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_6',
+          name: 'Psikoloji Bilimi ve Temel Süreçler',
+          description:
+              'Psikoloji davranışı ve zihinsel süreçleri bilimsel yöntemle inceler; davranışçı, bilişsel, psikanalitik, hümanistik ve biyolojik yaklaşımlar vardır. Temel süreçler gelişim (Piaget\'nin bilişsel gelişim dönemleri), duyum ve algı, güdülenme (Maslow\'un ihtiyaçlar hiyerarşisi), duygu, bilinç ve dikkattir.',
+          sourceLabel:
+              '$_psikolojiLabel, Çalışma Listesi: 1-2. Ünite (Psikoloji Bilimini Tanıyalım; Psikolojinin Temel Süreçleri)',
+          sourceUrl: _psikolojiUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_7',
+          name: 'Öğrenme, Bellek ve Düşünme',
+          description:
+              'Klasik koşullanma (Pavlov) uyarıcılar arası bağ kurmaya, edimsel koşullanma (Skinner) davranışın sonucuna ve pekiştirmeye dayanır; sosyal öğrenmede model alma (Bandura) önemlidir. Bellek duyusal, kısa süreli ve uzun süreli bellek olarak incelenir; unutmanın nedenleri ve problem çözme stratejileri bu ünitededir.',
+          sourceLabel:
+              '$_psikolojiLabel, Çalışma Listesi: 3. Ünite (Öğrenme, Bellek, Düşünme)',
+          sourceUrl: _psikolojiUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🔴 ÇOK KRİTİK',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_8',
+          name: 'Ruh Sağlığının Temelleri',
+          description:
+              'Duygusal zekâ, kişilik ve kişiliğin ölçülmesi, stres ve stresle başa çıkma yolları incelenir. Ruhsal bozukluklar hakkında yaygın yanlış inanışlar, akran zorbalığı ve ekran bağımlılığı gibi sorunlar ruh sağlığını koruma açısından değerlendirilir.',
+          sourceLabel:
+              '$_psikolojiLabel, Çalışma Listesi: 4. Ünite (Ruh Sağlığının Temelleri)',
+          sourceUrl: _psikolojiUrl,
+          questionCount: 1,
+          difficulty: '🟢 Kolay',
+          priority: '🟡 ORTA',
+          estimatedDays: 1,
+        ),
+        Topic(
+          id: 'ayt_fel_9',
+          name: 'Sosyolojiye Giriş, Birey ve Toplumsal Yapı',
+          description:
+              'Sosyoloji toplumsal olguları bilimsel yöntemle inceler; gözlem, görüşme ve anket başlıca tekniklerdir ve araştırmada etik ilkelere uyulur. Toplumsal grup, sosyalleşme, statü ve rol, toplumsal tabakalaşma, toplumsal hareketlilik ve göç toplumsal yapının temel kavramlarıdır.',
+          sourceLabel:
+              '$_sosyolojiLabel, Çalışma Listesi: 1-3. Ünite (Sosyolojiye Giriş; Birey ve Toplum; Toplumsal Yapı)',
+          sourceUrl: _sosyolojiUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_10',
+          name: 'Toplumsal Değişme, Kültür ve Toplumsal Kurumlar',
+          description:
+              'Toplumsal değişme ve gelişme; bütünleşme, çözülme ve yabancılaşma; modernizmden postmodernizme geçiş ve küreselleşme incelenir. Kültürün maddi ve manevi öğeleri ile aile, eğitim, ekonomi, siyaset ve din gibi toplumsal kurumların işlevleri bu bölümdedir.',
+          sourceLabel:
+              '$_sosyolojiLabel, Çalışma Listesi: 4-6. Ünite (Toplumsal Değişme ve Gelişme; Toplum ve Kültür; Toplumsal Kurumlar)',
+          sourceUrl: _sosyolojiUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_11',
+          name: 'Mantığa Giriş ve Klasik Mantık',
+          description:
+              'Mantık doğru düşünmenin kurallarını inceler; önerme, akıl yürütme, argüman, geçerlilik ve tutarlılık temel kavramlardır. Klasik (Aristotelesçi) mantıkta kavram ve tanım, önermelerin nicelik ve niteliğe göre sınıflandırılması ve kıyas incelenir.',
+          sourceLabel:
+              '$_mantikLabel, Çalışma Listesi: 1-2. Ünite (Mantığa Giriş; Klasik Mantık)',
+          sourceUrl: _mantikUrl,
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_fel_12',
+          name: 'Mantık ve Dil, Sembolik Mantık',
+          description:
+              'Dilin işlevleri, anlam ve tanım ilişkisi ile yanlış anlamaya yol açan akıl yürütme hataları incelenir. Sembolik mantıkta önermeler değil (¬), ve (∧), veya (∨), ise (→) ve ancak ve ancak (↔) bağlaçlarıyla gösterilir; doğruluk tablosu, De Morgan kuralları ve niceleyiciler kullanılır.',
+          sourceLabel:
+              '$_mantikLabel, Çalışma Listesi: 3-4. Ünite (Mantık ve Dil; Sembolik Mantık)',
+          sourceUrl: _mantikUrl,
+          questionCount: 1,
+          difficulty: '🔴 Zor',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
         ),
       ],
     ),

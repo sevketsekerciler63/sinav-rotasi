@@ -22,7 +22,7 @@ void main() {
       ...YksAttemptCatalog.tests('AYT', 'ea'),
       ...YksAttemptCatalog.tests('AYT', 'soz'),
     ]) {
-      if (spec.id case 'ayt_mat' || 'ayt_felsefe' || 'ayt_din') continue;
+      if (spec.id case 'ayt_mat' || 'ayt_din') continue;
       final subject = catalog.singleWhere(
         (item) => item.storageId == 'yks_course_${spec.id}',
       );
@@ -41,7 +41,7 @@ void main() {
     );
     // Hazır konusu olmayan dersler Kaynaklarım'da boş ders olarak kalır.
     expect(
-      resources.singleWhere((s) => s.storageId == 'yks_course_ayt_felsefe'),
+      resources.singleWhere((s) => s.storageId == 'yks_course_ayt_din'),
       isNotNull,
     );
   });
@@ -95,12 +95,13 @@ void main() {
         'AYT Coğrafya-1',
         'AYT Tarih-2',
         'AYT Coğrafya-2',
+        'AYT Felsefe grubu',
       ]);
       expect(state.tytSubjects, hasLength(6));
 
       await state.updateActiveProfile(scoreType: 'dil');
       expect(aytNames(), isEmpty);
-      expect(state.subjects.where((s) => s.type == 'AYT'), hasLength(9));
+      expect(state.subjects.where((s) => s.type == 'AYT'), hasLength(10));
     });
 
     test('puan türü değişince çalışılmış ders gizlenmez', () async {
