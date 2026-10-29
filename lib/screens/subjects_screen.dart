@@ -58,17 +58,11 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
             ),
             body: Column(
               children: [
-                if ([
-                  'ea',
-                  'soz',
-                  'dil',
-                ].contains(state.activeProfile.scoreType))
+                if (_scopeNotice(state.activeProfile.scoreType)
+                    case final notice?)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(
-                      'Hazır konu rehberi şu an TYT ve AYT Sayısal kapsamındadır. EA/SÖZ/YDT için Kaynaklarım’da uygun dersi seçip kendi konu/görevlerini ekleyebilirsin; bu rehber tam alan müfredatı değildir.',
-                      style: textTheme.bodySmall,
-                    ),
+                    child: Text(notice, style: textTheme.bodySmall),
                   ),
                 // Search bar
                 Padding(
@@ -527,11 +521,21 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
         : message;
   }
 
+  static String? _scopeNotice(String scoreType) => switch (scoreType) {
+    'ea' =>
+      'AYT konuları EA kapsamına göre gösteriliyor: Matematik, Edebiyat, Tarih-1 ve Coğrafya-1. Bu rehber tam alan müfredatı değildir; eksik gördüğün konuyu kendin ekleyebilirsin.',
+    'soz' =>
+      'AYT konuları SÖZ kapsamına göre gösteriliyor: Edebiyat, Tarih-1/2 ve Coğrafya-1/2. Felsefe grubu ve Din kültürü için hazır konu henüz yok; Kaynaklarım’da kendi konu/görevlerini ekleyebilirsin.',
+    'dil' =>
+      'Hazır konu rehberi TYT kapsamındadır. YDT için Kaynaklarım’da dilini seçip kendi konu/görevlerini ekleyebilirsin.',
+    _ => null,
+  };
+
   Widget _buildSearchResults(BuildContext context, AppState state) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final results = <MapEntry<Subject, Topic>>[];
-    for (var subject in state.subjects) {
+    for (var subject in state.visibleSubjects) {
       for (var topic in subject.topics) {
         if (topic.name.toLowerCase().contains(_searchQuery) ||
             topic.description.toLowerCase().contains(_searchQuery)) {

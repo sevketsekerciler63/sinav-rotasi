@@ -10,6 +10,10 @@ class Subject {
   final List<Topic> topics;
   final String tip;
 
+  /// AYT score types (say, ea, soz) this built-in course belongs to.
+  /// Empty means the course applies to every profile, as TYT courses do.
+  final Set<String> areas;
+
   Subject({
     this.id,
     this.isCustom = false,
@@ -19,6 +23,7 @@ class Subject {
     required this.totalQuestions,
     required this.topics,
     this.tip = '',
+    this.areas = const {},
   });
 
   String get storageId => id ?? 'builtin_${type}_${Uri.encodeComponent(name)}';

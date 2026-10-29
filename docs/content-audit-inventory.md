@@ -309,3 +309,22 @@ AYT Kimya kataloğundaki 6/6 kayda MEB OGM kaynağı eklendi. Gaz hacmi için s�
 - Dört Dörtlük AYT Kimya içindekilerinde tepkime ısısı, oluşum entalpisi ve Hess yasası var; entropy ve Gibbs ifadesi aynı dizinde görünmüyor. Uygulamadaki `ΔG=ΔH−TΔS` ve ilgili formül kartı bilimsel bağıntı olarak kaynaklı olsa da hedef YKS kohortundaki kapsamı uzman/program incelemesi bekliyor.
 - [Dört Dörtlük AYT Biyoloji içindekiler, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/biyoloji/files/basic-html/page6.html) ile soru dağılımı, s. 8, 20 başlık listeliyor; uygulamada 8 geniş kart bulunuyor. Duyu organları, destek-hareket, sindirim, dolaşım, bağışıklık, solunum/üriner/üreme sistemleri, ekoloji, nükleik asitler/protein sentezi, biyoteknoloji ve bitki biyolojisinin alt başlıkları ayrı kartlara veya açık eşlemeye ihtiyaç duyuyor. Başlıktaki soru adetleri uygulama ağırlığına aktarılmadı; bu kitap tek başına hedef 2026/2027 YKS kapsam belgesi değildir.
 - Mitoz/mayoz ve Mendel içerikleri MEB'in 10. sınıf materyalinde yer alıyor; AYT kartı olarak hangi derinlikte çalışma görevi gerektirdikleri hedef kohort ve alan uzmanı tarafından ayrıca kabul edilmeli. Fotosentez kartının önceki C₃/C₄ karşılaştırması kaynakta teyit edilmediği için kaldırıldı; gerekirse uygun ders kitabı ve kapsamla yeniden eşleştirilecek.
+
+## AYT EA/SÖZ konu kataloğu — 2026-10-30
+
+AYT Edebiyat, Tarih-1, Coğrafya-1, Tarih-2 ve Coğrafya-2 için 40 hazır konu eklendi. Ders kimlikleri Kaynaklarım'daki `yks_course_ayt_*` bağlarıyla aynıdır; önceden bu derslere eklenen kaynaklar artık konu seçebilir. Konu başlıkları aşağıdaki MEB OGM içindekiler sayfalarından alındı ve her konu ilgili içindekiler satırını (basılı sayfa numarasıyla) kaynak gösterir; konu bazlı sayfa bağlantısı henüz eşlenmedi.
+
+| Ders | Konu ID | Kaynak (içindekiler) |
+|---|---|---|
+| AYT Edebiyat (24 soru, EA/SÖZ) | `ayt_edb_1`–`13` | [3 Adım AYT Türk Dili ve Edebiyatı, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/tde/files/basic-html/page6.html) |
+| AYT Tarih-1 (10 soru, EA/SÖZ) | `ayt_tar1_1`–`10` | [Dört Dörtlük AYT Tarih, s. 6](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/tarih/files/basic-html/page6.html) — "Tarih ve Zaman"dan "Atatürkçülük ve Türk İnkılabı"na kadar |
+| AYT Tarih-2 (11 soru, SÖZ) | `ayt_tar2_1`–`5` | Aynı kitap — "İki Savaş Arasındaki Dönem"den "21. Yüzyılın Eşiği"ne kadar |
+| AYT Coğrafya-1 (6 soru, EA/SÖZ) | `ayt_cog1_1`–`6` | [Dört Dörtlük AYT Coğrafya, s. 8](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/cografya/files/basic-html/page8.html) — ilk dokuz ünite |
+| AYT Coğrafya-2 (11 soru, SÖZ) | `ayt_cog2_1`–`6` | Aynı kitap — son dokuz ünite |
+
+Açık noktalar (doğrulanacak):
+
+- Tarih-1/Tarih-2 ve Coğrafya-1/Coğrafya-2 ayrımı kitap ünitelerinin sınıf düzeyine göre yapıldı; Tarih-2 ve Coğrafya-2 testleri 1. testlerin kapsamını da içerir. Ayrımın güncel ÖSYM kapsamıyla birebir uyumu alan uzmanınca doğrulanmadı.
+- Konu `questionCount` değerleri planlama ağırlığıdır; ÖSYM soru dağılımı değildir. Tarih-2 ve Coğrafya-2'de konu toplamı test uzunluğundan azdır, çünkü testin kalanı 1. test kapsamından gelir.
+- Felsefe grubu ve Din kültürü için MEB OGM'de AYT "Dört Dörtlük" kitabı bulunamadı (`konu-pekistirme/ayt/` altında yalnızca TYT Felsefe var); bu iki ders için kaynaksız konu yazılmadı.
+- Açıklamalar yaygın ders kitabı bilgisinden yazıldı ve alan uzmanı onayı almadı.

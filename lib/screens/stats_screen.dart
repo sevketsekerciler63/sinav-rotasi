@@ -293,7 +293,7 @@ class StatsScreen extends StatelessWidget {
     int critical = 0, important = 0, medium = 0, low = 0;
     int criticalDone = 0, importantDone = 0, mediumDone = 0, lowDone = 0;
 
-    for (var s in state.subjects) {
+    for (var s in state.visibleSubjects) {
       for (var t in s.topics) {
         if (t.priority.contains('ÇOK KRİTİK')) {
           critical++;

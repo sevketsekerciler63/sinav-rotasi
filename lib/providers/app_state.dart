@@ -951,14 +951,16 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
             name is! String ||
             name.trim().isEmpty ||
             (type != 'TYT' && type != 'AYT') ||
-            subjects.any(
-              (subject) =>
-                  subject.storageId == id ||
-                  (subject.type == type &&
-                      subject.name.toLowerCase() == name.toLowerCase()),
-            )) {
+            subjects.any((subject) => subject.storageId == id)) {
           continue;
         }
+        // A newer catalog may add a built-in course with the same name as a
+        // personal course (e.g. "AYT Edebiyat"). Keep the personal course and
+        // its progress under a "(kişisel)" name instead of dropping it.
+        final uniqueName = _uniquePersonalName(
+          name,
+          subjects.where((subject) => subject.type == type).map((s) => s.name),
+        );
         final topics = <Topic>[];
         final savedTopics = item['topics'];
         if (savedTopics is List) {
@@ -971,7 +973,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
           Subject(
             id: id,
             isCustom: true,
-            name: name,
+            name: uniqueName,
             emoji: item['emoji'] is String ? item['emoji'] as String : '📘',
             type: type,
             totalQuestions: item['totalQuestions'] is int
@@ -1003,21 +1005,28 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  static String _uniquePersonalName(String name, Iterable<String> existing) {
+    final taken = existing.map((item) => item.trim().toLowerCase()).toSet();
+    if (!taken.contains(name.trim().toLowerCase())) return name;
+    var candidate = '${name.trim()} (kişisel)';
+    for (var index = 2; taken.contains(candidate.toLowerCase()); index++) {
+      candidate = '${name.trim()} (kişisel $index)';
+    }
+    return candidate;
+  }
+
   /// A newer catalog may add a built-in topic whose name equals a personal
   /// topic the student created earlier. Keep the personal topic, its id and
   /// progress, but show it with a "(kişisel)" suffix so both stay distinct.
   static Topic _withUniqueTopicName(Topic topic, List<Topic> existing) {
-    final taken = existing
-        .map((item) => item.name.trim().toLowerCase())
-        .toSet();
-    if (!taken.contains(topic.name.trim().toLowerCase())) return topic;
-    var candidate = '${topic.name.trim()} (kişisel)';
-    for (var index = 2; taken.contains(candidate.toLowerCase()); index++) {
-      candidate = '${topic.name.trim()} (kişisel $index)';
-    }
+    final name = _uniquePersonalName(
+      topic.name,
+      existing.map((item) => item.name),
+    );
+    if (name == topic.name) return topic;
     return Topic(
       id: topic.id,
-      name: candidate,
+      name: name,
       description: topic.description,
       questionCount: topic.questionCount,
       difficulty: topic.difficulty,
@@ -2404,7 +2413,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     }
     final newly = AchievementProgressMetrics.unlockEligibleAchievements(
       achievements: proposed,
-      subjects: subjects,
+      subjects: visibleSubjects,
       mockExams: mockExams,
       weakTopics: weakTopics,
       streak: streak,
@@ -2460,11 +2469,12 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     return target.difference(DateTime(now.year, now.month, now.day)).inDays;
   }
 
-  int get totalTopics => AchievementProgressMetrics.totalTopicCount(subjects);
+  int get totalTopics =>
+      AchievementProgressMetrics.totalTopicCount(visibleSubjects);
   int get completedTopics =>
-      AchievementProgressMetrics.completedTopicCount(subjects);
+      AchievementProgressMetrics.completedTopicCount(visibleSubjects);
   double get overallProgress =>
-      AchievementProgressMetrics.topicProgress(subjects);
+      AchievementProgressMetrics.topicProgress(visibleSubjects);
 
   int get completedDays => completedStudyDates.length;
   int get totalDays => DailyPlanMetrics.totalStudyDays(
@@ -2610,10 +2620,29 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
+  /// Courses shown for the active profile. Built-in AYT courses follow the
+  /// profile's score type (unspecified keeps the original SAY catalog), but a
+  /// course the student has already worked on stays visible so no progress,
+  /// note or mock exam net disappears after changing the score type.
+  List<Subject> get visibleSubjects =>
+      subjects.where(_isSubjectVisible).toList();
+
+  bool _isSubjectVisible(Subject subject) {
+    if (subject.isCustom || subject.areas.isEmpty) return true;
+    final scoreType = _activeProfile.scoreType;
+    final area = scoreType == ExamProfile.unspecified ? 'say' : scoreType;
+    if (subject.areas.contains(area)) return true;
+    return subject.topics.any(
+          (topic) =>
+              topic.isCompleted || topic.notes.isNotEmpty || topic.isCustom,
+        ) ||
+        mockExams.any((exam) => exam.hasNetForCatalogSubject(subject));
+  }
+
   List<Subject> get tytSubjects =>
-      subjects.where((s) => s.type == 'TYT').toList();
+      visibleSubjects.where((s) => s.type == 'TYT').toList();
   List<Subject> get aytSubjects =>
-      subjects.where((s) => s.type == 'AYT').toList();
+      visibleSubjects.where((s) => s.type == 'AYT').toList();
 
   int get totalSolvedQuestions =>
       StudyHistoryMetrics.totalSolvedQuestions(reportQuestionEvents);

@@ -1,5 +1,6 @@
 import '../models/topic.dart';
 import '../models/subject.dart';
+import 'ayt_social_subjects_data.dart';
 
 List<Subject> getAllSubjects() {
   return [
@@ -1158,6 +1159,7 @@ List<Subject> getAllSubjects() {
       emoji: '🔢',
       type: 'AYT',
       totalQuestions: 40,
+      areas: const {'say', 'ea'},
       tip:
           'Yeni konuyu tanım koşullarıyla öğren, bağıntıları farklı soru türlerinde uygula ve deneme yanlışlarına göre tekrar sırasını belirle.',
       topics: [
@@ -1393,6 +1395,7 @@ List<Subject> getAllSubjects() {
       emoji: '⚡',
       type: 'AYT',
       totalQuestions: 14,
+      areas: const {'say'},
       tip:
           'Dinamik, enerji-momentum ve elektrik konularında önce temel ilkeleri öğren, sonra farklı soru türleriyle uygulama yap.',
       topics: [
@@ -1505,6 +1508,7 @@ List<Subject> getAllSubjects() {
       emoji: '🧪',
       type: 'AYT',
       totalQuestions: 13,
+      areas: const {'say'},
       tip:
           'Mol hesabı, asit-baz ve kimyasal denge konularını işlem adımlarını yazarak çalış; sonuçlarını birimleriyle kontrol et.',
       topics: [
@@ -1603,6 +1607,7 @@ List<Subject> getAllSubjects() {
       emoji: '🧬',
       type: 'AYT',
       totalQuestions: 13,
+      areas: const {'say'},
       tip:
           'Mitoz, mayoz, Mendel genetiği ve kan gruplarını şema ve çaprazlamalarla tekrar et; ezberlediğin kuralları yeni örneklere uygula.',
       topics: [
@@ -1720,5 +1725,6 @@ List<Subject> getAllSubjects() {
         ),
       ],
     ),
+    ...getAytSocialSubjects(),
   ];
 }

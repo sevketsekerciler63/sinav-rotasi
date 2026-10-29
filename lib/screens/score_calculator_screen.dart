@@ -43,10 +43,10 @@ class _ScoreCalculatorScreenState extends State<ScoreCalculatorScreen> {
           _netControllers.clear();
         }
 
-        final tytSubjects = state.subjects
+        final tytSubjects = state.visibleSubjects
             .where((subject) => subject.type == 'TYT')
             .toList();
-        final aytSubjects = state.subjects
+        final aytSubjects = state.visibleSubjects
             .where((subject) => subject.type == 'AYT')
             .toList();
         final officialTyt = tytSubjects

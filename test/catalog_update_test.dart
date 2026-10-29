@@ -35,7 +35,8 @@ void main() {
           expect(topic.questionCount, greaterThan(0), reason: topic.id);
         }
       }
-      expect(ids.length, 115);
+      // 115 SAY/TYT konusu + 40 EA/SÖZ konusu (2026-10-30).
+      expect(ids.length, 155);
     });
 
     test('AYT Matematik geometri, olasılık ve dönüşüm konularını içerir', () {

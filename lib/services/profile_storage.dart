@@ -1358,11 +1358,11 @@ class ProfileStorage {
     final subjectIds = knownSubjects
         .map((subject) => subject.storageId)
         .toSet();
-    // Built-in topic names are not reserved for custom topics here: a later
-    // catalog release can add a topic whose name a student already used for
-    // a personal topic. Such a backup must stay importable; AppState shows
-    // the personal topic with a "(kişisel)" suffix. Custom topics still
-    // cannot repeat each other within one subject.
+    // Built-in topic and course names are not reserved here: a later catalog
+    // release can add a topic or course (e.g. "AYT Edebiyat") whose name a
+    // student already used. Such a backup must stay importable; AppState shows
+    // the personal item with a "(kişisel)" suffix. Custom topics and courses
+    // still cannot repeat each other.
     final subjectNames = <String, Set<String>>{};
     final customSubjectNames = <String>{};
     final topicIds = <String>{};
@@ -1407,14 +1407,7 @@ class ProfileStorage {
         final type = item['type'] as String;
         final normalizedSubjectName =
             '${type}_${(item['name'] as String).trim().toLowerCase()}';
-        final conflictsWithBuiltIn = knownSubjects.any(
-          (subject) =>
-              subject.type == type &&
-              subject.name.trim().toLowerCase() ==
-                  (item['name'] as String).trim().toLowerCase(),
-        );
         if (!subjectIds.add(id) ||
-            conflictsWithBuiltIn ||
             !customSubjectNames.add(normalizedSubjectName)) {
           _invalid('$itemPath.id/name', 'yinelenmeyen özel ders');
         }

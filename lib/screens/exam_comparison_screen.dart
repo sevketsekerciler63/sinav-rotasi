@@ -73,7 +73,7 @@ class _ExamComparisonScreenState extends State<ExamComparisonScreen> {
         final exam1 = completedExams[_exam1Index];
         final exam2 = completedExams[_exam2Index];
 
-        final subjects = state.subjects;
+        final subjects = state.visibleSubjects;
         final comparisonSubjects = subjects
             .where(
               (subject) =>

@@ -322,11 +322,11 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildCountdownCard(BuildContext context, AppState state) {
     final remaining = state.daysRemaining;
-    final totalTopics = state.subjects.fold<int>(
+    final totalTopics = state.visibleSubjects.fold<int>(
       0,
       (total, subject) => total + subject.topics.length,
     );
-    final completedTopics = state.subjects.fold<int>(
+    final completedTopics = state.visibleSubjects.fold<int>(
       0,
       (total, subject) => total + subject.completedCount,
     );
