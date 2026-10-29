@@ -56,6 +56,16 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField).at(0), 'Üçgenler');
       await tester.enterText(find.byType(TextField).at(2), '10');
+      final selectedTopic = state.subjects.first.topics.first;
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(selectedTopic.name).last);
+      await tester.pumpAndSettle();
+      store.failSuffix = '__learning_workspace';
+      await tester.tap(find.text('Kaydet'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(state.learningWorkspace.tasks, isEmpty);
       await tester.tap(find.text('Kaydet'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('İlerleme ekle'));
@@ -72,8 +82,15 @@ void main() {
       await tester.tap(find.text('Geri al'));
       await tester.pumpAndSettle();
       expect(state.learningWorkspace.events.single.active, isFalse);
+      final backup = await storage.exportBackup();
+      await storage.importBackup(backup);
       final reloaded = AppState(profileStorage: storage);
       await reloaded.loadData();
+      expect(reloaded.learningWorkspace.tasks.single.topicId, selectedTopic.id);
+      expect(
+        reloaded.learningWorkspace.tasks.single.topicName,
+        selectedTopic.name,
+      );
       expect(reloaded.learningWorkspace.remainingRanges(taskId), [(1, 10)]);
       expect(
         reloaded.learningWorkspace.resources.single.name,

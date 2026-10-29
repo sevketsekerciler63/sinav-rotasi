@@ -2,6 +2,9 @@ import '../theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/exam_attempt.dart';
+import '../models/net_score.dart';
+import '../utils/turkish_date.dart';
+import '../widgets/date_picker_field.dart';
 import '../providers/app_state.dart';
 import 'mock_exam_screen.dart';
 
@@ -71,6 +74,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
           const Text(
             'Çözdüğün denemeleri kaydet. TYT, AYT ve YDT ayrı tutulur. Burada soru veya deneme kitapçığı sunulmaz.',
           ),
+          const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: session,
             decoration: const InputDecoration(labelText: 'Oturum filtresi'),
@@ -100,10 +104,10 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        '${group[1].date}: ${group[1].totalNet.toStringAsFixed(2)} → ${group[0].date}: ${group[0].totalNet.toStringAsFixed(2)} net',
+                        '${turkishDayKey(group[1].date)}: ${NetScore.format(group[1].totalNet)} → ${turkishDayKey(group[0].date)}: ${NetScore.format(group[0].totalNet)} net',
                       ),
                       Text(
-                        'Fark: ${(group[0].totalNet - group[1].totalNet).toStringAsFixed(2)} net. Yayınevi ve zorluk farkı sonucu etkileyebilir.',
+                        'Fark: ${NetScore.format((group[0].totalNet - group[1].totalNet))} net. Yayınevi ve zorluk farkı sonucu etkileyebilir.',
                       ),
                       for (final test in YksAttemptCatalog.tests(
                         group.first.session,
@@ -111,7 +115,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
                         religionExempt: group.first.religionExempt,
                       ))
                         Text(
-                          '${test.label}: ${group[1].scores[test.id]!.net.toStringAsFixed(2)} → ${group[0].scores[test.id]!.net.toStringAsFixed(2)}',
+                          '${test.label}: ${NetScore.format(group[1].scores[test.id]!.net)} → ${NetScore.format(group[0].scores[test.id]!.net)}',
                         ),
                     ],
                   ),
@@ -130,7 +134,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
                 key: ValueKey(attempt.id),
                 title: Text(attempt.title),
                 subtitle: Text(
-                  '${attempt.date} · ${_label(attempt)} · ${attempt.totalNet.toStringAsFixed(2)} net',
+                  '${turkishDayKey(attempt.date)} · ${_label(attempt)} · ${NetScore.format(attempt.totalNet)} net',
                 ),
                 children: [
                   if (attempt.publisher.isNotEmpty)
@@ -143,7 +147,7 @@ class _ExamAttemptsScreenState extends State<ExamAttemptsScreen> {
                     ListTile(
                       title: Text(test.label),
                       subtitle: Text(
-                        '${attempt.scores[test.id]!.net.toStringAsFixed(2)} / ${test.questions} net${attempt.scores[test.id]!.correct == null ? '' : ' · D: ${attempt.scores[test.id]!.correct}, Y: ${attempt.scores[test.id]!.wrong}, B: ${attempt.scores[test.id]!.blank}'}',
+                        '${NetScore.format(attempt.scores[test.id]!.net)} / ${test.questions} net${attempt.scores[test.id]!.correct == null ? '' : ' · D: ${attempt.scores[test.id]!.correct}, Y: ${attempt.scores[test.id]!.wrong}, B: ${attempt.scores[test.id]!.blank}'}',
                       ),
                     ),
                   Wrap(
@@ -204,6 +208,15 @@ class ExamAttemptEditor extends StatefulWidget {
   const ExamAttemptEditor({super.key, this.attempt});
   @override
   State<ExamAttemptEditor> createState() => _ExamAttemptEditorState();
+}
+
+/// Deneme ileri tarihe yazılmaz; eski bir kayıttaki ileri tarih ise
+/// düzenlenirken seçilebilir kalır.
+DateTime _latestAttemptDate(String existing) {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final current = parseIsoDay(existing);
+  return current != null && current.isAfter(today) ? current : today;
 }
 
 class _ExamAttemptEditorState extends State<ExamAttemptEditor> {
@@ -380,7 +393,17 @@ class _ExamAttemptEditorState extends State<ExamAttemptEditor> {
           children: [
             field(title, 'Deneme adı'),
             field(publisher, 'Yayınevi (isteğe bağlı)'),
-            field(date, 'Çözdüğün gün: YYYY-AA-GG'),
+            DatePickerField(
+              label: 'Çözdüğün gün',
+              value: date.text.trim(),
+              enabled: !busy,
+              firstDate: DateTime(2000),
+              lastDate: _latestAttemptDate(date.text.trim()),
+              helpText: 'Denemeyi çözdüğün günü seç',
+              onChanged: (value) {
+                if (value != null) setState(() => date.text = value);
+              },
+            ),
             DropdownButtonFormField<String>(
               initialValue: session,
               decoration: const InputDecoration(labelText: 'Oturum'),

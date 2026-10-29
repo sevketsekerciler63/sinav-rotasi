@@ -258,7 +258,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
     if (_scoreType == ExamProfile.unspecified ||
         _startingLevel == ExamProfile.unspecified) {
-      setState(() => _setupError = 'Puan türünü ve başlangıç seviyeni seç.');
+      final missing = [
+        if (_scoreType == ExamProfile.unspecified) 'puan türünü',
+        if (_startingLevel == ExamProfile.unspecified) 'başlangıç seviyeni',
+      ].join(' ve ');
+      setState(
+        () => _setupError =
+            '${missing[0].toUpperCase()}${missing.substring(1)} seç.',
+      );
       return;
     }
 

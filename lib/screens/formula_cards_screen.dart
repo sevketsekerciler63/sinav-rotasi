@@ -267,9 +267,9 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesikimya/11/unite6/files/basic-html/page34.html',
       ),
       FormulaItem(
-        'pOH Hesabi',
-        'pOH = -log[OH-]',
-        '25 °C\'de sulu çözeltilerde pH + pOH = pKw ≈ 14',
+        'pOH Hesabı',
+        'pOH = −log[OH⁻]',
+        'Seyreltik sulu çözeltilerde derişim yaklaşımı; 25 °C\'de pH + pOH = pKw ≈ 14.',
         sourceLabel: 'MEB OGM Materyal · Kimya 11',
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/beceri_temelli/11/kimya/files/basic-html/page121.html',
@@ -334,7 +334,7 @@ class _FormulaCardsScreenState extends State<FormulaCardsScreen> {
       FormulaItem(
         'Chargaff Kuralı',
         'A = T; G = C',
-        'Çift iplikli DNA’da toplam baz sayıları eşittir; A+T/G+C oranı türe özgüdür.',
+        'Çift iplikli DNA’da toplam baz sayıları eşittir; (A+T)/(G+C) oranı türe özgüdür.',
         sourceLabel: 'MEB OGM Materyal · Fen Lisesi Biyoloji 12, s. 10',
         sourceUrl:
             'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/fenlisesibiyoloji/12/unite1/files/basic-html/page10.html',

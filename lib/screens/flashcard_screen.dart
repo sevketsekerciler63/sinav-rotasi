@@ -65,7 +65,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'mat_5',
         'Türev nedir?',
-        'Bir fonksiyonun anlık değişim hızı.\nf\'(x) = lim(\u0394x->0) [f(x+\u0394x) - f(x)] / \u0394x',
+        'Bir fonksiyonun anlık değişim hızı.\nf\'(x) = lim(\u0394x→0) [f(x+\u0394x) - f(x)] / \u0394x',
       ),
       Flashcard(
         'mat_6',
@@ -95,7 +95,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'fiz_2',
         'Newton\'un 2. yasası?',
-        'F = m x a\nKuvvet = Kütle x İvme\nBirimi: Newton (N)',
+        'ΣF = m · a\nNet (bileşke) kuvvet = Kütle × İvme\nKuvvet birimi: Newton (N = kg·m/s²)',
       ),
       Flashcard(
         'fiz_3',
@@ -125,12 +125,12 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_1',
         'Mol nedir?',
-        '1 mol = 6.022 x 10\u00B2\u00B3 tane\nn = m/M\nn: mol, m: kütle (g), M: mol kütlesi (g/mol)',
+        '1 mol ≈ 6,022 × 10\u00B2\u00B3 tanecik\nn = m/M\nn: mol, m: kütle (g), M: mol kütlesi (g/mol)',
       ),
       Flashcard(
         'kim_2',
         'İdeal gaz denklemi?',
-        'PV = nRT\nR = 0.082 L.atm/mol.K\nR = 8.314 J/mol.K',
+        'PV = nRT (ideal gaz, T kelvin)\nR ≈ 0,082 L·atm/(mol·K)\nR ≈ 8,314 J/(mol·K)',
       ),
       Flashcard(
         'kim_3',
@@ -143,7 +143,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'kim_4',
         'Elektron dizilimi kuralları?',
-        '1. Aufbau (düşük enerjiden başlama)\n2. Pauli (en fazla 2 elektron/orbital)\n3. Hund (aynı alt kabuklarda önce tek tek)',
+        '1. Aufbau: Elektronlar en düşük enerjili orbitalden başlayarak yerleşir.\n2. Pauli: Bir atomda iki elektronun dört kuantum sayısı aynı olamaz; bu yüzden bir orbitalde en fazla 2 zıt spinli elektron bulunur.\n3. Hund: Eş enerjili orbitallere elektronlar önce aynı spinle tek tek yerleşir.',
       ),
       Flashcard(
         'kim_5',
@@ -176,7 +176,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'bio_3',
         'Mayoz bölünmenin farkı?',
-        'Mayoz I: Tetrat oluşumu, crossing over\nMayoz II: Mitoza benzer\n2n -> n (kromozom sayısı yarıya iner)',
+        'Mayoz I: Tetrat oluşur, crossing over görülebilir; homolog kromozomlar ayrılır ve kromozom sayısı yarıya iner (2n → n).\nMayoz II: Mitoza benzer; kardeş kromatitler ayrılır (n → n).\nSonuç: genetik olarak farklı olabilen 4 hücre.',
       ),
       Flashcard(
         'bio_4',
@@ -194,7 +194,7 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
       Flashcard(
         'bio_6',
         'Mendel yasaları?',
-        '1. Ayrılma (segregasyon)\n2. Bağımsız dağılım\nGenotip: Aa, AA, aa\nFenotip: Dış görünüş',
+        '1. Ayrılma (segregasyon): Bir gene ait iki alel gamet oluşurken birbirinden ayrılır.\n2. Bağımsız dağılım: Farklı kromozomlardaki (bağlı olmayan) genler gametlere birbirinden bağımsız dağılır.\nGenotip: Alel bileşimi (AA, Aa, aa)\nFenotip: Gözlenen özellik',
       ),
     ],
   };

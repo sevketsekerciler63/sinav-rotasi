@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../providers/app_state.dart';
+import '../services/net_trend_metrics.dart';
 import '../services/weekly_report_metrics.dart';
+import '../widgets/net_trend_card.dart';
 import '../theme/app_theme.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -26,6 +28,17 @@ class StatsScreen extends StatelessWidget {
 
                 // Key metrics
                 _buildKeyMetrics(context, state),
+                const SizedBox(height: 20),
+
+                // Deneme net gelişimi
+                Text(
+                  '📊 Deneme Net Gelişimi',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 12),
+                NetTrendCard(
+                  series: NetTrendMetrics.build(state.examAttemptBook.attempts),
+                ),
                 const SizedBox(height: 20),
 
                 // TYT Progress
@@ -137,8 +150,8 @@ class StatsScreen extends StatelessWidget {
       _MetricData('🔥', 'Seri', '${state.streak} gün', AppTheme.accentOrange),
       _MetricData(
         '📝',
-        'Denemeler',
-        '${state.completedExams}/${state.mockExams.length}',
+        'Deneme kaydı',
+        '${state.completedExams}',
         AppTheme.accentPurple,
       ),
       _MetricData(
@@ -438,13 +451,15 @@ class StatsScreen extends StatelessWidget {
                     showTitles: true,
                     reservedSize: 20,
                     interval: 2,
-                    getTitlesWidget: (v, m) => Text(
-                      v.toInt().toString(),
-                      style: TextStyle(
-                        color: colors.onSurfaceVariant,
-                        fontSize: 10,
-                      ),
-                    ),
+                    getTitlesWidget: (v, m) => v % 2 != 0
+                        ? const SizedBox.shrink()
+                        : Text(
+                            v.toInt().toString(),
+                            style: TextStyle(
+                              color: colors.onSurfaceVariant,
+                              fontSize: 10,
+                            ),
+                          ),
                   ),
                 ),
                 bottomTitles: AxisTitles(

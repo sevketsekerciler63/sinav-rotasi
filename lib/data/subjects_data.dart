@@ -4,7 +4,7 @@ import '../models/subject.dart';
 List<Subject> getAllSubjects() {
   return [
     // ═══════════════════════════════════════════════
-    // TYT MATEMATİK — 25 Konu, 40 Soru
+    // TYT MATEMATİK — 27 Konu, 40 Soru
     // ═══════════════════════════════════════════════
     Subject(
       name: 'TYT Matematik',
@@ -71,7 +71,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_5',
           name: 'Köklü Sayılar',
           description:
-              '√a, a≥0 için karesi a olan negatif olmayan gerçek sayıyı gösterir. a,b≥0 iken √a·√b=√(ab); a≥0 ve b>0 iken √(a/b)=√a/√b. Örnek: √4=2, √9=3, √25=5. 1/√2, payda sıfır olmadığı için √2/2 biçiminde yazılabilir.',
+              '√a, a≥0 için karesi a olan negatif olmayan gerçek sayıyı gösterir. a,b≥0 iken √a·√b=√(ab); a≥0 ve b>0 iken √(a/b)=√a/√b. Örnek: √4=2, √9=3, √25=5. 1/√2, paydası rasyonel yapılarak (pay ve payda √2 ile çarpılarak) √2/2 biçiminde yazılabilir.',
           sourceLabel:
               'MEB OGM Materyal · Matematik 9 Beceri Temelli Etkinlikler',
           sourceUrl:
@@ -99,7 +99,7 @@ List<Subject> getAllSubjects() {
           id: 'tyt_mat_7',
           name: 'Bölme-Bölünebilme',
           description:
-              'Bir tam sayının 2\'ye bölünmesi için son rakamı çift; 3 veya 9\'a bölünmesi için rakamları toplamı sırasıyla 3 veya 9\'un katı olmalıdır. 4\'te son iki basamak, 5\'te son rakam 0 veya 5, 10\'da son rakam 0 olmalıdır.',
+              'Bir tam sayının 2\'ye bölünmesi için son rakamı çift; 3 veya 9\'a bölünmesi için rakamları toplamı sırasıyla 3 veya 9\'un katı olmalıdır. 4\'e bölünmede son iki basamağın oluşturduğu sayı 4\'ün katı; 5\'te son rakam 0 veya 5; 10\'da son rakam 0 olmalıdır.',
           sourceLabel:
               'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Bölünebilme Kuralları',
           sourceUrl:
@@ -346,6 +346,34 @@ List<Subject> getAllSubjects() {
               'MEB OGM Materyal · Dört Dörtlük TYT Matematik, Merkezi Eğilim Ölçüleri',
           sourceUrl:
               'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page283.html',
+          questionCount: 1,
+          difficulty: '🟢 Kolay',
+          priority: '🟡 ORTA',
+          estimatedDays: 1,
+        ),
+        Topic(
+          id: 'tyt_mat_26',
+          name: 'Sıralama ve Seçme (Permütasyon-Kombinasyon)',
+          description:
+              'Sayma, toplama ve çarpma ilkelerine dayanır. n farklı nesneden r tanesinin sıralamalarının sayısı P(n,r)=n!/(n−r)!, sıranın önemsiz olduğu seçimlerin sayısı C(n,r)=n!/(r!(n−r)!)\'dir (r≤n; 0!=1). Önce sıranın önemli olup olmadığına ve tekrarın serbest olup olmadığına karar ver.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page8.html',
+          questionCount: 1,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'tyt_mat_27',
+          name: 'Katı Cisimler (TYT Geometri)',
+          description:
+              'Ayrıtları a, b, c olan dikdörtgenler prizmasının hacmi a·b·c, yüzey alanı 2(ab+ac+bc)\'dir; küpte hacim a³, yüzey alanı 6a²\'dir. Dik prizma ve dik dairesel silindirde hacim taban alanı×yüksekliktir. Birimleri tutarlı kullan: hacim cm³, alan cm² gibi küp ve kare birimlerle ifade edilir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük TYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page8.html',
           questionCount: 1,
           difficulty: '🟢 Kolay',
           priority: '🟡 ORTA',
@@ -1123,7 +1151,7 @@ List<Subject> getAllSubjects() {
     ),
 
     // ═══════════════════════════════════════════════
-    // AYT MATEMATİK — 10 Konu, 40 Soru
+    // AYT MATEMATİK — 16 Konu, 40 Soru
     // ═══════════════════════════════════════════════
     Subject(
       name: 'AYT Matematik',
@@ -1269,6 +1297,90 @@ List<Subject> getAllSubjects() {
           difficulty: '🔴 Zor',
           priority: '🔵 DÜŞÜK',
           estimatedDays: 1,
+        ),
+        Topic(
+          id: 'ayt_mat_11',
+          name: 'Çember ve Daire (AYT Geometri)',
+          description:
+              'Merkez açının ölçüsü gördüğü yayın ölçüsüne, çevre açının ölçüsü gördüğü yayın ölçüsünün yarısına eşittir; çapı gören çevre açı 90°\'dir. Teğet, değme noktasında yarıçapa diktir ve dışarıdaki bir noktadan çizilen iki teğet parçasının uzunlukları eşittir. Yarıçapı r olan çemberin çevresi 2πr, dairenin alanı πr²\'dir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 2,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 3,
+        ),
+        Topic(
+          id: 'ayt_mat_12',
+          name: 'Katı Cisimler (AYT Geometri)',
+          description:
+              'Dik prizma ve dik dairesel silindirde hacim taban alanı×yükseklik; piramit ve dik dairesel konide hacim taban alanı×yükseklik/3\'tür. Yarıçapı r olan kürenin hacmi 4πr³/3, yüzey alanı 4πr²\'dir. Ayrıtı a olan küpte hacim a³, yüzey alanı 6a²\'dir. Yüzey alanında açınımı çizmek hangi yüzlerin sayılacağını netleştirir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 2,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 3,
+        ),
+        Topic(
+          id: 'ayt_mat_13',
+          name: 'Koşullu Olasılık',
+          description:
+              'P(B)>0 iken A\'nın B verildiğinde koşullu olasılığı P(A|B)=P(A∩B)/P(B)\'dir. A ve B bağımsızsa P(A∩B)=P(A)·P(B) ve P(A|B)=P(A) olur. Teorik olasılık eş olasılıklı örnek uzaydan, deneysel olasılık gözlenen sıklıktan hesaplanır; deneme sayısı arttıkça deneysel olasılık genellikle teorik değere yaklaşır.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 2,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_mat_14',
+          name: 'Analitik Düzlemde Dönüşümler',
+          description:
+              '(x,y) noktası (a,b) kadar ötelenince (x+a, y+b) olur. x eksenine göre yansıması (x,−y), y eksenine göre (−x,y), orijine göre (−x,−y), y=x doğrusuna göre (y,x)\'tir. Orijin etrafında pozitif yönde 90° dönme (x,y)→(−y,x) dönüşümüdür. Öteleme, yansıma ve dönme uzunlukları ve açı ölçülerini korur.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 1,
+          difficulty: '🟢 Kolay',
+          priority: '🟡 ORTA',
+          estimatedDays: 1,
+        ),
+        Topic(
+          id: 'ayt_mat_15',
+          name: 'Denklem ve Eşitsizlik Sistemleri',
+          description:
+              'İkinci dereceden iki bilinmeyenli denklem sistemlerinde yerine koyma veya yok etme yöntemiyle ortak çözümler bulunur; gerçek ortak çözümler grafiklerin kesişim noktalarına karşılık gelir. İkinci dereceden bir bilinmeyenli eşitsizlikte kökler bulunup işaret tablosu yapılır; eşitsizlik sisteminin çözüm kümesi, her eşitsizliğin çözüm kümelerinin kesişimidir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 2,
+          difficulty: '🟡 Orta',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 2,
+        ),
+        Topic(
+          id: 'ayt_mat_16',
+          name: 'Üçgen ve Çokgenler (AYT Geometri)',
+          description:
+              'AYT geometri soruları TYT üçgen ve çokgen bilgisini de kullanır. Benzer üçgenlerde benzerlik oranı k ise karşılık gelen uzunlukların oranı k, alanların oranı k²\'dir. Açıortay, kenarortay ve yükseklik üçgenin yardımcı elemanlarıdır. n kenarlı dışbükey çokgende iç açıların toplamı (n−2)·180°, dış açıların toplamı 360°\'dir.',
+          sourceLabel:
+              'MEB OGM Materyal · Dört Dörtlük AYT Matematik, alt öğrenme alanı ve konu dağılım tablosu',
+          sourceUrl:
+              'https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html',
+          questionCount: 2,
+          difficulty: '🔴 Zor',
+          priority: '🟠 ÖNEMLİ',
+          estimatedDays: 3,
         ),
       ],
     ),
@@ -1568,7 +1680,7 @@ List<Subject> getAllSubjects() {
           id: 'ayt_bio_6',
           name: 'Hormonal Sistem',
           description:
-              'Endokrin bezler hormonlarını kana verir. Hipofiz, tiroit, paratiroit, böbrek üstü bezleri ve pankreasın endokrin bölümü hormon örnekleridir; insülin ve glukagon kan glikozunun düzenlenmesinde zıt etkiler gösterir.',
+              'Endokrin bezler hormonlarını kana verir. Hipofiz, tiroit, paratiroit, böbrek üstü bezleri ve pankreasın endokrin bölümü endokrin bez örnekleridir; insülin ve glukagon kan glikozunun düzenlenmesinde zıt etkiler gösterir.',
           sourceLabel:
               'MEB OGM Materyal · Dört Dörtlük AYT Biyoloji, Endokrin Sistem',
           sourceUrl:

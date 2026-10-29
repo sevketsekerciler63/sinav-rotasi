@@ -40,7 +40,7 @@ Yöntem: uygulama, model, planlayıcı, rapor, depolama ve yedek kodu okundu; Ö
 
 **Doğrulandı.** İki farklı `StudySession` aynı anda `Future.wait` ile kaydedildi. İki çağrı da `true` döndü; kalıcı listede bir kayıt kaldı.
 
-**Neden:** `recordStudySession` kayıt listesini depolama kuyruğuna girmeden önce kopyalıyor. İki çağrı aynı eski listeyi okuyup ayrı birer yeni liste üretiyor. Yazmaları sıralamak, eski listeyle hazırlanmış ikinci yazmanın birinciyi ezmesini engellemiyor. Bu gözlem eşzamanlı çağrı koşuluna aittir; normal her seansın kaybolduğu anlamına gelmez.
+**Neden:** `recordStudySession` kayıt listesini depolama kuyruğuna girmeden önce kopyalıyor. İki çağrı aynı eski listeyi okuyup ayrı birer yeni liste üretiyor. Yazmaları sıralamak, eski listeyle hazırlanmış ipekikinci yazmanın birinciyi ezmesini engellemiyor. Bu gözlem eşzamanlı çağrı koşuluna aittir; normal her seansın kaybolduğu anlamına gelmez.
 
 **Kanıt:** `lib/providers/app_state.dart:683`; `ProfileStorage._enqueueMutation` yalnız hazır güncellemenin yazımını sıralıyor.
 

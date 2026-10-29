@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,6 +120,10 @@ class _ThemeAwareAppState extends State<_ThemeAwareApp> {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeState.themeMode,
+        // Takvim, saat seçici ve sistem metinleri Türkçe görünsün.
+        locale: const Locale('tr', 'TR'),
+        supportedLocales: const [Locale('tr', 'TR')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         home: const SplashScreen(nextScreen: AppGate()),
       ),
     );

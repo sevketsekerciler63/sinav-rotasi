@@ -1358,12 +1358,12 @@ class ProfileStorage {
     final subjectIds = knownSubjects
         .map((subject) => subject.storageId)
         .toSet();
-    final subjectNames = <String, Set<String>>{
-      for (final subject in knownSubjects)
-        subject.storageId: {
-          for (final topic in subject.topics) topic.name.trim().toLowerCase(),
-        },
-    };
+    // Built-in topic names are not reserved for custom topics here: a later
+    // catalog release can add a topic whose name a student already used for
+    // a personal topic. Such a backup must stay importable; AppState shows
+    // the personal topic with a "(kişisel)" suffix. Custom topics still
+    // cannot repeat each other within one subject.
+    final subjectNames = <String, Set<String>>{};
     final customSubjectNames = <String>{};
     final topicIds = <String>{};
 

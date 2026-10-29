@@ -2,7 +2,7 @@
 
 Tarih: 16 Ekim 2026.
 Karar: Kullanıcı Luna'nın uygulama işlerini, Sol'un kritik işleri ve sonraki incelemeyi ayrı listelerde takip etmek istiyor.
-Durum: LUNA-01–04 Sol tarafından incelendi; eksikler 02e6a76 ile düzeltildi, 5 widget testi geçti. Fiziksel cihaz kabulü açık. LUNA-05/06 altyapı ve sözleşme bağımlılıkları nedeniyle sonraki sırada. Bu not model değiştirmez ve arka planda ajan başlatmaz.
+Güncel durum (17 Ekim): LUNA-01–06 kaynak işleri uygulandı ve Sol tarafından incelendi; kaynak/görev/plan, serbest deneme ve ortak hareket akışları çalışır modellerle bağlı. 60 otomatik kontrol geçti, analiz temiz. Fiziksel cihaz ve yayın kabulü açık. Bu not model değiştirmez ve arka planda ajan başlatmaz.
 
 Güncel bulgular ve devam kaydı: [Sol incelemesi](sol-review-and-progress-2026-10-16.md).
 
@@ -13,7 +13,7 @@ Güncel bulgular ve devam kaydı: [Sol incelemesi](sol-review-and-progress-2026-
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.
 - İlk devir noktası `9878621`; Luna `8b7c4ff` iş bölümü notundan başladı; mevcut kullanıcı değişikliği korunuyor. LUNA-01 teslimi `475721c`, LUNA-02 teslimi `2cc8c7e`, LUNA-03 teslimi `5a2eea4`, LUNA-04 teslimi `9c799d4`; depoda bunun dışındaki kullanıcı değişikliklerini koru, yalnız commit'e güvenip çalışma ağacını sıfırlama.
-- Kayıt/yedek ilk kaynak düzeltmeleri ve tekrar olay geçmişi uygulandı; güncel şema 9, recovery_records ve async updateMockExam mevcut. Statik analiz/web derlemesi başarılı; otomatik regresyon ve cihaz kurtarma kabulü henüz yok.
+- Güncel şema 14. Kaynak/görev/aralık ilerlemesi, kapasite planı ve sabit günlük beklenti, sınırsız TYT/AYT/YDT deneme, profil yılı/içerik sürümü, kalıcı kayda bağlı geri bildirim, tekrar olay geçmişi ve kurtarma arşivi uygulandı. 60 otomatik kontrol geçti; fiziksel cihaz kurtarma kabulü açık.
 - Gerçek kullanıcı verisi silinmez. Kontrollü örnekler gerçek öğrenci geçmişi gibi sunulmaz. Eksik altyapı için çalışanmış gibi düğme veya gösterge yapılmaz.
 
 Önce bu notu ve docs/storage-backup-progress-2026-10-16.md dosyasını oku. Sonra yalnız seçilen görevin ilgili koduna ve gereken araştırma bölümüne git. Uzun sohbeti veya tüm raporları her küçük işte tekrar taramak gerekmez. Kullanıcının sonraki düzeltmeleri bu nottan önceliklidir.
@@ -114,7 +114,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-05 · Kişisel kaynak ve serbest deneme ekranları
 
-- [ ] Durum: SOL-04 ve SOL-05 bekleniyor.
+- [x] Durum: Sol kaynak/görev/ilerleme, kapasite planı ve sınırsız TYT/AYT/YDT deneme ekranlarını gerçek kalıcı API ile tamamladı; otomatik kabul geçti.
 - Kapsam: Sol'un hazırladığı kalıcı model/API ile kişisel kaynak listesi/ayrıntısı, kısa deneme listesi ve ayrı sonuç formu.
 - Kabul: kaynak ekleme/düzenleme, sayfa-test-soru birimi, kısmi ilerleme, deneme oturumuna uygun alanlar ve gerçek boş/hata durumları. AYT kaydında gereksiz TYT alanı yok.
 - Sınır: geçici ekran listesiyle çalışanmış gibi kalıcılık sunma; model/veri şeması/net hesaplama/yedek geçişi yazma. Sabit 13 şablonu yeni serbest kayıt altyapısı sanma.
@@ -122,7 +122,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### LUNA-06 · Ortak hareket tasarımını uygulama
 
-- [ ] Durum: SOL-06 hareket sözleşmesi ve temel akışlar bekleniyor.
+- [x] Durum: ortak hareket sözleşmesi, azaltılmış hareket, rota geçişleri ve sayaç durumunun korunması uygulandı; otomatik kabul geçti. Fiziksel cihaz hareket/performance kabulü açık.
 - Kapsam: basış, görev durumu, ayrıntı sayfası ve ölçülü ilerleme geçişleri; mevcut animasyonları ortaklaştırma.
 - Kabul: sistemin hareketi azalt tercihi tüm ilgili alanlarda çalışır; ekran değişimi veri/timer durumunu sıfırlamaz; kalıcı sonuçtan önce başarı animasyonu yok; her rebuild'de liste yeniden uçuşmaz.
 - Sınır: sürekli dikkat isteyen animasyon, zorunlu ses/titreşim, ağır paket veya işlevi bekleten görsel süre ekleme.
@@ -132,7 +132,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-01 · İlk veri diliminin ve Luna paketlerinin incelemesi
 
-- [ ] Durum: açık.
+- [ ] Durum: Kaynak incelemesi ve otomatik regresyon tamamlandı. Fiziksel cihaz ve gerçek eski yedek kabulü açık.
 - 9878621 içindeki net kanonikleştirme, işlem kuyruğu, async kayıt, hataların saklanması ve recovery_records sözleşmesini yeniden incele.
 - Luna'nın her teslimini Git farkı ve gerçek davranış açısından kontrol et; gereksiz geniş değişiklikleri ayır.
 - Sonuçları “onay / düzeltme gerekli / kontrol edilemedi” olarak, görev kimliği ve somut gerekçeyle yaz.
@@ -141,7 +141,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-02 · Kayıt ve kurtarmanın kalanları
 
-- [ ] Durum: kaynak ilk dilimi var, kabul açık.
+- [ ] Durum: Kalıcı kayda bağlı ekranlar, atomik profil oluşturma, ham kurtarma arşivi ve bozuk kayıt koruması uygulandı. Seçmeli arşiv onarımı, büyük veri performansı ve gerçek cihaz kabulü açık.
 - Diğer iyimser ekran eylemlerinin kalıcı sonuç/taslak/yeniden deneme sözleşmesi; yarım işlem, profil değişimi ve kapatıp açma.
 - Schema 1–6 → 7 geçişi, iyi ve bozuk grupların kayıpsız export/importu, yanlış profile bağlı veriler, eski iyi kopya ve başlangıç kurtarması.
 - Profil metadatası bozulduğunda acil dışa aktarma imkânını değerlendir; mevcut export'un initialize sınırını belgeleyip gider.
@@ -150,14 +150,14 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-03 · Plan motoru, geçmiş ve tekrar
 
-- [ ] Durum: tekrar olay kimliği/geri alma `6df0300` ile uygulandı ve odaklı testler geçti; kapasite ve tarihsel beklenti açık.
+- [ ] Durum: Kaynak kapasitesi, tarihsel gün beklentisi, geri alma/yeniden yapma ve tekrar olay geçmişi uygulandı. Eski statik şablon arşiv yolunda; geçmişte hiç saklanmamış beklenti uydurulmaz.
 - AUD-06/07/08: gerçek dakika kapasitesi; bölünebilir atomik görevler; taşan işi açıklama; tarihsel plan beklentisi; tekrar olay kimliği ve geri alma anlamı.
 - Seviye ve uygun gün tercihlerinin gerçek etkisi; hedef değişiminde geçmişin yeniden yazılmaması.
 - Kabul: 30 dakikalık gün 95 görevi uygulanabilir diye sunmaz; yeni başlayanla dört gün kaçıran aday ayrılır; tamamla–geri al–tamamla tekrar sayısını yapay artırmaz.
 
 ### SOL-04 · Kişisel kaynak ve çalışma modelleri
 
-- [ ] Durum: kalıcı kaynak/görev/aralıklı ilerleme API'si `ee3f45d` ile uygulandı ve test edildi. Kaynak ekranı, plan/rapor bağı ve AUD-12 açık. API: [resource-api-v1.md](resource-api-v1.md).
+- [ ] Durum: Model, ekran, plan ve rapor bağları uygulandı; AUD-12 ders kimliği/ambiguous eski ad koruması tamamlandı. Cihaz kabulü açık. API: [resource-api-v1.md](resource-api-v1.md).
 - PROD-02/03: kaynak kimliği, sınav/ders/konu, birim, toplam/ilerleme; kaynak → görev → çalışma kaydı; kısmi ilerleme ve geri alma.
 - AUD-12: özel derslerin görünen adları/takma adları resmî ders kimliğiyle karışmaz; resmî toplamlar korunur.
 - Depolama, şema geçişi, yedek ve profil izolasyonu dahil hazırlanır.
@@ -165,7 +165,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-05 · Serbest deneme ve çok sınav altyapısı
 
-- [ ] Durum: başlanmadı.
+- [ ] Durum: Sınırsız TYT/AYT/YDT ve alan/dil ayrımlı karşılaştırma, sınav yılı + içerik sürümü uygulandı. 2027 kapsam doğrulaması, tam EA/SÖZ/YDT hazır konu rehberi ve sonraki sınav adaptörleri açık.
 - PROD-04/05 ve AUD-10/11/15: şablon/planlanan deneme/gerçek giriş ayrımı; serbest yeni deneme; oturum ve ders kimlikleri; sınava göre net kuralları.
 - YKS'nin desteklenen puan türleri ile katalog kapsamını dürüst göster; KPSS ve sonraki sınavlar için çekirdeği ayır, eksik içerik varmış gibi sunma.
 - Sınav yılı/müfredat/kaynak sürümü; resmî süre ve tarihlerin tek yapılandırması. Mevcut bilgi/formül/flashcard doğruluk açıklarının kaynakla düzeltilmesi (AUD-09).
@@ -174,7 +174,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-06 · Tasarım ve hareket sözleşmesi, bütünleşme incelemesi
 
-- [ ] Durum: kısmi araştırma var; uygulama sözleşmesi açık.
+- [ ] Durum: Hareket sözleşmesi ve bütünleşme düzeltmeleri uygulandı; otomatik kabul geçti. Gerçek öğrenci görüşmeleri, cihaz erişilebilirliği ve performansı açık.
 - LUNA-01/04 çıktılarının ürün hedefiyle uyumu; gezinme, boş/hata/bekleme durumları ve kişisel kaynak akışı.
 - LUNA-06 için süre/eğri/azaltılmış hareket kararlarını, timer/rota durumunun korunmasını ve başarı geri bildiriminin kayıt sonucuna bağını tanımla.
 - Sonraki Luna ekranlarını gerçek modellerle bütünleştir; hesaplamaların ekranda kopyalanmasını önle.
@@ -182,7 +182,7 @@ Ortak dosyalarda aynı anda iki model çalışmayacak; model değişimiyle sıra
 
 ### SOL-07 · Cihaz yedeği, isteğe bağlı bulut ve yayın kabulü
 
-- [ ] Durum: başlanmadı; cihaz/hesap yapılandırması gerektiren kısımlar ayrıca kayıtlı tutulacak.
+- [ ] Durum: Android cihaz tercihleri ayrıldı, OS yedek kapsamı ve CI yapılandırıldı. Gerçek cihaz, OAuth, iOS, imzalı yayın ve uzak CI kabulü açık.
 - Android Auto Backup/transfer kapsamı; uygun veriyi dahil etme, cihaz bilgilerini ayırma; kontrollü kaldırma/yeniden kurma ve farklı cihazdan kurtarma.
 - Dosya sağlayıcıları ve gerçek yükleme; isteğe bağlı doğrudan Drive için OAuth/kota/iyi sürüm geçmişi/boş kurulumun dolu yedeği ezmemesi.
 - iOS davranışı, çevrimdışı kuyruk, hesap değişimi, erişim iptali ve depolama sınırı.
@@ -215,9 +215,9 @@ Yalnız değişen dosyaları ve sonucu özetle; bütün sohbeti tekrar yazma. Ba
 | LUNA-02 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
 | LUNA-03 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
 | LUNA-04 | Uygulandı, Sol düzeltmeleri eklendi | Kaynak/widget kabulü; cihaz açık | `02e6a76`; ayrıntı Sol inceleme kaydında |
-| LUNA-05 | Altyapı bekliyor | İncelenmedi | SOL-04/05 |
-| LUNA-06 | Sözleşme bekliyor | İncelenmedi | SOL-06 |
-| SOL-01/02 önceki veri dilimi | Kaynak uygulandı | Kabul açık | Otomatik regresyon/cihaz kurtarma |
+| LUNA-05 | Kaynak ve serbest deneme ekranları uygulandı | Otomatik kabul geçti | Cihaz kabulü açık |
+| LUNA-06 | Hareket sözleşmesi uygulandı | Otomatik kabul geçti | Cihaz performansı açık |
+| SOL-01/02 veri dilimi | Kayıt ve kurtarma düzeltildi | Otomatik regresyon geçti | Gerçek yedek/cihaz kurtarma açık |
 
 Durumlar: başlanmadı → çalışılıyor → uygulandı/inceleme bekliyor → düzeltme gerekli veya kabul edildi. Sonradan gelen inceleme mevcut kabulü geçersiz kılabilir. Bu dosyanın oluşturulması hiçbir uygulama görevini tamamlamaz.
 
@@ -229,3 +229,14 @@ LUNA-05 kaynak yarısı gerçek kalıcı API ile uygulandı; kaynak/görev/kısm
 
 ### SOL devamı: LUNA-05 iki ekran dilimi
 Kaynak/görev/ilerleme ekranı, kapasite ve gün beklentisi, serbest TYT/AYT/YDT deneme defteri uygulandı. Eski takvim kayıtları korunur. Sonraki dilim SOL-06 hareket sözleşmesi / LUNA-06; gerçek cihaz, OAuth ve eski gerçek yedek kabulü ayrıca açık. [Kanıtlar ve sınırlar](sol-review-and-progress-2026-10-16.md).
+
+
+## 17 Ekim · Sonraki işler ve dış bağımlılıklar
+Bu bölüm güncel durumdur; üstteki tarihli teslim kayıtları kendi zamanının kanıtını korur.
+1. Akademik içerik: 2027 resmi kapsamını doğrulama, tam EA/SÖZ/YDT konu rehberini hazırlama ve bütün bilgi kartlarını kaynaklarıyla editoryal denetleme. Yıl seçmek bunu otomatik yapmaz.
+2. Veri: gerçek eski yedek örnekleriyle kabul, seçmeli ham kurtarma arşivi onarımı, büyük geçmiş için ölçüm ve depolama mimarisi. Mevcut JSON işlem günlüğü gerçek veritabanı garantisi olarak sunulmaz.
+3. Android: bağlı cihaz/emülatör yok (`adb devices` boş). Silme/yeniden kurma, telefon değiştirme ve dosya sağlayıcısı iptal/çevrimdışı kabulü yapılamadı.
+4. iOS: Windows ortamında Xcode/cihaz yok; cihaz tercihlerini OS yedeğinden ayırma ve gerçek geri yükleme açık.
+5. Drive: OAuth istemcisi, paket/imza yapılandırması ve test hesabı yok. Çalışıyormuş gibi bulut eşitleme gösterilmiyor.
+6. Yayın: imza anahtarı, mağaza hesabı, gerçek cihaz kabulü ve uzak CI çalıştırması yok. Debug APK yayın sürümü değildir.
+7. Kullanıcı araştırması: gerçek öğrenci görüşmesi yapılmadı. Fiziksel ekran okuyucu, geri kaydırma hareketleri ve düşük cihaz performansı ayrıca kabul ister.

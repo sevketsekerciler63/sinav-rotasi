@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/learning_workspace.dart';
 import '../providers/app_state.dart';
+import '../utils/turkish_date.dart';
+import '../widgets/date_picker_field.dart';
 import 'resources_screen.dart';
 import 'pomodoro_screen.dart';
 import 'resource_plan_screen.dart';
@@ -266,13 +268,47 @@ Future<void> _taskEditor(
             (day) => day.blocks.any((block) => block.taskId == task.id),
           ));
   final id = task?.id ?? _id('task');
+  final topics = state.subjects
+      .where((subject) => subject.storageId == resource.subjectId)
+      .expand((subject) => subject.topics)
+      .toList();
+  String? topicId = task?.topicId;
+  String? topicName = task?.topicName;
   try {
     await _editor(
       context,
       task == null ? 'Görev ekle' : 'Görevi düzenle',
-      (_, busy) => Column(
+      (refresh, busy) => Column(
         children: [
           _field(title, 'Görev adı / konu', busy),
+          DropdownButtonFormField<String>(
+            initialValue: topicId ?? '',
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Bağlı konu (isteğe bağlı)',
+            ),
+            items: [
+              const DropdownMenuItem(value: '', child: Text('Konu seçilmedi')),
+              for (final topic in topics)
+                DropdownMenuItem(value: topic.id, child: Text(topic.name)),
+              if (topicId != null && !topics.any((t) => t.id == topicId))
+                DropdownMenuItem(
+                  value: topicId,
+                  child: Text('$topicName (katalogdan kaldırılmış)'),
+                ),
+            ],
+            onChanged: busy
+                ? null
+                : (value) => refresh(() {
+                    topicId = value == '' ? null : value;
+                    topicName =
+                        topics
+                            .where((t) => t.id == topicId)
+                            .firstOrNull
+                            ?.name ??
+                        (topicId == null ? null : topicName);
+                  }),
+          ),
           _field(
             start,
             'İlk ${resource.unit.label} (dahil)',
@@ -288,7 +324,16 @@ Future<void> _taskEditor(
             locked: locked,
           ),
           _field(minutes, 'Tahmini toplam dakika', busy, number: true),
-          _field(day, 'Çalışma günü: YYYY-AA-GG (isteğe bağlı)', busy),
+          DatePickerField(
+            label: 'Çalışma günü (isteğe bağlı)',
+            value: day.text.trim().isEmpty ? null : day.text.trim(),
+            optional: true,
+            enabled: !busy,
+            firstDate: _earliestPlannedDate(task?.plannedDate),
+            lastDate: DateTime(DateTime.now().year + 5, 12, 31),
+            helpText: 'Görevin en erken çalışma günü',
+            onChanged: (value) => refresh(() => day.text = value ?? ''),
+          ),
           const Text('Plan oluşturduğunda bu tarihten önceye yerleştirilmez.'),
         ],
       ),
@@ -301,12 +346,89 @@ Future<void> _taskEditor(
           endUnit: _number(end),
           estimatedMinutes: _number(minutes),
           plannedDate: day.text.trim().isEmpty ? null : day.text.trim(),
+          topicId: topicId,
+          topicName: topicName,
           archived: task?.archived ?? false,
         ),
       ),
     );
   } finally {
     for (final controller in [title, start, end, minutes, day]) {
+      controller.dispose();
+    }
+  }
+}
+
+/// Geçmiş tarihli eski bir görev düzenlenirken mevcut değer seçilebilir kalsın.
+DateTime _earliestPlannedDate(String? existing) {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final current = parseIsoDay(existing);
+  return current != null && current.isBefore(today) ? current : today;
+}
+
+int _defaultUnitsPerTask(StudyResourceUnit unit) => switch (unit) {
+  StudyResourceUnit.page => 20,
+  StudyResourceUnit.test => 2,
+  StudyResourceUnit.question => 40,
+  StudyResourceUnit.video => 3,
+};
+
+/// Kaynağın görevlere ayrılmamış kısmını eşit görevlere böler.
+Future<void> _splitEditor(BuildContext context, StudyResource resource) async {
+  final state = context.read<AppState>();
+  final per = TextEditingController(
+    text: _defaultUnitsPerTask(resource.unit).toString(),
+  );
+  final minutes = TextEditingController(text: '60');
+  final prefix = TextEditingController(text: 'Bölüm');
+  final idPrefix = _id('task');
+  final unit = resource.unit.label;
+  String preview() {
+    final ranges = state.learningWorkspace.unassignedRanges(resource.id);
+    if (ranges.isEmpty) return 'Bu kaynağın tüm aralığı görevlere ayrılmış.';
+    final free = ranges.fold<int>(0, (sum, r) => sum + r.$2 - r.$1 + 1);
+    final size = int.tryParse(per.text.trim());
+    final rangeText = ranges.map((r) => '${r.$1}–${r.$2}').join(', ');
+    if (size == null || size < 1) {
+      return 'Boştaki aralık: $rangeText ($free $unit).';
+    }
+    final count = ranges.fold<int>(
+      0,
+      (sum, r) => sum + ((r.$2 - r.$1 + 1) + size - 1) ~/ size,
+    );
+    return 'Boştaki aralık: $rangeText ($free $unit) → $count görev. '
+        'Mevcut görevlere ve çalışma geçmişine dokunulmaz.';
+  }
+
+  try {
+    await _editor(
+      context,
+      'Otomatik böl',
+      (_, busy) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _field(per, 'Her görevde kaç $unit', busy, number: true),
+          _field(minutes, 'Görev başına tahmini dakika', busy, number: true),
+          _field(prefix, 'Görev adı (ör. Bölüm, Test)', busy),
+          ListenableBuilder(
+            listenable: Listenable.merge([per]),
+            builder: (context, _) => Text(preview()),
+          ),
+        ],
+      ),
+      () => state.saveResourceTasks(
+        state.learningWorkspace.splitUnassigned(
+          resourceId: resource.id,
+          unitsPerTask: _number(per),
+          minutesPerTask: _number(minutes),
+          titlePrefix: prefix.text,
+          idPrefix: idPrefix,
+        ),
+      ),
+    );
+  } finally {
+    for (final controller in [per, minutes, prefix]) {
       controller.dispose();
     }
   }
@@ -550,12 +672,25 @@ class _ResourceDetailState extends State<StudyResourceDetail> {
                     : () => _taskEditor(context, resource),
                 child: const Text('Görev ekle'),
               ),
+              OutlinedButton.icon(
+                onPressed:
+                    disabled ||
+                        resource.archived ||
+                        workspace.unassignedRanges(resource.id).isEmpty
+                    ? null
+                    : () => _splitEditor(context, resource),
+                icon: const Icon(Icons.call_split_rounded, size: 18),
+                label: const Text('Otomatik böl'),
+              ),
             ],
           ),
           if (tasks.isEmpty)
             const Padding(
               padding: EdgeInsets.all(20),
-              child: Text('Bir aralık seçerek ilk görevini ekle.'),
+              child: Text(
+                'Bir aralık seçerek ilk görevini ekle ya da “Otomatik böl” ile '
+                'kaynağı tek seferde eşit görevlere ayır.',
+              ),
             ),
           for (final task in tasks)
             Card(
@@ -568,11 +703,15 @@ class _ResourceDetailState extends State<StudyResourceDetail> {
                       '${task.title}${task.archived ? ' · Arşivde' : ''}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
+                    if (task.topicId != null)
+                      Text(
+                        'Konu: ${state.subjects.where((s) => s.storageId == resource.subjectId).expand((s) => s.topics).where((t) => t.id == task.topicId).firstOrNull?.name ?? task.topicName}',
+                      ),
                     Text(
                       '${task.startUnit}–${task.endUnit} ${resource.unit.label} · ${workspace.taskProgress(task.id)} / ${task.unitCount} tamamlandı',
                     ),
                     Text(
-                      'Tahmini ${task.estimatedMinutes} dakika${task.plannedDate == null ? '' : ' · Hedef: ${task.plannedDate}'}',
+                      'Tahmini ${task.estimatedMinutes} dakika${task.plannedDate == null ? '' : ' · En erken: ${turkishDayKey(task.plannedDate!)}'}',
                     ),
                     Wrap(
                       spacing: 8,

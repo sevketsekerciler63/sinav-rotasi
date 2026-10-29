@@ -6,6 +6,7 @@ import '../providers/app_state.dart';
 import 'daily_plan_screen.dart';
 import 'study_resources_screen.dart';
 import 'settings_screen.dart';
+import '../utils/turkish_date.dart';
 
 class ResourceTodayCard extends StatelessWidget {
   const ResourceTodayCard({super.key});
@@ -190,7 +191,7 @@ class _ResourcePlanScreenState extends State<ResourcePlanScreen> {
                 key: PageStorageKey('${state.activeProfile.id}:${day.date}'),
                 initiallyExpanded: day.date == today,
                 title: Text(
-                  '${day.date}${day.date == today ? ' · Bugün' : ''}',
+                  '${turkishDayKey(day.date, withWeekday: true)}${day.date == today ? ' · Bugün' : ''}',
                 ),
                 subtitle: Text(
                   '${day.plannedMinutes} / ${day.capacityMinutes} dakika · ${day.blocks.where((block) => workspace.blockProgress(day, block) == block.units).length} / ${day.blocks.length} aralık tamamlandı',

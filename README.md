@@ -5,6 +5,8 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
 ## Mevcut kapsam
 
 - TYT/AYT ders ve konu takibi; profile özel ders ve konu ekleme
+- Kaynakları otomatik görevlere bölme; görevleri kaynağın dersindeki hazır veya kişisel konulara bağlama. Bağlantılar yerel kayıtta ve JSON yedeğinde korunur; kaynak ilerlemesi konu tamamlanmasını kendiliğinden değiştirmez.
+- Denemelerim kayıtlarından kronolojik net grafiği; TYT, AYT alanları ve YDT dilleri ayrı karşılaştırılır. Netler ve tarih seçici Türkçe gösterilir.
 - YKS profilinde SAY/EA/SÖZ/DİL puan türü ve kullanıcının Başlangıç/Temel/Orta/İleri öz değerlendirmesi; JSON yedeğinde saklanır, eski profiller “Belirtilmedi” olur
 - Haftalık uygun gün ve süre hedefiyle bugünden sınava kadar oluşturulan plan; 95 temel görev, dinlenme günleri ve zayıf konulara göre tekrar dönemi
 - Hedefler, zayıf konular, istatistik, rozet ve Pomodoro
@@ -28,12 +30,12 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 
 ## Bilinen durum
 
-- Veri `SharedPreferences` içinde saklanır. Profil saklama şeması sürüm 6'dır; sürüm 1–5 yedekler geriye uyumlu okunur. Eski kayıtların ilk gerçek cihaz açılışında taşındığı henüz doğrulanmadı.
+- Veri `SharedPreferences` içinde saklanır. Profil saklama şeması sürüm 14'tür (`ProfileStorage.schemaVersion`); daha eski yedekler geriye uyumlu okunur. Eski kayıtların ilk gerçek cihaz açılışında taşındığı henüz doğrulanmadı.
 - 95 temel plan görevi `day_001`–`day_095` kimlikleriyle saklanır. Uygun çalışma günleri değişince tarihler yeniden düzenlenir; görev ilerlemesi kimliğini korur. Daha fazla uygun gün varsa ek günlere tekrar/deneme analizi gelir; daha az gün varsa temel görevler bazı günlerde birlikte gösterilir.
 - Tamamlanmamış görev, uygulama yeni günde açıldığında veya öne geldiğinde sıradaki uygun çalışma gününe taşınır; tamamlanan görevler yeniden planlanmaz.
 - Günlük dakika tercihi hedef olarak gösterilir; mevcut görevlerin gerçek süre tahmini bu tercihe göre henüz yeniden hesaplanmıyor. Temel görevleri bir güne sığdırmak için birleştirme gerekebilir.
 - Yeni kurulumun kişisel plan hedefi kurulum anından 180 gün sonrasına ayarlanır; kayıtlı profiller otomatik değişmez. Bu tarih resmî sınav tarihi değildir. Kullanıcı Ayarlar'dan kendi hedefini güncelleyebilir; resmî tarih açıklanmadan YKS tarihi uydurulmamalıdır.
-- YKS kataloğu tüm puan türlerini kapsamaz; KPSS şablonu ve ekranları henüz yoktur.
+- Hazır konu kataloğu 115 konudur (TYT + AYT SAY; 2026-10-21'de MEB OGM tablolarına göre AYT geometri, koşullu olasılık, dönüşümler ve TYT sayma/katı cisimler eklendi). YKS kataloğu tüm puan türlerini kapsamaz; KPSS şablonu ve ekranları henüz yoktur.
 - Puan türü ve öz değerlendirme profil bilgisidir; günlük görevler ve süreler bu seçime göre henüz kişiselleştirilmez. Müfredat/puan türü kapsam eşlemesi ayrıca doğrulanmalıdır.
 - Yedek panoya kopyalanabilir veya JSON dosyası olarak kaydedilebilir; içe aktarmada dosya seçme, panodan yapıştırma ve metin alanı desteklenir. Önizleme ve etki onayı korunur; yükleme sonrası kısa süreli geri alma sunulur.
 - Eski toplam soru sayısı korunur fakat tarih bilgisi olmadığı için günlük/haftalık soru raporuna katılmaz; tarih anahtarı korunmuş eski plan kayıtları raporda ayrı gösterilir.
@@ -43,7 +45,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - Kart ve zayıf konu tekrarları cihaz içinde tarihlendirilir; günlük hatırlatıcı bunlardan ayrı, isteğe bağlı bir cihaz bildirimidir. Profil/hedef tarihi değişince planlı bildirim güncellenir. Eski tamamlanmış günlük tekrarların konu bağlantısı bulunmayabilir, yeni bağlı görevler bu tarihe göre planlanır.
 - Son başarılı dışa aktarma zamanı cihazda gösterilir ve profil yedeğine dahil edilmez. Gerçek Android/iOS dosya seçici, farklı cihaz/origin taşıması ve geri yükleme round-trip kabulü bekliyor.
 - Ayarlarındaki “Veri ve gizlilik” özeti yerel veri alanını, kullanıcı seçtiğinde açılan YouTube ve kart kaynak bağlantılarını, yedek kapsamını, cihazdaki hatırlatıcı tercihini ve silme etkisini açıklar. Inter ve Space Grotesk lisanslarıyla uygulamaya gömülüdür; fontlar için çalışma anında ağ isteği yapılmaz.
-- `test/widget_test.dart` henüz çalıştırılabilir test içermiyor.
+- `flutter test` ile katalog, depolama/kurtarma, günlük soru tarihleri, net trendi, Türkçe tarih seçici ve kaynak görev/konu bağlantısı kontrolleri çalıştırılır. Konu bağlantısında kayıt hatası sonrası taslak, yeniden açma ve JSON yedek gidiş-dönüşü sınanır.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
 - [Release checklist](docs/release-checklist.md) sürüm, Android imzası, build, güncelleme ve geri dönüş akışını açıklar. Üretim keystore'u yoktur; yerel debug imzalı release için `ALLOW_DEBUG_SIGNING_FOR_RELEASE=true` açıkça ayarlanmalıdır. iOS artefaktı macOS/Xcode üzerinde derlenip doğrulanmalıdır.
 - `arsiv/eski-yks-kaynaklari` klasöründe eski MTOK Excel kaynakları vardır.

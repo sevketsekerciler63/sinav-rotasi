@@ -89,6 +89,7 @@ class ResourceTask {
   final String id, resourceId, title;
   final int startUnit, endUnit, estimatedMinutes;
   final String? plannedDate;
+  final String? topicId, topicName;
   final bool archived;
 
   const ResourceTask({
@@ -99,6 +100,8 @@ class ResourceTask {
     required this.endUnit,
     required this.estimatedMinutes,
     this.plannedDate,
+    this.topicId,
+    this.topicName,
     this.archived = false,
   });
 
@@ -111,6 +114,8 @@ class ResourceTask {
     'endUnit': endUnit,
     'estimatedMinutes': estimatedMinutes,
     'plannedDate': plannedDate,
+    'topicId': topicId,
+    'topicName': topicName,
     'archived': archived,
   };
 
@@ -118,6 +123,16 @@ class ResourceTask {
     final start = _integer(json, 'startUnit', min: 1, max: 1000000);
     final end = _integer(json, 'endUnit', min: start, max: 1000000);
     final date = json['plannedDate'];
+    final topicId = json['topicId'];
+    final topicName = json['topicName'];
+    if ((topicId == null) != (topicName == null) ||
+        (topicId != null &&
+            (topicId is! String ||
+                topicId.trim().isEmpty ||
+                topicName is! String ||
+                topicName.trim().isEmpty))) {
+      throw const FormatException('Görev konusu geçersiz.');
+    }
     if (date != null) {
       if (date is! String ||
           !RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date) ||
@@ -134,6 +149,8 @@ class ResourceTask {
       endUnit: end,
       estimatedMinutes: _integer(json, 'estimatedMinutes', min: 1, max: 100000),
       plannedDate: date,
+      topicId: topicId as String?,
+      topicName: topicName as String?,
       archived: _boolean(json, 'archived'),
     );
   }
@@ -146,6 +163,8 @@ class ResourceTask {
     endUnit: endUnit,
     estimatedMinutes: estimatedMinutes,
     plannedDate: plannedDate,
+    topicId: topicId,
+    topicName: topicName,
     archived: value,
   );
 }
@@ -255,6 +274,123 @@ class LearningWorkspace {
       start = event.endUnit + 1;
     }
     if (start <= task.endUnit) result.add((start, task.endUnit));
+    return result;
+  }
+
+  /// Kaynakta henüz hiçbir etkin göreve ayrılmamış aralıklar. Arşivlenmiş
+  /// görevlerin yalnızca çalışılmış kısımları dolu sayılır; doğrulama
+  /// kuralıyla ([_validate]) aynı ayrılmış aralık tanımı kullanılır.
+  List<(int, int)> unassignedRanges(String resourceId) {
+    final resource = _resources[resourceId];
+    if (resource == null) return [];
+    final reserved = <(int, int)>[];
+    for (final task in _tasks.values) {
+      if (task.resourceId != resourceId) continue;
+      if (task.archived) {
+        reserved.addAll(
+          _events.values
+              .where((event) => event.active && event.taskId == task.id)
+              .map((event) => (event.startUnit, event.endUnit)),
+        );
+      } else {
+        reserved.add((task.startUnit, task.endUnit));
+      }
+    }
+    reserved.sort((a, b) => a.$1.compareTo(b.$1));
+    final result = <(int, int)>[];
+    var start = resource.initialCompletedUnits + 1;
+    for (final range in reserved) {
+      if (range.$2 < start) continue;
+      if (range.$1 > start) {
+        final end = range.$1 - 1 < resource.totalUnits
+            ? range.$1 - 1
+            : resource.totalUnits;
+        if (end >= start) result.add((start, end));
+      }
+      start = range.$2 + 1;
+    }
+    if (start <= resource.totalUnits) result.add((start, resource.totalUnits));
+    return result;
+  }
+
+  /// Boştaki aralıkları en fazla [unitsPerTask] birimlik sıralı görevlere
+  /// böler. Görev kimlikleri sıfırla doldurulur; planlayıcı görevleri
+  /// kimliğe göre sıraladığı için 10. görev 2. görevden önce gelmez.
+  List<ResourceTask> splitUnassigned({
+    required String resourceId,
+    required int unitsPerTask,
+    required int minutesPerTask,
+    required String titlePrefix,
+    required String idPrefix,
+    int maxTasks = 300,
+  }) {
+    final resource = _resources[resourceId];
+    if (resource == null) throw const FormatException('Kaynak bulunamadı.');
+    if (resource.archived) {
+      throw const FormatException('Önce kaynağı arşivden çıkar.');
+    }
+    if (unitsPerTask < 1 || unitsPerTask > resource.totalUnits) {
+      throw FormatException(
+        'Görev başına 1 ile ${resource.totalUnits} arasında '
+        '${resource.unit.label} seç.',
+      );
+    }
+    if (minutesPerTask < 1 || minutesPerTask > 600) {
+      throw const FormatException('Görev başına 1–600 dakika seç.');
+    }
+    final prefix = titlePrefix.trim().isEmpty ? 'Bölüm' : titlePrefix.trim();
+    final ranges = unassignedRanges(resourceId);
+    if (ranges.isEmpty) {
+      throw const FormatException(
+        'Bu kaynağın tüm aralığı görevlere ayrılmış.',
+      );
+    }
+    final chunks = <(int, int)>[];
+    for (final range in ranges) {
+      for (var start = range.$1; start <= range.$2; start += unitsPerTask) {
+        final end = start + unitsPerTask - 1;
+        chunks.add((start, end < range.$2 ? end : range.$2));
+      }
+    }
+    if (chunks.length > maxTasks) {
+      throw FormatException(
+        'Bu ayarla ${chunks.length} görev oluşur; en fazla $maxTasks. '
+        'Görev başına daha çok ${resource.unit.label} seç.',
+      );
+    }
+    final width = chunks.length.toString().length < 4
+        ? 4
+        : chunks.length.toString().length;
+    return [
+      for (var index = 0; index < chunks.length; index++)
+        ResourceTask(
+          id: '$idPrefix-${(index + 1).toString().padLeft(width, '0')}',
+          resourceId: resourceId,
+          title:
+              '$prefix ${index + 1} (${chunks[index].$1}–${chunks[index].$2})',
+          startUnit: chunks[index].$1,
+          endUnit: chunks[index].$2,
+          estimatedMinutes: _proportionalMinutes(
+            minutesPerTask,
+            chunks[index].$2 - chunks[index].$1 + 1,
+            unitsPerTask,
+          ),
+        ),
+    ];
+  }
+
+  static int _proportionalMinutes(int minutes, int units, int unitsPerTask) {
+    final value = (minutes * units / unitsPerTask).round();
+    return value < 1 ? 1 : value;
+  }
+
+  /// Birden çok görevi tek değişiklik olarak ekler; biri geçersizse hiçbiri
+  /// eklenmez.
+  LearningWorkspace saveTasks(Iterable<ResourceTask> tasks) {
+    var result = this;
+    for (final task in tasks) {
+      result = result.saveTask(task);
+    }
     return result;
   }
 

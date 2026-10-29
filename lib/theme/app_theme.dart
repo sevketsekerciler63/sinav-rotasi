@@ -261,6 +261,9 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: cardDarkAlt,
+        // Açık etiket yazısı seçili hâlde de okunabilsin (kontrast ≈ 5,5:1).
+        selectedColor: const Color(0xFF2F5A4F),
+        checkmarkColor: accentBlue,
         labelStyle: GoogleFonts.inter(
           fontSize: 12,
           color: const Color(0xFFD2DFD9),

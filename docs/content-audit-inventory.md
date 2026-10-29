@@ -2,6 +2,23 @@
 
 Son kaynak sayımı: 2026-10-16. Bu dosya kapsam envanteridir; listedeki bir ifadenin doğru olduğunu veya alan uzmanı tarafından onaylandığını göstermez.
 
+## 2026-10-21 katalog güncellemesi
+
+MEB OGM *Dört Dörtlük* TYT ve AYT Matematik kitaplarının alt öğrenme alanı tablosuyla karşılaştırıldı; katalogda olmayan 8 konu eklendi (107 → 115). Kaynak: [AYT tablosu](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/ayt/matematik/files/basic-html/page8.html), [TYT tablosu](https://ogmmateryal.eba.gov.tr/panel/upload/etkilesimli/kitap/konu-pekistirme/tyt/matematik/files/basic-html/page8.html).
+
+| Topic ID | Konu |
+| --- | --- |
+| `ayt_mat_11` | Çember ve Daire (AYT Geometri) |
+| `ayt_mat_12` | Katı Cisimler (AYT Geometri) |
+| `ayt_mat_13` | Koşullu Olasılık |
+| `ayt_mat_14` | Analitik Düzlemde Dönüşümler |
+| `ayt_mat_15` | Denklem ve Eşitsizlik Sistemleri |
+| `ayt_mat_16` | Üçgen ve Çokgenler (AYT Geometri) |
+| `tyt_mat_26` | Sıralama ve Seçme (Permütasyon-Kombinasyon) |
+| `tyt_mat_27` | Katı Cisimler (TYT Geometri) |
+
+Kaynak bağı tablo sayfasıdır (konu sayfası değil); konu bazlı sayfa eşlemesi ve uzman incelemesi açıktır. Aynı adla daha önce kişisel konu eklemiş öğrencinin konusu silinmez, `(kişisel)` ekiyle gösterilir (`test/catalog_update_test.dart`). Aynı gün üç açıklama düzeltildi: `tyt_mat_5` (paydayı rasyonel yapma), `tyt_mat_7` (4'e bölünme kuralı), `ayt_bio_6` (bezlere "hormon" denmesi).
+
 ## Kaynak durumu
 
 | İçerik grubu | Kaynakta sayılan kayıt | Kaynak etiketi/URL'si olan | Durum |

@@ -995,12 +995,36 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         if (topic == null) continue;
         for (final subject in subjects) {
           if (subject.storageId == subjectId) {
-            subject.topics.add(topic);
+            subject.topics.add(_withUniqueTopicName(topic, subject.topics));
             break;
           }
         }
       }
     }
+  }
+
+  /// A newer catalog may add a built-in topic whose name equals a personal
+  /// topic the student created earlier. Keep the personal topic, its id and
+  /// progress, but show it with a "(kişisel)" suffix so both stay distinct.
+  static Topic _withUniqueTopicName(Topic topic, List<Topic> existing) {
+    final taken = existing
+        .map((item) => item.name.trim().toLowerCase())
+        .toSet();
+    if (!taken.contains(topic.name.trim().toLowerCase())) return topic;
+    var candidate = '${topic.name.trim()} (kişisel)';
+    for (var index = 2; taken.contains(candidate.toLowerCase()); index++) {
+      candidate = '${topic.name.trim()} (kişisel $index)';
+    }
+    return Topic(
+      id: topic.id,
+      name: candidate,
+      description: topic.description,
+      questionCount: topic.questionCount,
+      difficulty: topic.difficulty,
+      priority: topic.priority,
+      estimatedDays: topic.estimatedDays,
+      isCustom: true,
+    );
   }
 
   Topic? _topicFromDefinition(dynamic value) {
@@ -2113,6 +2137,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     'task:${task.id}',
     (workspace) => workspace.saveTask(task),
   );
+
+  /// Otomatik bölünen görevleri tek kayıt işlemiyle ekler.
+  Future<bool> saveResourceTasks(List<ResourceTask> tasks) =>
+      _changeLearningWorkspace(
+        'tasks:${tasks.isEmpty ? '-' : tasks.first.id}',
+        (workspace) => workspace.saveTasks(tasks),
+      );
 
   Future<bool> recordResourceProgress(ResourceProgressEvent event) =>
       _changeLearningWorkspace(

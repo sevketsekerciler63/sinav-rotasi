@@ -5,6 +5,7 @@ import '../models/mock_exam.dart';
 import '../models/net_score.dart';
 import '../providers/app_state.dart';
 import '../services/weekly_report_metrics.dart';
+import '../utils/turkish_date.dart';
 import '../theme/app_theme.dart';
 
 class WeeklyReportScreen extends StatelessWidget {
@@ -111,7 +112,7 @@ class WeeklyReportScreen extends StatelessWidget {
                           ),
                           for (final attempt in recordedAttempts)
                             Text(
-                              '${attempt.date} · ${attempt.title} · ${attempt.session}${attempt.area.isEmpty ? '' : ' ${attempt.area.toUpperCase()}'} · ${attempt.totalNet.toStringAsFixed(2)} net',
+                              '${turkishDayKey(attempt.date)} · ${attempt.title} · ${attempt.session}${attempt.area.isEmpty ? '' : ' ${attempt.area.toUpperCase()}'} · ${NetScore.format(attempt.totalNet)} net',
                             ),
                           const Text(
                             'Farklı oturumların netleri toplanmaz. Karşılaştırmayı Denemelerim ekranında aynı alan ve dil içinde görebilirsin.',

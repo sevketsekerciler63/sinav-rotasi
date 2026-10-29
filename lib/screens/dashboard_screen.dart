@@ -776,9 +776,11 @@ class DashboardScreen extends StatelessWidget {
         label: 'Pomodoro',
         accent: AppTheme.accentRed,
         category: _QuickCategory.calis,
+        // "Pomodoro sayfasını aç" yalnız sayfayı açar; seansı başlatmak için
+        // ana sayfadaki ayrı "odak seansı başlat" düğmesi kullanılır.
         onTap: () => Navigator.push(
           context,
-          AppPageRoute(builder: (_) => const PomodoroScreen(autoStart: true)),
+          AppPageRoute(builder: (_) => const PomodoroScreen()),
         ),
       ),
       _QuickItem(
