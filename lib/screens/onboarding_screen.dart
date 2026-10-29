@@ -534,7 +534,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Hazır konu rehberi TYT + AYT SAY için 2026 referansıdır. EA, SÖZ ve YDT kaynak ve denemelerini de takip edebilirsin. Yeni yılın tam konu kapsamı henüz doğrulanmadı.',
+                          'Hazır konu rehberi TYT, AYT SAY ve AYT EA/SÖZ (Edebiyat, Tarih, Coğrafya) için 2026 referansıdır; AYT konuları seçtiğin puan türüne göre gösterilir. Felsefe grubu, Din kültürü ve YDT için kendi kaynak ve denemelerini takip edebilirsin. Yeni yılın tam konu kapsamı henüz doğrulanmadı.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),

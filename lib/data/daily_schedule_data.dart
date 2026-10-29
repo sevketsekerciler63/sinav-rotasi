@@ -1,8 +1,13 @@
+import 'ayt_social_subjects_data.dart';
 import 'exam_rules.dart';
 import '../models/daily_log.dart';
+import '../models/exam_profile.dart';
 import '../models/study_schedule_preferences.dart';
 
-List<DailyLog> getDailySchedule({DateTime? targetDate}) {
+List<DailyLog> getDailySchedule({
+  DateTime? targetDate,
+  String scoreType = ExamProfile.unspecified,
+}) {
   final logs = [
     DailyLog(
       date: DateTime(2026, 3, 17),
@@ -879,6 +884,7 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
       motivationNote: 'Yarın SINAV! Her şeyi yaptın. Güven kendine! 🏆',
     ),
   ];
+  _adaptAytForScoreType(logs, scoreType);
 
   if (targetDate == null) return _withCoreProgressIds(logs);
   final normalizedTarget = DateTime(
@@ -906,19 +912,94 @@ List<DailyLog> getDailySchedule({DateTime? targetDate}) {
   );
 }
 
+/// The template's AYT column was written for SAY. EA, SÖZ and DİL profiles
+/// keep the same days and task ids (so saved progress stays attached), but
+/// their AYT text points to their own courses. SAY and unspecified profiles
+/// keep the original text.
+void _adaptAytForScoreType(List<DailyLog> logs, String scoreType) {
+  if (!const {'ea', 'soz', 'dil'}.contains(scoreType)) return;
+  final courses = getAytSocialSubjects()
+      .where((subject) => subject.areas.contains(scoreType))
+      .toList();
+  final courseNames = [
+    if (scoreType == 'ea') 'Matematik',
+    for (final course in courses) course.name.replaceFirst('AYT ', ''),
+  ].join(', ');
+
+  // Interleave courses so every week touches each of them.
+  final queue = <String>[];
+  for (var index = 0; courses.any((c) => index < c.topics.length); index++) {
+    for (final course in courses) {
+      if (index >= course.topics.length) continue;
+      queue.add(
+        '${course.name.replaceFirst('AYT ', '')} — '
+        '${course.topics[index].name}',
+      );
+    }
+  }
+
+  final mathPattern = RegExp(r'^AYT: (Mat|Formüller)');
+  final sciencePattern = RegExp(r'\b(Fizik|Kimya|Bio|Kim)\b');
+  bool isReview(String text) =>
+      text.contains('tekrar') || text.contains('sadece');
+  String questions(String text) {
+    final count = RegExp(r'(\d+) soru').firstMatch(text)?.group(1);
+    return count == null
+        ? 'Konu özeti çıkar, kendi kaynağından soru çöz.'
+        : '$count soru.';
+  }
+
+  final topicSlots = <DailyLog>[];
+  for (final log in logs) {
+    final text = log.aytContent;
+    if (text.startsWith('AYT sırası')) {
+      log.aytContent = scoreType == 'dil'
+          ? 'YDT: Soru çözme sıranı ve süre planını son denemelerde uyguladığın gibi koru.'
+          : 'AYT\'de testleri hangi sırayla çözeceğini son denemelerde uyguladığın gibi koru.';
+      continue;
+    }
+    final isMath = mathPattern.hasMatch(text);
+    if (!isMath && !sciencePattern.hasMatch(text)) continue;
+    if (isMath && scoreType == 'ea') continue;
+    if (scoreType == 'dil') {
+      log.aytContent = isReview(text)
+          ? 'YDT: Yanlış yaptığın kelime ve soruları tekrar et. ${questions(text)}'
+          : 'YDT: Kelime çalışması ve okuma parçası. ${questions(text)}';
+    } else if (isReview(text)) {
+      log.aytContent = 'AYT: $courseNames karışık tekrar. ${questions(text)}';
+    } else {
+      topicSlots.add(log);
+    }
+  }
+
+  // Spread every topic over the available slots without dropping any.
+  for (var slot = 0; slot < topicSlots.length; slot++) {
+    final first = slot * queue.length ~/ topicSlots.length;
+    final afterLast = (slot + 1) * queue.length ~/ topicSlots.length;
+    final topics = queue.sublist(first, afterLast);
+    final log = topicSlots[slot];
+    log.aytContent = topics.isEmpty
+        ? 'AYT: $courseNames — eksik gördüğün konuyu tekrar et. ${questions(log.aytContent)}'
+        : 'AYT: ${topics.join(' · ')}. ${questions(log.aytContent)}';
+  }
+}
+
 List<DailyLog> getPersonalizedDailySchedule({
   required DateTime targetDate,
   required StudySchedulePreferences preferences,
   Set<String> completedTaskIds = const {},
   Set<String> completedTaskIdsForToday = const {},
   DateTime? today,
+  String scoreType = ExamProfile.unspecified,
 }) {
   final now = today ?? DateTime.now();
   final start = DateTime(now.year, now.month, now.day);
   final target = DateTime(targetDate.year, targetDate.month, targetDate.day);
-  if (target.isBefore(start)) return getDailySchedule(targetDate: target);
+  if (target.isBefore(start)) {
+    return getDailySchedule(targetDate: target, scoreType: scoreType);
+  }
 
-  final templateTasks = getDailySchedule();
+  final templateTasks = getDailySchedule(scoreType: scoreType);
   final completedTodaySummaries = templateTasks
       .where(
         (task) => completedTaskIdsForToday.contains(task.progressIds.single),

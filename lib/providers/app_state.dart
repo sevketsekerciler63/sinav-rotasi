@@ -868,7 +868,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   void _restoreDailyPlanProgress(String logsJson) {
     final snapshot = DailyPlanMigration.restore(
       logsJson,
-      templateLogs: getDailySchedule(),
+      templateLogs: getDailySchedule(scoreType: _activeProfile.scoreType),
     );
     _dailyPlanEntries = snapshot.entries;
     _dailyLogHistory = snapshot.history;
@@ -887,6 +887,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     final now = DateTime.now();
     _planDateBuiltFor = DateTime(now.year, now.month, now.day);
     return getPersonalizedDailySchedule(
+      scoreType: _activeProfile.scoreType,
       targetDate: targetDate,
       preferences: _schedulePreferences,
       completedTaskIds: DailyPlanMetrics.completedCoreTaskIds(
@@ -1749,7 +1750,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         (values) {
           final snapshot = DailyPlanMigration.restore(
             values['daily_logs'] ?? initialLogs,
-            templateLogs: getDailySchedule(),
+            templateLogs: getDailySchedule(scoreType: _activeProfile.scoreType),
           );
           final questionsRaw =
               jsonDecode(values['question_history'] ?? initialQuestions) as Map;
@@ -2517,7 +2518,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   Set<String> get completedStudyDateKeys {
     final legacy = StudyHistoryMetrics.completedStudyDateKeys(
       _dailyPlanEntries,
-      getDailySchedule(),
+      getDailySchedule(scoreType: _activeProfile.scoreType),
     );
     final plans = learningWorkspace.plans.toList()
       ..sort((a, b) => a.date.compareTo(b.date));
@@ -2573,7 +2574,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   List<LegacyDailyActivity> get legacyDailyActivities =>
       StudyHistoryMetrics.legacyDailyActivities(
         _dailyLogHistory,
-        getDailySchedule(),
+        getDailySchedule(scoreType: _activeProfile.scoreType),
       );
 
   int completedStudySessionsOn(DateTime date) {
@@ -2615,7 +2616,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   DailyLog? nextIncompleteTaskFor(DailyLog log) {
     return DailyPlanMetrics.nextIncompleteTask(
       log: log,
-      templateTasks: getDailySchedule(),
+      templateTasks: getDailySchedule(scoreType: _activeProfile.scoreType),
       planEntries: _dailyPlanEntries,
     );
   }

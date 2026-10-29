@@ -489,7 +489,9 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
                               log.aytContent.isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Text(
-                              'AYT:',
+                              log.aytContent.startsWith('YDT')
+                                  ? 'YDT:'
+                                  : 'AYT:',
                               style: TextStyle(
                                 color: colors.secondary,
                                 fontWeight: FontWeight.w600,
