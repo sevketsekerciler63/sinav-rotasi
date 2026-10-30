@@ -4,10 +4,10 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
 
 ## Kısaca
 
-- **Local-first:** hesap, sunucu ve analitik yok; veri cihazda tutulur, JSON olarak yedeklenip geri yüklenebilir.
-- **Teknoloji:** Flutter (Dart), `SharedPreferences` tabanlı sürümlü depolama (şema 14), Android, iOS ve web hedefi.
-- **Kalite kapıları:** `dart format`, `flutter analyze`, `flutter test` ve web release derlemesi; aynı adımlar `.github/workflows/flutter.yml` içinde CI olarak tanımlıdır. 30 Ekim 2026 kaydına göre 102 otomatik test geçiyordu.
-- **Durum:** Mağazada yayımlanmadı. Gerçek Android telefonda kabul, TalkBack ve düşük donanım denemeleri açıktır; bu README'deki sınırlar bilerek yazılmıştır.
+- Hesap, sunucu ve analitik yok. Veriler telefonda kalır; JSON olarak yedeklenip geri yüklenebilir.
+- Flutter (Dart). Android, iOS ve web için hazırlandı; iOS derlemesi denenmedi.
+- Her değişiklikte biçim, analiz, testler ve web derlemesi çalışıyor (GitHub Actions). Son kayıtta 102 test geçiyordu.
+- Mağazada yayımlanmadı. Gerçek telefonda kabul testi, ekran okuyucu ve düşük donanım denemeleri yapılmadı.
 
 <p>
   <img src="docs/screenshots/ana-sayfa.png" alt="Ana sayfa: hedefe kalan gün, konu ilerlemesi ve günlük kaynak planı" width="260">
@@ -22,11 +22,7 @@ Ekran görüntüleri web derlemesinden (390 px genişlik) alınmıştır; yeni k
 
 ## Nasıl geliştirdim
 
-Bu proje yapay zekâ kodlama asistanlarıyla birlikte geliştirildi; bunu saklamıyorum. İş bölümü şöyle:
-
-- **Ben karar veriyorum:** ürünün kapsamı (kendi soru üretimi yok, kesin puan/sıralama vaadi yok), veri güvenliği ilkeleri ve neyin commit'leneceği.
-- **Yapay zekâ üretiyor ve denetliyor:** kod, testler, içerik denetimleri ve belge taslakları. Denetim ve ilerleme kayıtları `docs/` klasöründedir.
-- **Doğrulama kuralı:** bir şey çalıştırılıp görülmeden "tamamlandı" yazılmaz. Test, analyzer ve build sonuçları ile cihazda yapılmamış kabul maddeleri ayrı tutulur; bu yüzden aşağıdaki "Bilinen durum" bölümü açık kalan işleri de içerir.
+Bu uygulamayı yapay zekâ asistanlarıyla birlikte yazdım. Neyin yapılacağına ben karar verdim (örneğin kendi soru üretimi ve puan tahmini olmayacak), kodun çoğunu asistan yazdı. Her değişiklikten sonra testler, analiz ve derleme çalıştırıldı. Çalıştırılamayan ya da telefonda denenmeyen şeyler aşağıdaki "Bilinen durum" bölümünde yazıyor. `docs/` klasöründe asistanla yaptığımız denetim ve ilerleme notları duruyor.
 
 ## Mevcut kapsam
 
