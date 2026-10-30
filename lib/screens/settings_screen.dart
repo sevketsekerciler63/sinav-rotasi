@@ -172,9 +172,9 @@ class SettingsScreen extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      '107 konu - 95 günlük plan - 13 deneme\n29 rozet - Pomodoro - Hedef takibi',
-                      style: TextStyle(fontSize: 12, height: 1.5),
+                    Text(
+                      '${state.totalTopics} konu - 95 günlük plan - ${state.mockExams.length} deneme\n${state.achievements.length} rozet - Pomodoro - Hedef takibi',
+                      style: const TextStyle(fontSize: 12, height: 1.5),
                     ),
                     const SizedBox(height: 12),
                     Row(
