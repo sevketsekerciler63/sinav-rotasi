@@ -74,3 +74,7 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - `flutter test` ile katalog, depolama/kurtarma, günlük soru tarihleri, net trendi, Türkçe tarih seçici ve kaynak görev/konu bağlantısı kontrolleri çalıştırılır. Konu bağlantısında kayıt hatası sonrası taslak, yeniden açma ve JSON yedek gidiş-dönüşü sınanır.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
 - [Release checklist](docs/release-checklist.md) sürüm, Android imzası, build, güncelleme ve geri dönüş akışını açıklar. Üretim keystore'u yoktur; yerel debug imzalı release için `ALLOW_DEBUG_SIGNING_FOR_RELEASE=true` açıkça ayarlanmalıdır. iOS artefaktı macOS/Xcode üzerinde derlenip doğrulanmalıdır.
+
+## Lisans
+
+Tüm hakları saklıdır. Kaynak kod yalnızca inceleme amacıyla herkese açıktır; kullanım lisansı verilmemiştir.
