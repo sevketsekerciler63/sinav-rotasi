@@ -13,6 +13,10 @@ YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalış
   <img src="docs/screenshots/ana-sayfa.png" alt="Ana sayfa: hedefe kalan gün, konu ilerlemesi ve günlük kaynak planı" width="260">
   <img src="docs/screenshots/plan-ayari.png" alt="Kurulum: puan türü, seviye, hedef tarihi ve çalışma günleri" width="260">
 </p>
+<p>
+  <img src="docs/screenshots/konular.png" alt="Konular: TYT dersleri, konu sayıları ve ilerleme çubukları" width="260">
+  <img src="docs/screenshots/istatistikler.png" alt="İstatistikler: genel ilerleme, seri, deneme kaydı ve ders bazlı ilerleme" width="260">
+</p>
 
 Ekran görüntüleri web derlemesinden (390 px genişlik) alınmıştır; yeni kurulumdaki boş durumu gösterir.
 
