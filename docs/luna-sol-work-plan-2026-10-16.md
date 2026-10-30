@@ -8,7 +8,7 @@ Güncel bulgular ve devam kaydı: [Sol incelemesi](sol-review-and-progress-2026-
 
 ## 1. Devralırken kısa bağlam
 
-- Depo: C:\Users\PC\Desktop\sinav-rotasi
+- Depo: bu deponun kök klasörü
 - Ürün: öğrencinin kendi kitap/test/video/denemeleriyle çalışmasını yöneten, YKS ilk uygulama olmak üzere çok sınava genişleyecek kişisel çalışma sistemi.
 - Kendi soru bankamızı ve yıllık özgün deneme üretimini yapmıyoruz. Yapay zekâ soru üretimi ilk sürümün dayanağı değil.
 - Görsel yön: mevcut Rota Atlası; mürekkep yeşili, sıcak kâğıt, mint rota ve amber işaretler. Ana ekran öğrencinin sıradaki işini öne çıkarmalı.

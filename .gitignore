@@ -54,6 +54,9 @@ key.properties
 .env
 .env.*
 
+# Local-only archive (old sources, never published)
+arsiv/
+
 # Symbolication related
 app.*.symbols
 

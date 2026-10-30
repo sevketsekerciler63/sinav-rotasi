@@ -2,6 +2,28 @@
 
 YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalışma düzenini yerel olarak takip etmesi için Flutter uygulaması.
 
+## Kısaca
+
+- **Local-first:** hesap, sunucu ve analitik yok; veri cihazda tutulur, JSON olarak yedeklenip geri yüklenebilir.
+- **Teknoloji:** Flutter (Dart), `SharedPreferences` tabanlı sürümlü depolama (şema 14), Android, iOS ve web hedefi.
+- **Kalite kapıları:** `dart format`, `flutter analyze`, `flutter test` ve web release derlemesi; aynı adımlar `.github/workflows/flutter.yml` içinde CI olarak tanımlıdır. 30 Ekim 2026 kaydına göre 102 otomatik test geçiyordu.
+- **Durum:** Mağazada yayımlanmadı. Gerçek Android telefonda kabul, TalkBack ve düşük donanım denemeleri açıktır; bu README'deki sınırlar bilerek yazılmıştır.
+
+<p>
+  <img src="docs/screenshots/ana-sayfa.png" alt="Ana sayfa: hedefe kalan gün, konu ilerlemesi ve günlük kaynak planı" width="260">
+  <img src="docs/screenshots/plan-ayari.png" alt="Kurulum: puan türü, seviye, hedef tarihi ve çalışma günleri" width="260">
+</p>
+
+Ekran görüntüleri web derlemesinden (390 px genişlik) alınmıştır; yeni kurulumdaki boş durumu gösterir.
+
+## Nasıl geliştirdim
+
+Bu proje yapay zekâ kodlama asistanlarıyla birlikte geliştirildi; bunu saklamıyorum. İş bölümü şöyle:
+
+- **Ben karar veriyorum:** ürünün kapsamı (kendi soru üretimi yok, kesin puan/sıralama vaadi yok), veri güvenliği ilkeleri ve neyin commit'leneceği.
+- **Yapay zekâ üretiyor ve denetliyor:** kod, testler, içerik denetimleri ve belge taslakları. Denetim ve ilerleme kayıtları `docs/` klasöründedir.
+- **Doğrulama kuralı:** bir şey çalıştırılıp görülmeden "tamamlandı" yazılmaz. Test, analyzer ve build sonuçları ile cihazda yapılmamış kabul maddeleri ayrı tutulur; bu yüzden aşağıdaki "Bilinen durum" bölümü açık kalan işleri de içerir.
+
 ## Mevcut kapsam
 
 - TYT/AYT ders ve konu takibi; profile özel ders ve konu ekleme
@@ -48,4 +70,3 @@ Flutter SDK ile proje kökünde `flutter pub get`, ardından `flutter run` kulla
 - `flutter test` ile katalog, depolama/kurtarma, günlük soru tarihleri, net trendi, Türkçe tarih seçici ve kaynak görev/konu bağlantısı kontrolleri çalıştırılır. Konu bağlantısında kayıt hatası sonrası taslak, yeniden açma ve JSON yedek gidiş-dönüşü sınanır.
 - Android uygulama kimliği mevcut cihaz verisini korumak için `com.yks.yks_study_app` olarak bırakılmıştır.
 - [Release checklist](docs/release-checklist.md) sürüm, Android imzası, build, güncelleme ve geri dönüş akışını açıklar. Üretim keystore'u yoktur; yerel debug imzalı release için `ALLOW_DEBUG_SIGNING_FOR_RELEASE=true` açıkça ayarlanmalıdır. iOS artefaktı macOS/Xcode üzerinde derlenip doğrulanmalıdır.
-- `arsiv/eski-yks-kaynaklari` klasöründe eski MTOK Excel kaynakları vardır.
