@@ -2,6 +2,8 @@
 
 [![Flutter CI](https://github.com/sevketsekerciler63/sinav-rotasi/actions/workflows/flutter.yml/badge.svg)](https://github.com/sevketsekerciler63/sinav-rotasi/actions/workflows/flutter.yml)
 
+**Canlı demo:** [sevketsekerciler63.github.io/sinav-rotasi](https://sevketsekerciler63.github.io/sinav-rotasi/). Web sürümü; veriler kendi tarayıcında kalır.
+
 YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalışma düzenini yerel olarak takip etmesi için Flutter uygulaması.
 
 ## Kısaca
