@@ -1,5 +1,7 @@
 # Sınav Rotası
 
+[![Flutter CI](https://github.com/sevketsekerciler63/sinav-rotasi/actions/workflows/flutter.yml/badge.svg)](https://github.com/sevketsekerciler63/sinav-rotasi/actions/workflows/flutter.yml)
+
 YKS adaylarının hedef, ders ve konu ilerlemesi, deneme sonuçları ve çalışma düzenini yerel olarak takip etmesi için Flutter uygulaması.
 
 ## Kısaca
